@@ -17,7 +17,7 @@ stimulation and altitude/azimuth retinotopic map generation is not included in t
 The package also provides some useful plotting functions to visualize the results.
 
 Please check the jupyter notebook in the '\examples' folder for the usage.
-https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.html
+https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.ipynb
 
 
 ####Language:
