@@ -593,11 +593,6 @@ def int2str(num,length=None):
 if __name__=='__main__':
 
     #----------------------------------------------------------------------------
-
-    # mov = np.random.rand(250,512,512,4)
-    # generateAVI(r'C:\JunZhuang\labwork\data\python_temp_folder','tempMov',mov)
-
-    #----------------------------------------------------------------------------
     print int2str(5)
     print int2str(5,2)
     print int2str(155,6)

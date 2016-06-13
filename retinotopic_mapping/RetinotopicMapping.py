@@ -3,7 +3,6 @@ __author__ = 'junz'
 import numpy as np
 import os
 import scipy.ndimage as ni
-import scipy.stats as stats
 import scipy.sparse as sparse
 import math
 import matplotlib.pyplot as plt
@@ -18,36 +17,25 @@ from matplotlib import cm
 import core.FileTools as ft
 import core.ImageAnalysis as ia
 import core.PlottingTools as pt
-import tifffile as tf
 
 
 
 def loadTrial(trialPath):
-    '''
+    """
     load single retinotopic mapping trial from database
-    '''
+    """
 
     trialDict = ft.loadFile(trialPath)
 
-    try:
-        traces = trialDict['traces']
-    except KeyError:
-        traces = []
-
     trial = RetinotopicMappingTrial(mouseID = trialDict['mouseID'], # str, mouseID
                                     dateRecorded = trialDict['dateRecorded'], # int, date recorded, yearmonthday
-                                    trialNum = trialDict['trialNum'], # str, number of the trail on that day
-                                    mouseType = trialDict['mouseType'], # str, mouse Genotype
-                                    visualStimType = trialDict['visualStimType'], # str, stimulation type
-                                    visualStimBackground = trialDict['visualStimBackground'], # str, background of visual stimulation
-                                    imageExposureTime = trialDict['imageExposureTime'], # float, exposure time of image file
+                                    comments = trialDict['comments'], # str, number of the trail on that day
                                     altPosMap = trialDict['altPosMap'], # altitude position map
                                     aziPosMap = trialDict['aziPosMap'], # azimuth position map
                                     altPowerMap = trialDict['altPowerMap'], # altitude power map
                                     aziPowerMap = trialDict['aziPowerMap'], # azimuth power map
                                     vasculatureMap = trialDict['vasculatureMap'], # vasculature map
-                                    params = trialDict['params'],
-                                    isAnesthetized = trialDict['isAnesthetized'])
+                                    params = trialDict['params'])
 
     try:
         trial.altPosMapf = trialDict['altPosMapf']
@@ -114,286 +102,13 @@ def loadTrial(trialPath):
     except KeyError:
         pass
 
-    return trial, traces
-
-
-def findPhaseIndex(trace, harmonic=1):
-    '''
-
-    return the index of the peak at the given harmonic component of a singal trace
-
-    :param trace: signal
-    :param harmonic: the interested harmonic
-    :return: index of the peak of the given harmonic
-    '''
-    traceF = np.fft.fft(trace)
-    angle = (-1*np.angle(traceF[harmonic]))%(2*np.pi)
-    index = len(trace) * angle / (2*np.pi)
-
-    return index
-
-
-def generatePhaseMap(movie,cycles = 1,isReverse = False,isFilter = False,sigma = 3.,isplot = False):
-    '''
-    generating phase map of a 3-d movie, on the frequency defined by cycles.
-
-    the movie should have the same length of 'cycles' number of cycles.
-
-    isFilter: Ture      use sigma filtering
-              False     not use sigma filtering
-
-    sigma is the criterion to choose pixels for plotting. Only the pixels
-    meet the following criterion will be plotted:
-
-    for this particular pixel: the power at the desired frequency is bigger
-    than 'sigma' standard deviation from the mean power of all frequencies.
-
-    '''
-    if isReverse:
-        movie = np.amax(movie) - movie
-
-    spectrumMovie = np.fft.fft(movie,axis=0)
-
-    #generate power movie
-    powerMovie = (np.abs(spectrumMovie) * 2.) / np.size(movie, 0)
-    powerMap = np.abs(powerMovie[cycles,:,:])
-
-    #generate phase movie
-    phaseMovie = np.angle(spectrumMovie)
-    #phaseMap = phaseMovie[cycles,:,:]
-    phaseMap = -1 * phaseMovie[cycles,:,:]
-
-    #remove pixels with not enough power in the ideal frequency
-    if isFilter == True:
-        meanPower = np.mean(powerMovie, axis = 0)
-        stdPower = np.std(powerMovie, axis = 0)
-        for i in np.arange(powerMap.shape[0]):
-            for j in np.arange(powerMap.shape[1]):
-                if powerMap[i,j] < meanPower[i,j] + sigma * stdPower[i,j]:
-                    phaseMap[i,j] = np.nan
-
-    if isplot == True:
-        plt.figure()
-        plotMap = 180 * (phaseMap / np.pi)
-        plt.imshow(plotMap,aspect='equal')
-        plt.colorbar()
-
-    return phaseMap % (2*np.pi), powerMap #value from -pi to pi
-
-
-def generatePhaseMap2(movie,cycles,isReverse = False,isPlot = False):
-    '''
-    generating phase map of a 3-d movie, on the frequency defined by cycles.
-    the movie should have the same length of 'cycles' number of cycles.
-    '''
-    if isReverse:
-        movie = np.amax(movie) - movie
-
-    spectrumMovie = np.fft.fft(movie,axis=0)
-
-    #generate power movie
-    powerMovie = (np.abs(spectrumMovie) * 2.) / np.size(movie, 0)
-    powerMap = np.abs(powerMovie[cycles,:,:])
-
-    #generate phase movie
-    phaseMovie = np.angle(spectrumMovie)
-    #phaseMap = phaseMovie[cycles,:,:]
-    phaseMap = -1 * phaseMovie[cycles,:,:]
-    phaseMap = phaseMap % (2 * np.pi)
-
-    if isPlot == True:
-        plt.figure()
-        plotMap = 180 * (phaseMap / np.pi)
-        plt.imshow(plotMap,
-                   aspect='equal',
-                   cmap = 'hsv',
-                   vmax = 360,
-                   vmin = 0,
-                   interpolation = 'nearest')
-        plt.colorbar()
-
-    return phaseMap, powerMap
-
-
-def getPhase(trace,cycles,isReverse = False):
-    '''
-    return phase and power of a certain trace, the trace should have 'cycles' number of cycles
-    the returned phase can be plugged direct into equation generated by getPhasePositionEquation() function to calculate
-    retinotopic location of a pertical trace
-    '''
-
-    if trace.ndim != 1: raise ValueError, 'input trace should be a 1-d array!'
-
-    if isReverse:
-        trace = np.amax(trace) - trace
-
-    spectrum = np.fft.fft(trace)
-    power = ((np.abs(spectrum) * 2.) / spectrum.shape[0])[cycles]
-    phase = ((-1 * np.angle(spectrum))[cycles]) % (2 * np.pi)
-
-    return phase, power
-
-
-def phasePosition(phaseMap, displayLog):
-    '''
-    from phaseMap get the position map, according to the KSstim display
-    log
-    '''
-
-    if not('KSstim' in displayLog['stimulation']['stimName']):
-        raise TypeError, 'The stimulation is not KSstim!'
-
-    sweepTable = displayLog['stimulation']['sweepTable']
-    frames = displayLog['stimulation']['frames']
-
-    phase = np.linspace(0,2*np.pi,len(frames),endpoint=False)
-
-    phaseIndexStart = np.nan
-    phaseIndexEnd = np.nan
-    phaseStart = np.nan
-    phaseEnd = np.nan
-    for i in range(0,len(frames)-1):
-        if (frames[i][2] == None) & (frames[i+1][2] != None):
-            phaseStart = phase[i+1]
-            phaseIndexStart = int(i+1)
-            #print phaseIndexStart, phaseStart
-
-        if (frames[i][2] != None) & (frames[i+1][2] == None):
-            phaseEnd = phase[i]
-            phaseIndexEnd = int(i)
-            #print phaseIndexEnd, phaseEnd
-
-    if np.isnan(phaseIndexStart):
-        print 'no gap in the front.'
-        phaseIndexStart = 0
-        phaseStart = phase[0]
-
-    if np.isnan(phaseIndexEnd):
-        print 'no gap in the end.'
-        phaseIndexEnd = len(phase)
-        phaseEnd = phase[-1]
-
-    position = np.zeros(len(frames))
-    position[:] = np.nan
-
-    for i, framei in enumerate(frames):
-        if framei[2] != None:
-            position[i] = (sweepTable[framei[2]][1]+sweepTable[framei[2]][2])/2
-
-    stiDirection = displayLog['stimulation']['direction']
-
-    if displayLog['presentation']['displayOrder'] == -1:
-        position = position[::-1]
-        stiDirection = stiDirection[::-1]
-
-    print '\nStimulus direction:', stiDirection
-
-    slope, intercept, r_value, p_value, stderr = stats.linregress(phase[phaseIndexStart:(phaseIndexEnd+1)],
-                                                                  position[phaseIndexStart:(phaseIndexEnd+1)])
-
-    positionMap = phaseMap * slope + intercept
-
-    #print slope, intercept, phaseMap[74,66], phaseMap2[74,66], positionMap[74,66]
-
-    #positionMap[phaseMap<phaseStart] = np.nan
-    #positionMap[phaseMap>phaseEnd] = np.nan
-
-    return positionMap
-
-
-def getPhasePositionEquation(displayLog):
-    '''
-    return the intercept and slope of the linear relationship between phase and retinotopic location for a certain
-    display of KSStim
-    '''
-
-    if not('KSstim' in displayLog['stimulation']['stimName']):
-        raise TypeError, 'The stimulation is not KSstim!'
-
-    sweepTable = displayLog['stimulation']['sweepTable']
-    frames = displayLog['stimulation']['frames']
-
-    phase = np.linspace(0,2*np.pi,len(frames),endpoint=False)
-
-    phaseIndexStart = np.nan
-    phaseIndexEnd = np.nan
-    for i in range(0,len(frames)-1):
-        if (frames[i][2] == None) & (frames[i+1][2] != None):phaseIndexStart = int(i+1)
-        if (frames[i][2] != None) & (frames[i+1][2] == None):phaseIndexEnd = int(i)
-
-    if np.isnan(phaseIndexStart):print 'no gap in the front.'; phaseIndexStart = 0
-
-    if np.isnan(phaseIndexEnd):print 'no gap in the end.'; phaseIndexEnd = len(phase)
-
-    position = np.zeros(len(frames))
-    position[:] = np.nan
-
-    for i, framei in enumerate(frames):
-        if framei[2] is not None:
-            position[i] = (sweepTable[framei[2]][1]+sweepTable[framei[2]][2])/2
-
-    stiDirection = displayLog['stimulation']['direction']
-
-    if displayLog['presentation']['displayOrder'] == -1:
-        position = position[::-1]; stiDirection = stiDirection[::-1]
-
-    # print '\nStimulus direction:', stiDirection
-
-    slope, intercept, r_value, p_value, stderr = stats.linregress(phase[phaseIndexStart:(phaseIndexEnd+1)],
-                                                                  position[phaseIndexStart:(phaseIndexEnd+1)])
-
-    # print 'slope: \t'+str(slope)
-    # print 'intercept: \t'+str(intercept)
-    # print 'r_value: \t'+str(r_value)
-    # print 'p_value: \t'+str(p_value)
-    # print 'stderr: \t'+str(stderr)
-
-    return slope, intercept
-
-
-def getPhasePositionEquation2(frames, sweepTable):
-    '''
-    return the intercept and slope of the linear relationship between phase and retinotopic location from a frames and
-    sweepTable (in standard corticalmapping.VisualStim.KSstimJun or corticalmapping.VisualStim.KSstimAllDir format).
-    Assuming displayOrder is 1 when display this stimulus
-    '''
-
-    phase = np.linspace(0,2*np.pi,len(frames),endpoint=False)
-
-    phaseIndexStart = np.nan
-    phaseIndexEnd = np.nan
-    for i in range(0,len(frames)-1):
-        if (frames[i][2] == None) & (frames[i+1][2] != None):phaseIndexStart = int(i+1)
-        if (frames[i][2] != None) & (frames[i+1][2] == None):phaseIndexEnd = int(i)
-
-    if np.isnan(phaseIndexStart):print 'no gap in the front.'; phaseIndexStart = 0
-    if np.isnan(phaseIndexEnd):print 'no gap in the end.'; phaseIndexEnd = len(phase)
-
-    position = np.zeros(len(frames))
-    position[:] = np.nan
-
-    for i, framei in enumerate(frames):
-        if framei[2] is not None:
-            position[i] = (sweepTable[framei[2]][1]+sweepTable[framei[2]][2])/2
-
-    # print '\nStimulus direction:', stiDirection
-
-    slope, intercept, r_value, p_value, stderr = stats.linregress(phase[phaseIndexStart:(phaseIndexEnd+1)],
-                                                                  position[phaseIndexStart:(phaseIndexEnd+1)])
-
-    # print 'slope: \t'+str(slope)
-    # print 'intercept: \t'+str(intercept)
-    # print 'r_value: \t'+str(r_value)
-    # print 'p_value: \t'+str(p_value)
-    # print 'stderr: \t'+str(stderr)
-
-    return slope, intercept
+    return trial
 
 
 def visualSignMap(phasemap1,phasemap2):
-    '''
+    """
     calculate visual sign map from two orthogonally oriented phase maps
-    '''
+    """
 
     if phasemap1.shape != phasemap2.shape:
         raise LookupError, "'phasemap1' and 'phasemap2' should have same size."
@@ -426,12 +141,12 @@ def visualSignMap(phasemap1,phasemap2):
     return areamap
 
 
-def dilationPatches(rawPatches,smallPatchThr = 5,borderWidth = 1): #pixel width of the border after dilation
+def dilationPatches(rawPatches,smallPatchThr=5,borderWidth=1): #pixel width of the border after dilation
 
-    '''
+    """
     dilation patched in a given area untill the border between them are as
     narrow as defined by 'borderWidth'.
-    '''
+    """
 
     #get patch borders
     total_area = sm.convex_hull_image(rawPatches)
@@ -468,12 +183,12 @@ def dilationPatches(rawPatches,smallPatchThr = 5,borderWidth = 1): #pixel width 
     return newPatches
 
 
-def dilationPatches2(rawPatches,dilationIter = 20,borderWidth = 1): #pixel width of the border after dilation
+def dilationPatches2(rawPatches,dilationIter=20,borderWidth=1): #pixel width of the border after dilation
 
-    '''
+    """
     dilation patched in a given area untill the border between them are as
     narrow as defined by 'borderWidth'.
-    '''
+    """
 
 
     total_area = ni.binary_dilation(rawPatches, iterations = dilationIter).astype(np.int)
@@ -507,11 +222,11 @@ def dilationPatches2(rawPatches,dilationIter = 20,borderWidth = 1): #pixel width
     return newPatches2
 
 
-def labelPatches(patchmap, signMap, connectivity=4):
-    '''
+def labelPatches(patchmap, signMap):
+    """
     from a segregated patchmap generate a dictionary with each entry represents
     a single patch, sorted by area
-    '''
+    """
 
     labeledPatches, patchNum = ni.label(patchmap)
 
@@ -548,13 +263,11 @@ def labelPatches(patchmap, signMap, connectivity=4):
     return patches
 
 
-def phaseFilter(phaseMap,
-                filterType = 'Gaussian', # 'Gaussian' of 'uniform'
-                filterSize = 3,
-                isPositive = True): #if Ture return phase [0 2pi], if False return phase [-pi, pi]
-    '''
-    smooth phaseMap in a circular fashion
-    '''
+def phaseFilter(phaseMap, filterType='gaussian', filterSize=3, isPositive=True):
+    """
+    smooth phaseMap in a circular fashion. filterType should be "gaussian" or "uniform"
+    isPositive: bool, if Ture return phase [0 2pi], if False return phase [-pi, pi]
+    """
 
     phaseMapSin = np.sin(phaseMap)
     phaseMapCos = np.cos(phaseMap)
@@ -563,9 +276,12 @@ def phaseFilter(phaseMap,
         phaseMapSinf = ni.filters.gaussian_filter(phaseMapSin, filterSize)
         phaseMapCosf = ni.filters.gaussian_filter(phaseMapCos, filterSize)
 
-    if filterType == 'uniform':
+    elif filterType == 'uniform':
         phaseMapSinf = ni.filters.uniform_filter(phaseMapSin, filterSize)
         phaseMapCosf = ni.filters.uniform_filter(phaseMapCos, filterSize)
+        
+    else: 
+        raise ValueError('filterType should be either "gaussian" or "uniform".')
 
     phaseMapf = np.arctan2(phaseMapSinf, phaseMapCosf)
 
@@ -575,15 +291,19 @@ def phaseFilter(phaseMap,
     return phaseMapf
 
 
-def visualSpace(patch,
-                altMap,
-                aziMap,
-                pixelSize = 2., # pixel size in visual space
-                closeIter = None,
-                isPlot = False): # dilation iterations for final map
-    '''
-    get the visual response space of a cortical patch
-    '''
+def visualCoverage(patch, altMap, aziMap, pixelSize=2., closeIter=None, isPlot=False):
+    """
+    get the visual response coverage of a cortical patch
+
+    :param patch:
+    :param altMap:
+    :param aziMap:
+    :param pixelSize: pixel size in visual space, deg
+    :param closeIter: closer iteration for generating visual coverage
+    :param isPlot:
+    :return:
+
+    """
 
     pixelSize = np.float(pixelSize)
 
@@ -616,20 +336,15 @@ def visualSpace(patch,
     visualAziCenter = np.mean(gridAzi[visualSpace != 0])
 
     if isPlot:
-        plotVisualSpace(visualSpace,pixelSize=pixelSize)
+        plotVisualCoverage(visualSpace, pixelSize=pixelSize)
 
     return visualSpace, uniqueArea, visualAltCenter, visualAziCenter
 
 
-def plotVisualSpace(visualSpace,
-                    pixelSize, # deg
-                    altStart = -40,
-                    aziStart = -20,
-                    tickSpace = 10, # deg
-                    plotAxis = None):
-    '''
+def plotVisualCoverage(visualSpace, pixelSize, altStart=-40, aziStart=-20, tickSpace=10, plotAxis=None):
+    """
     plot visual space in given plotAxis
-    '''
+    """
     
     pixelSize = np.float(pixelSize)
     
@@ -663,10 +378,10 @@ def plotVisualSpace(visualSpace,
 
 def localMin(eccMap, binSize):
 
-    '''
+    """
     find local minimum of eccenticity map (in degree), with binning by binSize
     in degree
-    '''
+    """
 
     eccMap2 = np.array(eccMap)
     cutStep = np.arange(np.nanmin(eccMap2[:]) - binSize,
@@ -697,11 +412,11 @@ def localMin(eccMap, binSize):
     return marker
 
 
-def adjacentPairs(patches,borderWidth = 2):
+def adjacentPairs(patches,borderWidth=2):
 
-    '''
+    """
     return all the patch pairs with same visual sign and sharing border
-    '''
+    """
 
     keyList = patches.keys()
     pairKeyList = []
@@ -717,10 +432,10 @@ def adjacentPairs(patches,borderWidth = 2):
     return pairKeyList
 
 
-def mergePatches(array1, array2, borderWidth = 2):
-    '''
+def mergePatches(array1, array2, borderWidth=2):
+    """
     merge two binary patches with borderWidth no greater than borderWidth
-    '''
+    """
 
     sp = array1 + array2
     spc =  ni.binary_closing(sp, iterations = (borderWidth)).astype(np.int8)
@@ -733,13 +448,13 @@ def mergePatches(array1, array2, borderWidth = 2):
 
 
 def eccentricityMap(altMap, aziMap, altCenter, aziCenter):
-    '''
+    """
     calculate eccentricity map of with defined center
 
     altMap, aziMap, altCenter, aziCenter: in degree
 
     eccentricity map is returned in degree
-    '''
+    """
 
     altMap2 = altMap * np.pi / 180
     aziMap2 = aziMap * np.pi / 180
@@ -767,9 +482,9 @@ def eccentricityMap(altMap, aziMap, altCenter, aziCenter):
 
 
 def sortPatches(patchDict):
-    '''
+    """
     from a patch dictionary generate an new dictionary with patches sorted by there area
-    '''
+    """
 
     patches = []
     newPatchDict = {}
@@ -788,10 +503,10 @@ def sortPatches(patchDict):
     return newPatchDict
 
 
-def plotPatches(patches,plotaxis = None,zoom = 1,alpha = 0.5,markersize = 5):
-    '''
+def plotPatches(patches, plotaxis=None, zoom=1, alpha=0.5, markersize=5):
+    """
     plot a patches in a patch dictionary
-    '''
+    """
 
     if plotaxis == None:
         f = plt.figure()
@@ -815,8 +530,8 @@ def plotPatches(patches,plotaxis = None,zoom = 1,alpha = 0.5,markersize = 5):
     return imageHandle
 
 
-def plotPatchBorders(patches,plotaxis = None,borderWidth = 2,color='#ff0000',zoom = 1,isPlotCenter = True,isCenter = True,
-                     rotationAngle = 0 ):# rotation of map in degrees, counter-clockwise
+def plotPatchBorders(patches, plotaxis=None, borderWidth=2, color='#ff0000', zoom=1, isPlotCenter=True, isCenter = True,
+                     rotationAngle=0):# rotation of map in degrees, counter-clockwise
 
     #generating plot axis
     if plotaxis == None:
@@ -913,25 +628,21 @@ def plotPatchBorders(patches,plotaxis = None,borderWidth = 2,color='#ff0000',zoo
     return imageHandle
 
 
-def plotPatchBorders2(patches,
-                      plotAxis = None,
-                      plotSize = None, # size of plotting area
-                      borderWidth = 2,
-                      zoom = 1,
-                      centerPatch = 1,
-                      rotationAngle = 0, # rotation of map in degrees, counter-clockwise
-                      markerSize = 2, # size of center dot
-                      closingIteration = None # open iteration for patch borders
-                      ):
+def plotPatchBorders2(patches, plotAxis=None, plotSize=None, borderWidth=2, zoom=1, centerPatch=1, rotationAngle=0,
+                      markerSize=2, closeIteration=None):
 
-    '''
+    """
     plot rotated and centered patch borders
 
     centerPatch defines center at which patch
         1: center at the biggest patch
         2: center at the second biggest patch
         ...
-    '''
+
+    rotationAngle: rotation of map in degrees, counter-clockwise
+    markerSize: size of center dot
+    closeIteration: close iteration for patch borders
+    """
 
     #generating plot axis
     if plotAxis == None:
@@ -1000,9 +711,9 @@ def plotPatchBorders2(patches,
 
         #ploting current border
         if value[3] == -1:
-            pt.plot_mask(value[2], plotAxis=plotAxis, color='#0000ff', borderWidth = borderWidth, closingIteration = closingIteration)
+            pt.plot_mask(value[2], plotAxis=plotAxis, color='#0000ff', borderWidth = borderWidth, closingIteration = closeIteration)
         elif value[3] == 1:
-            pt.plot_mask(value[2], plotAxis=plotAxis, color='#ff0000', borderWidth = borderWidth, closingIteration = closingIteration)
+            pt.plot_mask(value[2], plotAxis=plotAxis, color='#ff0000', borderWidth = borderWidth, closingIteration = closeIteration)
 
         # expanding center coordinate for each patch
         value[0][0] = value[0][0] + expandN
@@ -1037,23 +748,18 @@ def plotPatchBorders2(patches,
     return forPlotting
 
 
-def plotPatchBorders3(patches,
-                      altPosMap,
-                      aziPosMap,
-                      plotAxis = None,
-                      plotSize = None, # size of plotting area
-                      borderWidth = 2,
-                      zoom = 1,
-                      centerPatchKey = 'patch01', # center at the largest patch by default
-                      markerSize = 2, # size of center dot
-                      closingIteration = None, # open iteration for patch borders
-                      arrowLength = 10 # length of arrow of gradiant
-                      ):
-    '''
+def plotPatchBorders3(patches, altPosMap, aziPosMap, plotAxis=None, plotSize=None, borderWidth=2, zoom=1,
+                      centerPatchKey='patch01', markerSize=2, closeIteration=None, arrowLength=10):
+    """
     plot patch border centered and rotated by a certain patch defined by 'centerPatch'
 
     also plot vetors of altitude gradiant and azimuth gradiant
-    '''
+
+    plotSize: size of plotting area
+    centerPatchKey: size of center dot
+    closeIteration: open iteration for patch borders
+    arrowLength: length of arrow of gradiant
+    """
 
 
     #generating plot axis
@@ -1136,10 +842,10 @@ def plotPatchBorders3(patches,
 
         #ploting current border
         if currPatch.sign == -1:
-            pt.plot_mask(zoomedArray, plotAxis=plotAxis, color='#0000ff', borderWidth = borderWidth, closingIteration = closingIteration)
+            pt.plot_mask(zoomedArray, plotAxis=plotAxis, color='#0000ff', borderWidth = borderWidth, closingIteration = closeIteration)
             plotAxis.plot(zoomedCenter[1],zoomedCenter[0], '.b', markersize = markerSize)
         elif currPatch.sign == 1:
-            pt.plot_mask(zoomedArray, plotAxis=plotAxis, color='#ff0000', borderWidth = borderWidth, closingIteration = closingIteration)
+            pt.plot_mask(zoomedArray, plotAxis=plotAxis, color='#ff0000', borderWidth = borderWidth, closingIteration = closeIteration)
             plotAxis.plot(zoomedCenter[1],zoomedCenter[0], '.r', markersize = markerSize)
 
         #get gradiant vectors for current patch
@@ -1171,13 +877,7 @@ def plotPatchBorders3(patches,
     plotAxis.get_yaxis().set_visible(False)
 
 
-def plotPairedPatches(patch1,
-                      patch2,
-                      altMap,
-                      aziMap,
-                      title,
-                      pixelSize = 1,
-                      closeIter = None):
+def plotPairedPatches(patch1, patch2, altMap, aziMap, title, pixelSize = 1, closeIter = None):
 
     visualSpace1, area1, _, _ = patch1.getVisualSpace(altMap = altMap,
                                                       aziMap = aziMap,
@@ -1242,25 +942,23 @@ def plotPairedPatches(patch1,
     f_122.set_yticks(ytick)
     f_122.set_yticklabels(yticklabel)
 
+
 def getPatchDict(patch):
     return {'sparseArray':patch.sparseArray,'sign':patch.sign}
+
 
 class RetinotopicMappingTrial(object):
 
 
     def __init__(self,
+                 altPosMap,  # altitude position map
+                 aziPosMap,  # azimuth position map
+                 altPowerMap,  # altitude power map
+                 aziPowerMap,  # azimuth power map
+                 vasculatureMap,  # vasculature map
                  mouseID, # str, mouseID
                  dateRecorded, # int, date recorded, yearmonthday
-                 trialNum, # str, number of the trail on that day
-                 mouseType, # str, mouse Genotype
-                 visualStimType, # str, stimulation type
-                 visualStimBackground, # str, background of visual stimulation
-                 imageExposureTime, # float, exposure time of image file
-                 altPosMap, # altitude position map
-                 aziPosMap, # azimuth position map
-                 altPowerMap, # altitude power map
-                 aziPowerMap, # azimuth power map
-                 vasculatureMap, # vasculature map
+                 comments='', # str, comments of this particular trial
                  params ={
                           'phaseMapFilterSigma':1,
                           'signMapFilterSigma':10,
@@ -1277,44 +975,29 @@ class RetinotopicMappingTrial(object):
                           'visualSpaceCloseIter':15,
                           'splitOverlapThr':1.1
                           },
-                 isAnesthetized = False,
                  ):
 
         self.mouseID = mouseID
         self.dateRecorded = dateRecorded
-        self.trialNum = trialNum
-        self.mouseType = mouseType
-        self.visualStimType = visualStimType
-        self.visualStimBackground = visualStimBackground
-        self.imageExposureTime = imageExposureTime
         self.altPosMap = altPosMap
         self.aziPosMap = aziPosMap
         self.altPowerMap = altPowerMap
         self.aziPowerMap = aziPowerMap
         self.vasculatureMap = vasculatureMap
+        self.comments = comments
         self.params = params
-
-        self.isAnesthetized = isAnesthetized
-
 
     def getName(self):
 
         trialName = str(self.dateRecorded)+\
-                    '_M'+str(self.mouseID)+\
-                    '_Trial' + str(self.trialNum)
-                    #'_'+self.mouseType.split('-')[0]+';'+self.mouseType.split(';')[-1][0:4]
-                    #'_' + str(self.visualStimType)+\
-                    #'_' + str(self.visualStimBackground)
-
-        # if self.isAnesthetized:
-        #     trialName += '_Anesth'
-        # else:
-        #     trialName += '_Awake'
+                    '_M'+str(self.mouseID)
 
         return trialName
 
+    def __str__(self):
+        return 'A retinotopic mapping trial: ' + self.getName()
 
-    def _getSignMap(self, isReverse = False, isPlot = False, isFixedRange = True):
+    def _getSignMap(self, isReverse=False, isPlot=False, isFixedRange=True):
 
         altPosMapf  = ni.filters.gaussian_filter(self.altPosMap,
                                                  self.params['phaseMapFilterSigma'])
@@ -1399,8 +1082,7 @@ class RetinotopicMappingTrial(object):
 
         return altPosMapf, aziPosMapf, altPowerMapf, aziPowerMapf, signMap, signMapf
 
-
-    def _getRawPatchMap(self, isPlot = False):
+    def _getRawPatchMap(self, isPlot=False):
 
         if not hasattr(self, 'signMapf'):
             _ = self._getSignMap()
@@ -1438,8 +1120,7 @@ class RetinotopicMappingTrial(object):
 
         return patchmap2
 
-
-    def _getRawPatches(self, isPlot = False):
+    def _getRawPatches(self, isPlot=False):
 
         if not hasattr(self, 'rawPatchMap'):
             _ = self._getRawPatchMap()
@@ -1454,7 +1135,7 @@ class RetinotopicMappingTrial(object):
         patchMapDilated = dilationPatches2(rawPatchMap, dilationIter=dilationIter, borderWidth=borderWidth)
 
         #generate raw patch dictionary
-        rawPatches = labelPatches(patchMapDilated, signMapf, connectivity = 4)
+        rawPatches = labelPatches(patchMapDilated, signMapf)
 
         rawPatches2 = dict(rawPatches)
         #remove small patches
@@ -1497,8 +1178,7 @@ class RetinotopicMappingTrial(object):
 
         return rawPatches
 
-
-    def _getDeterminantMap(self, isPlot = False):
+    def _getDeterminantMap(self, isPlot=False):
 
         if not hasattr(self, 'altPosMapf') or not hasattr(self, 'aziPosMapf'):
             _ = self._getSignMap()
@@ -1527,8 +1207,7 @@ class RetinotopicMappingTrial(object):
 
         return detMap
 
-
-    def _getEccentricityMap(self, isPlot = False):
+    def _getEccentricityMap(self, isPlot=False):
 
         if not hasattr(self, 'rawPatches'):
             _ = self._getRawPatches()
@@ -1564,8 +1243,7 @@ class RetinotopicMappingTrial(object):
 
         return eccMap, eccMapf
 
-
-    def _splitPatches(self,isPlot = False):
+    def _splitPatches(self,isPlot=False):
 
         if not hasattr(self, 'eccentricityMapf'):
             _ = self._getEccentricityMap()
@@ -1688,7 +1366,6 @@ class RetinotopicMappingTrial(object):
         self.patchesAfterSplit = patches
 
         return patches
-
 
     def _mergePatches(self, isPlot=False):
 
@@ -1848,111 +1525,6 @@ class RetinotopicMappingTrial(object):
 
         return patches, finalPatches
 
-
-    def getTraces(self,
-                  moviePath,
-                  resampleFrequency = 10, # at which frequency the traces are resampled
-                  centerPatch = 'patch01', # the patch to get ROI
-                  ROIcenters = [[30.,0.],[60.,0.],[90.,0.]], # visual space centers of ROIs
-                  ROIsearchRange = 0.5, #range to search pixels in ROI
-                  ROIsize = 10, # ROI size (pixel)
-                  ROIcolor = ['#ff0000','#00ff00','#0000ff'],#color for each ROI
-                  isPlot = False,
-                  ):
-
-
-        if not hasattr(self, 'finalPatches'):
-            self.processTrial()
-
-        if type(ROIsearchRange) == int or type(ROIsearchRange) == float:
-            ROIsearchRanges=[]
-            for i in range(len(ROIcenters)):
-                ROIsearchRanges.append(ROIsearchRange)
-        elif type(ROIsearchRange) == list:
-             ROIsearchRanges = ROIsearchRange
-
-        if not hasattr(self, 'altPosMapf'):
-            self._getSignMap()
-
-        altPosMapf = self.altPosMapf
-        aziPosMapf = self.aziPosMapf
-        patches = self.finalPatches
-        mov = tf.imread(moviePath)
-
-        traces = []
-
-        centerPatchArray = patches[centerPatch].array.astype(np.bool)
-
-        for i, ROIcenter in enumerate(ROIcenters):
-            try:
-                altIndex = np.logical_and(altPosMapf > ROIcenter[1]-ROIsearchRanges[i], altPosMapf < ROIcenter[1]+ROIsearchRanges[i])
-                aziIndex = np.logical_and(aziPosMapf > ROIcenter[0]-ROIsearchRanges[i], aziPosMapf < ROIcenter[0]+ROIsearchRanges[i])
-                index = np.logical_and(altIndex, aziIndex)
-                index = np.where(np.logical_and(index, centerPatchArray) == True)
-                pos = int(len(index[0])/2)
-                print ROIcenter, index
-                print 'ROI'+str(i)+' center: ['+str(index[0][pos])+','+str(index[1][pos])+']; visual space: ['+str(altPosMapf[index[0][pos],index[1][pos]])+','+str(aziPosMapf[index[0][pos],index[1][pos]])+']'
-                mask = ia.generate_rectangle_mask(mov, (index[0][pos], index[1][pos]), ROIsize, ROIsize)
-                trace = ia.get_trace(mov, mask)
-                t = np.arange(len(trace)) * self.imageExposureTime
-                traceP = findPhaseIndex(trace) * self.imageExposureTime
-
-                t2, y2 = ia.resample(t, trace, 1./resampleFrequency)
-
-                traces.append({'position': ROIcenter,
-                               'mask': mask,
-                               'trace': [t2,y2],
-                               'tracePhaseTime': traceP,
-                               'ROIcolor':ROIcolor[i]})
-            except:
-                pass
-
-        if isPlot:
-            vasculatureMap = self.vasculatureMap
-
-            try:
-                zoom = vasculatureMap.shape[0] / self.altPosMapf.shape[0]
-            except:
-                zoom = 1
-
-            f = plt.figure(figsize=(15,5))
-            ax1 = f.add_axes([0.1,0.1,0.2,0.8])
-            ax2 = f.add_axes([0.4,0.1,0.5,0.8])
-            try:
-                ax1.imshow(vasculatureMap, cmap='gray', interpolation='nearest',aspect='equal')
-            except:
-                pass
-            ROIlegend = []
-            for i in range(len(traces)):
-                try:
-                    pt.plot_mask(traces[i]['mask'], plotAxis = ax1, borderWidth=5, zoom=zoom, color=traces[i]['ROIcolor'])
-                    currT=traces[i]['trace'][0]
-                    currTrace=traces[i]['trace'][1]
-                    ax2.plot(currT,currTrace-np.mean(currTrace), '-', color=traces[i]['ROIcolor'], lw=2)
-                    ROIlegend.append(['center:'+str(traces[i]['position'])+', baseline:' + '{0:.0f}'.format(np.mean(currTrace))])
-                except:
-                    pass
-
-
-            ax2.legend(ROIlegend,prop={'size':8})
-
-            ymin = np.floor(ax2.yaxis.get_data_interval()[0]/10)*10
-            ymax = np.ceil(ax2.yaxis.get_data_interval()[1]/10)*10
-
-            for i in range(len(traces)):
-                try:
-                    ax2.plot([traces[i]['tracePhaseTime'],traces[i]['tracePhaseTime']],[ymin,ymax],'--',color=traces[i]['ROIcolor'],lw=2)
-                except:
-                    pass
-
-            ax1.set_axis_off()
-            ax2.set_ylim([ymin, ymax])
-            ax2.set_xlabel('time (sec)')
-            ax2.set_ylabel('normalized count')
-
-        return traces
-
-
     def cleanMaps(self):
 
         try:del self.altPosMapf
@@ -2000,14 +1572,7 @@ class RetinotopicMappingTrial(object):
         try:del self.finalPatchesMarked
         except AttributeError:pass
 
-
-    def cleanTraces(self):
-
-        try:del self.traces
-        except AttributeError:pass
-
-
-    def processTrial(self, isPlot = False):
+    def processTrial(self, isPlot=False):
         self.cleanMaps()
         self._getSignMap(isPlot=isPlot)
         self._getRawPatchMap(isPlot=isPlot)
@@ -2017,67 +1582,11 @@ class RetinotopicMappingTrial(object):
         self._splitPatches(isPlot=isPlot)
         self._mergePatches(isPlot=isPlot)
 
-
-    def refresh(self,
-                moviePath = None,
-                imageExposureTime = None,
-                centerPatch = 'patch01',
-                ROIcenters = [[30,0],[60,0],[90,0]], # visual space centers of ROIs
-                ROIsearchRange = 0.5,
-                ROIsize = 10, # ROI size (pixel)
-                ROIcolor = ['#ff0000','#00ff00','#0000ff'], #color for each ROI
-                isPlot = False):
-
-        self.cleanSelf()
-
-        self._getSignMap(isPlot=isPlot)
-        self._getRawPatchMap(isPlot=isPlot)
-        self._getRawPatches(isPlot=isPlot)
-        self._getDeterminantMap(isPlot=isPlot)
-        self._getEccentricityMap(isPlot=isPlot)
-        self._splitPatches(isPlot=isPlot)
-        self._mergePatches(isPlot=isPlot)
-
-        try:
-            _ = self.getTraces(moviePath = moviePath,
-                               imageExposureTime = imageExposureTime,
-                               centerPatch = centerPatch,
-                               ROIcenters = ROIcenters,
-                               ROIsearchRange = ROIsearchRange,
-                               ROIsize = ROIsize,
-                               ROIcolor = ROIcolor,
-                               isPlot = isPlot)
-
-        except:
-            pass
-
-
     def generateTrialDict(self,
-                          keysToRetain = ('altPosMap',
-                                          'aziPosMap',
-                                          'signMap',
-                                          'altPosMapf',
-                                          'aziPosMapf',
-                                          'signMapf',
-                                          'rawPatchMap',
-                                          'eccentricityMapf',
-                                          'finalPatches',
-                                          'finalPatchesMarked',
-                                          'mouseID',
-                                          'dateRecorded',
-                                          'trialNum',
-                                          'mouseType',
-                                          'visualStimType',
-                                          'visualStimBackground',
-                                          'imageExposureTime',
-                                          'altPowerMap',
-                                          'altPowerMapf',
-                                          'aziPowerMap',
-                                          'aziPowerMapf',
-                                          'vasculatureMap',
-                                          'params',
-                                          'isAnesthetized'
-                                          )
+                          keysToRetain=('altPosMap', 'aziPosMap', 'altPowerMap', 'aziPowerMap', 'params',
+                                        'vasculatureMap', 'mouseID', 'dateRecorded', 'comments', 'signMap',
+                                        'altPosMapf', 'aziPosMapf', 'altPowerMapf', 'aziPowerMapf', 'signMapf',
+                                        'rawPatchMap', 'eccentricityMapf', 'finalPatches', 'finalPatchesMarked')
                           ):
 
 
@@ -2143,114 +1652,7 @@ class RetinotopicMappingTrial(object):
         ax2.axis('off')
         ax2.set_title('azimuth position')
 
-
-    def generateStandardOutput(self,traces = None,isSave = False,saveFolder = None):
-
-        if not hasattr(self, 'finalPatches'):
-            self.processTrial()
-
-        if not hasattr(self, 'signMap'):
-            self._getSignMap()
-
-        try:
-            zoom = self.vasculatureMap.shape[0]/self.altPosMap.shape[0]
-        except:
-            zoom = 1
-
-        trialName = self.getName()
-
-        f = plt.figure(figsize=(15,10))
-        f.suptitle(trialName)
-
-        f_331 = f.add_subplot(331)
-        try:
-            f_331.imshow(self.vasculatureMap, cmap='gray', interpolation='nearest')
-        except:
-            pass
-        f_331.set_axis_off()
-
-        if traces:
-            f_3389 = f.add_axes([0.4,0.1,0.5,0.23])
-            ROIlegend=[]
-
-            for i in range(len(traces)):
-                pt.plot_mask(traces[i]['mask'], plotAxis = f_331, borderWidth=5, zoom=zoom, color=traces[i]['ROIcolor'])
-
-                currT=traces[i]['trace'][0]
-                currTrace=traces[i]['trace'][1]
-                f_3389.plot(currT,currTrace-np.mean(currTrace), '-', color=traces[i]['ROIcolor'], lw=2)
-
-                ROIlegend.append(['center:'+str(traces[i]['position'])+', baseline:' + '{0:.0f}'.format(np.mean(currTrace))])
-
-            f_3389.legend(ROIlegend,prop={'size':8})
-
-            ymin = np.floor(f_3389.yaxis.get_data_interval()[0]/10)*10
-            ymax = np.ceil(f_3389.yaxis.get_data_interval()[1]/10)*10
-
-            for i in range(len(traces)):
-                f_3389.plot([traces[i]['tracePhaseTime'],traces[i]['tracePhaseTime']],[ymin,ymax],'--',color=traces[i]['ROIcolor'], lw=2)
-
-            f_3389.set_ylim([ymin, ymax])
-            f_3389.set_xlabel('time (sec)')
-            f_3389.set_ylabel('normalized count')
-
-
-        f_332 = f.add_subplot(332)
-        currfig = f_332.imshow(np.mean([self.altPowerMap,self.aziPowerMap],axis=0), cmap='hot', interpolation='nearest')
-        f.colorbar(currfig)
-        f_332.set_axis_off()
-
-        f_333 = f.add_subplot(333)
-        try:
-            vm = self.vasculatureMap.astype(np.float)
-            vmin = np.amin(vm)
-            vmax = np.amax(vm)
-            vmin = vmin - 0.5*(vmax-vmin)
-            f_333.imshow(self.vasculatureMap, vmin=vmin, vmax=vmax, cmap='gray', interpolation='nearest')
-        except:
-            pass
-        plotPatches(self.finalPatches,plotaxis=f_333,zoom=zoom, markersize=3)
-        f_333.set_axis_off()
-
-        f_334 = f.add_subplot(334)
-        currfig = f_334.imshow(self.altPosMapf, vmin=-40, vmax=60, cmap='hsv', interpolation='nearest')
-        f.colorbar(currfig)
-        f_334.set_title('alt position')
-        f_334.set_axis_off()
-
-        f_335 = f.add_subplot(335)
-        currfig = f_335.imshow(self.aziPosMapf, vmin=0, vmax=120, cmap='hsv', interpolation='nearest')
-        f.colorbar(currfig)
-        f_335.set_title('azi position')
-        f_335.set_axis_off()
-
-        f_336 = f.add_subplot(336)
-        currfig = f_336.imshow(self.signMapf, vmin=-1, vmax=1, cmap='jet', interpolation='nearest')
-        f.colorbar(currfig)
-        f_336.set_axis_off()
-
-        f_337 = f.add_subplot(337)
-        plotPatchBorders3(self.finalPatches,
-                          self.altPosMapf,
-                          self.aziPosMapf,
-                          plotAxis = f_337,
-                          plotSize = 500,
-                          borderWidth = 2,
-                          zoom = 1,
-                          centerPatchKey = 'patch01',
-                          markerSize = 5,
-                          closingIteration = 1,
-                          arrowLength = 15)
-        f_337.get_xaxis().set_visible(False)
-        f_337.get_yaxis().set_visible(False)
-
-        if isSave:
-            f.savefig(os.path.join(saveFolder,trialName+'.pdf'), format='pdf', dpi = 300, orientation='landscape', papertype='a4')
-            f.savefig(os.path.join(saveFolder,trialName+'.png'), format='png', dpi = 300, orientation='landscape', papertype='a4')
-            del f
-
-
-    def generateNormalizedMaps(self,centerPatchKey='patch01',mapSize = 512,isPlot = False,borderValue=0.):
+    def generateNormalizedMaps(self, centerPatchKey='patch01', mapSize=512, isPlot=False, borderValue=0.):
 
         if not hasattr(self, 'finalPatches'):
             self.processTrial()
@@ -2326,7 +1728,6 @@ class RetinotopicMappingTrial(object):
 
         return altPosMapNor, aziPosMapNor, altPowerMapNor, aziPowerMapNor, signMapNor, signMapfNor
 
-
     def getNormalizeTransform(self,centerPatchKey = 'patch01'):
 
         try:
@@ -2345,14 +1746,13 @@ class RetinotopicMappingTrial(object):
 
         return centerPixel, rotationAngle
 
+    def normalize(self, centerPatchKey='patch01', mapSize=800, isPlot=False, borderValue=0.):
 
-    def normalize(self,centerPatchKey = 'patch01',mapSize = 800,isPlot = False,borderValue=0.):
-
-        '''
+        """
         Generate normalized vasculature map and normalized final patches
 
         return normalized vascualture and patch dictionary, which will be zoomed to match the vascualture map resolution
-        '''
+        """
 
         if hasattr(self, 'finalPatchesMarked'):
             patches = self.finalPatchesMarked
@@ -2417,8 +1817,7 @@ class RetinotopicMappingTrial(object):
 
         return vasMapNor, patchesNor
 
-
-    def plotNormalizedPatchCenter(self,centerPatchKey = 'patch01',mapSize = 512,plotAxis = None,markerSize = 5.,markerEdgeWidth = 2.):
+    def plotNormalizedPatchCenter(self, centerPatchKey='patch01', mapSize=512, plotAxis=None, markerSize=5., markerEdgeWidth=2.):
 
         if not plotAxis:
             f=plt.figure()
@@ -2474,8 +1873,7 @@ class RetinotopicMappingTrial(object):
         plotAxis.set_ylim([0, mapSize])
         plotAxis.set_axis_off()
 
-
-    def plotTrial(self,isSave = False,saveFolder = None):
+    def plotTrial(self, isSave=False, saveFolder=None):
 
         if not hasattr(self, 'finalPatches'):
             self.processTrial()
@@ -2620,7 +2018,7 @@ class RetinotopicMappingTrial(object):
             f3.savefig(os.path.join(saveFolder,trialName+'_SplitMerge.pdf'), format='pdf', dpi = 600, orientation='landscape', papertype='a4')
 
 
-    def plotFinalPatches(self,plotAxis = None):
+    def plotFinalPatches(self, plotAxis=None):
 
 
         if not hasattr(self, 'finalPatches'):
@@ -2645,8 +2043,8 @@ class RetinotopicMappingTrial(object):
         plotAxis.set_axis_off()
         plotAxis.set_title(name)
 
-
-    def plotFinalPatchBorders(self,plotAxis = None,plotName=True,plotVasMap=True,isTitle=True,isColor=True,borderWidth=2,fontSize=15,interpolation='bilinear'):
+    def plotFinalPatchBorders(self, plotAxis=None, plotName=True, plotVasMap=True, isTitle=True, isColor=True,
+                              borderWidth=2, fontSize=15, interpolation='bilinear'):
 
         if hasattr(self,'finalPatchesMarked'):finalPatches=self.finalPatchesMarked
         elif hasattr(self, 'finalPatches'):finalPatches=self.finalPatches
@@ -2684,8 +2082,8 @@ class RetinotopicMappingTrial(object):
         
         return plotAxis.get_figure()
 
-
-    def plotFinalPatchBorders2(self,plotAxis=None,plotName=True,plotVasMap=True,isTitle=True,isColor=True,positiveColor='#ff0000',negativeColor='#0000ff',borderWidth=2,fontSize=15):
+    def plotFinalPatchBorders2(self, plotAxis=None, plotName=True, plotVasMap=True, isTitle=True, isColor=True,
+                               positiveColor='#ff0000', negativeColor='#0000ff', borderWidth=2, fontSize=15):
 
         if hasattr(self,'finalPatchesMarked'):finalPatches=self.finalPatchesMarked
         elif hasattr(self, 'finalPatches'):finalPatches=self.finalPatches
@@ -2724,11 +2122,10 @@ class RetinotopicMappingTrial(object):
 
         return plotAxis.get_figure()
 
-
     def getBaselineFluorscence(self):
-        '''
+        """
         get mean baseline fluorescence of each visual area
-        '''
+        """
 
         try:
             finalPatches = self.finalPatchesMarked
@@ -2774,11 +2171,10 @@ class RetinotopicMappingTrial(object):
 
         return baselineDict
 
-
     def getMeanPowerAmplitude(self):
-        '''
+        """
         get mean response power amplitude of each visual area
-        '''
+        """
 
         try:
             finalPatches = self.finalPatchesMarked
@@ -2818,12 +2214,11 @@ class RetinotopicMappingTrial(object):
 
         return meanPowerDict
 
-
-    def getCorticalArea(self,pixelSize = 0.0129):
-        '''
+    def getCorticalArea(self, pixelSize=0.0129):
+        """
         get area of each visual area (mm^2)
         unit of pixelSize is mm
-        '''
+        """
 
         try:
             finalPatches = self.finalPatchesMarked
@@ -2840,12 +2235,11 @@ class RetinotopicMappingTrial(object):
 
         return areaDict
 
-
-    def getMagnification(self,pixelSize = 0.0129, isFilter = False,erodeIter = None,):
-        '''
+    def getMagnification(self, pixelSize=0.0129, isFilter=False, erodeIter=None):
+        """
         get magnification of each visual area (mm^2/deg^2)
         unit of pixelSize is mm
-        '''
+        """
 
         if not hasattr(self,'determinantMap'):
             _ = self._getDeterminantMap()
@@ -2879,15 +2273,14 @@ class RetinotopicMappingTrial(object):
 
         return magDict
 
-
     def getVisualFieldOrigin(self):
-        '''
+        """
         get the visual field origin as the retinotopic coordinates at the pixels
         where V1, LM and RL meet.
 
         algorithm dilate V1, LM and RL until the all meet than calculate the
         mean retinotopic locations of all overlap pixels
-        '''
+        """
 
         if not hasattr(self,'finalPatchesMarked'):
             raise LookupError, 'Please mark the final patches first!!'
@@ -2924,11 +2317,10 @@ class RetinotopicMappingTrial(object):
 
         return altPosOrigin, aziPosOrigin
 
-
-    def plotMagnificationMap(self,pixelSize = 0.0129,plotAxis = None,isFilter = False):
-        '''
+    def plotMagnificationMap(self, pixelSize=0.0129, plotAxis=None, isFilter=False):
+        """
         param pixelSize:  mm
-        '''
+        """
         if not hasattr(self,'determinantMap'):
             _ = self._getDeterminantMap()
 
@@ -2959,11 +2351,10 @@ class RetinotopicMappingTrial(object):
         ax.set_aspect(1)
         ax.set_title(name)
 
-
     def _generateTotalMask(self):
-        '''
-        generate a single mask (0s and 1s) of the entire visual areas
-        '''
+        """
+        generate a single mask (0s and 1s) of the entire visual cortex
+        """
 
         mask = np.zeros(self.altPosMap.shape)
 
@@ -2977,8 +2368,21 @@ class RetinotopicMappingTrial(object):
 
         return mask.astype(np.int8)
 
+    def plotRetinotopicLocation(self, plotAxis=None, location=(0.,50.), color='#ff0000', searchRange=3., borderWidth=1,
+                                closeIter=3, openIter=3):
+        """
+        plot the visual cortex surface with hot spots which corresponding to a given retinotopic location defined by
+        variable location and searchRange
 
-    def plotRetinotopicLocation(self,plotAxis=None,location=(0.,50.),color='#ff0000',searchRange=3.,borderWidth=1,closeIter=3,openIter=3):
+        :param plotAxis:
+        :param location:
+        :param color:
+        :param searchRange:
+        :param borderWidth:
+        :param closeIter:
+        :param openIter:
+        :return:
+        """
 
         if not plotAxis:
             f = plt.figure()
@@ -3009,8 +2413,7 @@ class RetinotopicMappingTrial(object):
 
         pt.plot_mask(mask, plotAxis=plotAxis, color=color, borderWidth=borderWidth)
 
-
-    def plotPatchesWithName(self,patchDict,plotAxis=None):
+    def plotPatchesWithName(self, patchDict, plotAxis=None):
 
         if not hasattr(self,patchDict): raise LookupError, 'This RetinotopicMappingTrial object does not have "' + patchDict + '" attribute!'
         patchesForPlotting = self.__dict__[patchDict]
@@ -3027,11 +2430,10 @@ class RetinotopicMappingTrial(object):
 
         return plotAxis.figure
 
-
     def plotVisualCoverage(self):
-        '''
+        """
         plot the visual coverage of each visual area in a compact way
-        '''
+        """
 
         if hasattr(self,'finalPatchesMarked'):
             finalPatches = self.finalPatchesMarked
@@ -3058,9 +2460,9 @@ class RetinotopicMappingTrial(object):
                                                       closeIter = closeIter,
                                                       isplot = False)
 
-            plotVisualSpace(visualSpace,
-                            pixelSize=pixelSize,
-                            plotAxis=currAx)
+            plotVisualCoverage(visualSpace,
+                               pixelSize=pixelSize,
+                               plotAxis=currAx)
 
             currAx.set_title(key)
 
@@ -3068,21 +2470,14 @@ class RetinotopicMappingTrial(object):
 
         return figList, axList
 
-
-    def plotContours(self,
-                     isNormalize = True, #is resetting the origin of visual field
-                     altLevels = np.arange(-30.,50.,5.),
-                     aziLevels = np.arange(0.,120.,5.),
-                     isPlottingBorder=True,
-                     inline = False,
-                     lineWidth = 3,
-                     figSize = (12,12),
-                     fontSize = 15,
-                     altAxis = None,
-                     aziAxis = None):
-        '''
+    def plotContours(self, isNormalize=True, altLevels=np.arange(-30.,50.,5.), aziLevels=np.arange(0.,120.,5.),
+                     isPlottingBorder=True, inline=False, lineWidth=3, figSize=(12, 12), fontSize=15, altAxis=None,
+                     aziAxis=None):
+        """
         plot contours of altitute posititon and azimuth position
-        '''
+
+        isNormalize: is resetting the origin of visual field
+        """
 
         if not hasattr(self,'altPosMapf'):
             self._getSignMap()
@@ -3168,6 +2563,7 @@ class RetinotopicMappingTrial(object):
         
         return altAxis, aziAxis
 
+
 class Patch(object):
 
     def __init__(self,patchArray,sign):
@@ -3187,55 +2583,49 @@ class Patch(object):
         return self.sparseArray.toarray()
 
     def getCenter(self):
-        '''
+        """
         return the coordinates of the center of a patch
         [rowIndex, columnIndex]
-        '''
+        """
         pixels = np.argwhere(self.array)
         center = np.mean(pixels.astype(np.float32), axis = 0)
         return np.round(center).astype(np.int)
 
-
     def getArea(self):
-        '''
+        """
         return pixel number in the patch
-        '''
+        """
         return np.sum(self.array[:])
 
-
     def getMask(self):
-        '''
+        """
         generating ploting mask for the patch
-        '''
+        """
         mask = np.array(self.array, dtype = np.float32)
         mask[mask == 0] = np.nan
         return mask
 
-
     def getSignedMask(self):
-        '''
+        """
         generating ploting mask with visual sign for the patch
-        '''
+        """
         signedMask = np.array(self.array * self.sign, dtype = np.float32)
         signedMask[signedMask == 0] = np.nan
         return signedMask
 
-
     def getDict(self):
         return {'sparseArray':self.sparseArray,'sign':self.sign}
 
-
     def getTrace(self,mov):
-        '''
+        """
         return trace of this patch in a certain movie
-        '''
+        """
         return ia.get_trace(mov, self.array)
 
-
-    def isTouching(self, patch2, distance = 1):
-        '''
+    def isTouching(self, patch2, distance=1):
+        """
         decide if this patch is adjacent to another patch within certain distance
-        '''
+        """
 
         if distance < 1:
             raise LookupError, 'distance should be integer no less than 1.'
@@ -3248,12 +2638,11 @@ class Patch(object):
         else:
             return False
 
-
-    def getVisualSpace(self,altMap,aziMap,visualFieldOrigin = None,pixelSize = 1.,closeIter = None,isplot = False):
-        '''
+    def getVisualSpace(self, altMap, aziMap, visualFieldOrigin=None, pixelSize=1., closeIter=None, isplot=False):
+        """
         get the visual response space, visual response space center unique area and
         eccentricity map of a cortical patch
-        '''
+        """
 
 #        altRange = np.array([np.amin(altMap)-10., np.amax(altMap)+10.])
 #        aziRange = np.array([np.amin(aziMap)-10., np.amax(aziMap)+10.])
@@ -3296,26 +2685,24 @@ class Patch(object):
 
             f = plt.figure()
             ax = f.add_subplot(111)
-            plotVisualSpace(visualSpace,
-                            pixelSize=pixelSize,
-                            plotAxis=ax)
+            plotVisualCoverage(visualSpace,
+                               pixelSize=pixelSize,
+                               plotAxis=ax)
 
         return visualSpace, uniqueArea, visualAltCenter, visualAziCenter
 
-
     def getSigmaArea(self, detMap):
-        '''
+        """
         calculate sigma area for the patch given altitude and azimuth maps
-        '''
+        """
         sigmaArea = np.sum((self.array * detMap)[:])
         return sigmaArea
 
-
     def getPixelVisualCenter(self, altMap, aziMap):
-        '''
+        """
         get the center coordinates in visual response space for all pixels in
         this cortical patch
-        '''
+        """
 
         altPatch = self.array * altMap
         meanAlt = np.mean(altPatch[altPatch != 0])
@@ -3324,16 +2711,15 @@ class Patch(object):
 
         return meanAlt, meanAzi
 
-
     def eccentricityMap(self, altMap, aziMap, altCenter, aziCenter):
-        '''
+        """
         calculate eccentricity map of this patch to a certain center in visual
         space
 
         altMap, aziMap, altCenter, aziCenter: in degree
 
         eccentricity map is returned in degree
-        '''
+        """
 
         altMap2 = altMap * np.pi / 180
         aziMap2 = aziMap * np.pi / 180
@@ -3360,14 +2746,13 @@ class Patch(object):
         eccMap[self.array==0]=np.nan
         return eccMap
 
-
     def split2(self, eccMap, patchName = 'patch00', cutStep = 1, borderWidth = 2, isplot = False):
-        '''
+        """
         split this patch into two or more patch, according to the eccentricity
         map (in degree). return a dictionary of patches after split
 
         patchName: str, original patch name
-        '''
+        """
         minMarker = localMin(eccMap, cutStep)
         
         connectivity=np.array([[1,1,1],[1,1,1],[1,1,1]])
@@ -3423,14 +2808,13 @@ class Patch(object):
 
         return newPatchDict
 
-
     def split(self, eccMap, patchName = 'patch00', cutStep = 1, borderWidth = 2, isplot = False):
-        '''
+        """
         split this patch into two or more patch, according to the eccentricity
         map (in degree). return a dictionary of patches after split
 
         patchName: str, original patch name
-        '''
+        """
         minMarker = localMin(eccMap, cutStep)
 
         plt.figure()
@@ -3519,11 +2903,10 @@ class Patch(object):
 
         return newPatchDict
 
-
-    def getBorder(self, borderWidth = 2):
-        '''
+    def getBorder(self, borderWidth=2):
+        """
         return boder of this patch with boder width defined by "borderWidth"
-        '''
+        """
 
         patchMap = np.array(self.array, dtype = np.float32)
         
@@ -3535,11 +2918,11 @@ class Patch(object):
 
         return border
         
-    def getCorticalPixelForVisualSpaceCenter(self,eccMap):
-        '''
+    def getCorticalPixelForVisualSpaceCenter(self, eccMap):
+        """
         return the coordinates of the pixel representing the center of the 
         visual space of the patch
-        '''
+        """
         eccMap2=np.array(eccMap).astype(np.float)
         
         eccMap2[self.array==0]=np.nan
@@ -3552,191 +2935,4 @@ class Patch(object):
 if __name__ == "__main__":
     
     plt.ioff()
-
-#    testTrial = ft.loadFile(r'\\aibsdata2\nc-ophys\Jun\exampleData\testTrial.pkl')
-
-#    params = {'borderWidth': 1,
-#              'closeIter': 3,
-#              'dilationIter': 10,
-#              'eccMapFilterSigma': 5.0,
-#              'mergeOverlapThr': 0.1,
-#              'openIter': 3,
-#              'phaseMapFilterSigma': 0.8,
-#              'signMapFilterSigma': 9.0,
-#              'signMapThr': 0.3,
-#              'smallPatchThr': 200,
-#              'splitLocalMinCutStep': 10.,
-#              'splitOverlapThr': 1.1,
-#              'visualSpaceCloseIter': 15,
-#              'visualSpacePixelSize': 0.5}
-#
-#    trial = RetinotopicMappingTrial(mouseID = testTrial['mouseID'], # str, mouseID
-#                                    dateRecorded = testTrial['dateRecorded'], # int, date recorded, yearmonthday
-#                                    trialNum = testTrial['trialNum'], # str, number of the trail on that day
-#                                    mouseType = testTrial['mouseType'], # str, mouse Genotype
-#                                    visualStimType = testTrial['visualStimType'], # str, stimulation type
-#                                    visualStimBackground = testTrial['visualStimBackground'], # str, background of visual stimulation
-#                                    imageExposureTime = testTrial['imageExposureTime'], # exposure time of the recorded image
-#                                    altPosMap = testTrial['altPosMap'], # altitute position map
-#                                    aziPosMap = testTrial['aziPosMap'], # azimuth position map
-#                                    altPowerMap = testTrial['altPowerMap'], # altitude power map
-#                                    aziPowerMap = testTrial['aziPowerMap'], # azimuth power map
-#                                    vasculatureMap = testTrial['vasculatureMap'], # vasculature map
-#                                    params = params, # testTrial['params'], # parameters for imaging analysis
-#                                    isAnesthetized = testTrial['isAnesthetized'])
-#
-#    trial.processTrial(isPlot=True)
-#    trial._getSignMap()
-#    
-#    traces = trial.getTraces(moviePath = r'\\aibsdata2\nc-ophys\Jun\exampleData\testMov.tif', isPlot = True)
-#    trial.generateStandardOutput(traces=traces)
-#    
-#    trialDict = trial.generateTrialDict()
-#    print trialDict.keys()
-#    
-#    trial.plotTrial()
-#    
-#    altPosMapfNor, aziPosMapfNor, altPowerMapfNor, aziPowerMapfNor, signMapfNor = trial.generateNormalizedMaps(isPlot = True)
-#    
-#    
-#    trial.plotNormalizedPatchCenter()
-#    
-#    trial.plotFinalPatches()
-#
-#    
-#    vasMapNor, finalPatchesNor = trial.normalize(isPlot = True)
-
-#    plt.show()
-
-    
-#------------------------------------------------------------------------------------------------
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\20140623_M140174_Trial3.pkl")
-#    
-#    testTrial.plotFinalPatchBorders()
-#    plt.show()
-#    
-#    corArea = testTrial.getCorticalArea()
-#    print '\nCortical area for each visual area (mm^2):'
-#    for key, item in corArea.iteritems():    
-#        print key, ':', item    
-#    
-#    baselineF = testTrial.getBaselineFluorscence()
-#    print '\nNormalized baseline fluroscence for each visual area:'
-#    for key, item in baselineF.iteritems():
-#        print key, ':', item
-#        
-#    power = testTrial.getMeanPowerAmplitude()
-#    print '\nNormalized power amplitude for each visual area:'
-#    for key, item in power.iteritems():
-#        print key, ':', item
-#        
-#    magnification = testTrial.getMagnification()
-#    print '\nMagnification for each visual area (mm^2/deg^2):'
-#    for key, item in magnification.iteritems():
-#        print key, ':', item
-        
-#    altPosOrigin, aziPosOrigin = testTrial.getVisualFieldOrigin()
-#    print 'Altitude origin:', altPosOrigin
-#    print 'Azimuth origin:', aziPosOrigin
-    
-    
-#-------------------------------------------------------------------------------------------------
-    
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\20150130_M160809_Trial1_2_3_4.pkl")
-#    visualArea = 'LM'
-#    patch = testTrial.finalPatchesMarked[visualArea]
-#    
-#    testTrial._getSignMap()
-#    
-#    f=plt.figure()
-#    ax=f.add_subplot(111)
-#    ax.imshow(testTrial.altPosMapf,vmin=-30,vmax=50,cmap='hsv',interpolation='nearest')
-#    pt.plot_mask(patch.getMask(),plotAxis=ax)
-#        
-#    VSlist = patch.getVisualSpace(testTrial.altPosMapf,testTrial.aziPosMapf)
-#                                                                       
-#    VSSpace, VSCoverage, VSAltCenter, VSAziCenter = VSlist
-#    print 'Altitute center for area '+visualArea+': '+str(VSAltCenter)
-#    print 'Azimuth center for area '+visualArea+': '+str(VSAziCenter)
-#    plt.figure()
-#    plt.imshow(VSSpace,interpolation='nearest')
-#    plt.title(visualArea)
-#    plt.show()
-#------------------------------------------------------------------------------------------------
-    
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\20150116_M156569_Trial1_2_3_4.pkl")
-#    visualArea = 'V1'
-#    patch = testTrial.finalPatchesMarked[visualArea]
-#    
-#    testTrial._getSignMap()
-#    
-#    f=plt.figure()
-#    ax=f.add_subplot(111)
-#    ax.imshow(testTrial.altPosMapf,vmin=-30,vmax=50,cmap='hsv',interpolation='nearest')
-#    pt.plot_mask(patch.getMask(),plotAxis=ax)
-#    
-#    plt.show()
-    
-#----------------------------------------------------------------------------------------------
-        
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTrial_Ai9330min.pkl")
-#    testTrial.plotMagnificationMap(isFilter=False)
-#    plt.show()
-
-
-#----------------------------------------------------------------------------------------------
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTrial_All.pkl")
-#    totalMask = testTrial._generateTotalMask()
-#    plt.imshow(totalMask)
-#    plt.title('total mask of all visual areas')
-#    plt.show()
-
-
-#----------------------------------------------------------------------------------------------
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTrial_All.pkl")
-#    
-#    locationList = [[0.,40.],
-#                    [0.,50.],
-#                    [0.,60.]]
-#                    
-#    colorList = pt.random_color(len(locationList))
-#    
-#    f=plt.figure(figsize=(12,12))
-#    ax=f.add_subplot(111)
-#    testTrial.plotFinalPatchBorders(plotAxis=ax,plotName=False,isTitle=True)
-#    
-#    for i, location in enumerate(locationList):
-#        testTrial.plotRetinotopicLocation(plotAxis=ax,location=location,color=colorList[i])
-#    
-#    labels = ['alt:'+str(x[0])+'; azi:'+str(x[1]) for x in locationList]
-#    [ax.plot(None,None,ls='',c=c,label=l) for c,l in zip(colorList,labels)]
-#    leg = ax.legend(labels,frameon=False)
-#    for color,text in zip(colorList,leg.get_texts()):
-#        text.set_color(color)
-#    
-#    plt.show()
-
-
-#----------------------------------------------------------------------------------------------
-
-
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTial_Ai93&Ai9630min.pkl")
-#    testTrial.plotVisualCoverage()
-#    plt.show()
-#    
-#----------------------------------------------------------------------------------------------
-
-    # testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTial_Ai93&Ai9630min.pkl")
-    testTrial, traces = loadTrial(r"E:\data\2015-11-13-150821-M177931-RetinotopicMapping\20150821_MM177931_Trial1_3_4.pkl")
-    # testTrial.processTrial(isPlot=True)
-    testTrial.plotFinalPatchBorders2(borderWidth=1)
-    plt.show()
-    
-#----------------------------------------------------------------------------------------------
-#    testTrial, traces = loadTrial(r"E:\data2\2015-02-03-population-maps\populationTial_Ai93&Ai9630min.pkl")
-#    eccMap = testTrial.eccentricityMapf
-#    V1 = testTrial.finalPatchesMarked['V1']
-#    V1center = V1.getCorticalPixelForVisualSpaceCenter(eccMap)
-#    print V1center
-    
-    
+    print 'for debug ...'

@@ -5,8 +5,7 @@ Created on Wed Oct 29 15:51:19 2014
 @author: junz
 """
 
-import corticalmapping.RetinotopicMapping as rm
-import corticalmapping.core.FileTools as ft
+import retinotopic_mapping.RetinotopicMapping as rm
 import os
 import matplotlib.pyplot as plt
 
@@ -28,7 +27,7 @@ trialList = [
 for k, trialName in enumerate(trialList):
 
     trialPath = os.path.join(currFolder,trialName)
-    trial, _ = rm.loadTrial(trialPath)
+    trial = rm.loadTrial(trialPath)
     finalPatches = getattr(trial,patchesToShow)
     numOfPatches = len(finalPatches.keys())
     rowNum = numOfPatches // columnNum + 1

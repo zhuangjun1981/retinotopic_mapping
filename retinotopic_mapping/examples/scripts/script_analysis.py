@@ -2,8 +2,8 @@ __author__ = 'junz'
 
 import os
 import matplotlib.pyplot as plt
-import corticalmapping.RetinotopicMapping as rm
-import corticalmapping.core.FileTools as ft
+import retinotopic_mapping.RetinotopicMapping as rm
+import retinotopic_mapping.core.FileTools as ft
 
 
 trialName = "160211_M214522_Trial1.pkl"
@@ -28,7 +28,7 @@ params = {'phaseMapFilterSigma': 1.,
 currFolder = os.path.dirname(os.path.realpath(__file__))
 os.chdir(currFolder)
 
-trial, _ = rm.loadTrial(trialName)
+trial = rm.loadTrial(trialName)
 
 trial.params=params
 

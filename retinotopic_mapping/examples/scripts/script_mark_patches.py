@@ -6,8 +6,8 @@ Created on Thu Oct 30 14:46:38 2014
 """
 import os
 import matplotlib.pyplot as plt
-import corticalmapping.core.FileTools as ft
-import corticalmapping.RetinotopicMapping as rm
+import retinotopic_mapping.core.FileTools as ft
+import retinotopic_mapping.RetinotopicMapping as rm
 
 
 trialName = '160208_M193206_Trial1.pkl'

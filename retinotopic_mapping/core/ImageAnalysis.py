@@ -10,7 +10,7 @@ from matplotlib import cm
 import matplotlib.colors as col
 import skimage.morphology as sm
 import FileTools as ft
-from corticalmapping.core import PlottingTools as pt
+from retinotopic_mapping.core import PlottingTools as pt
 try: import cv2
 except ImportError as e: print e
 try: from toolbox.misc import BinarySlicer
@@ -1366,97 +1366,6 @@ class WeightedROI(ROI):
 
 
 if __name__ == '__main__':
-
-    #============================================================
-    # a = np.random.rand(100,100)
-    # mask = generate_oval_mask(a,[45,58],20,30,isplot=True)
-    # plt.show()
-
-    #============================================================
-    # a = np.arange(400).reshape((20,20))
-    # b = rigid_transform(a,2,30,(1,5),(30,25))
-    # f,ax=plt.subplots(1,2)
-    # ax[0].imshow(a,interpolation='nearest')
-    # ax[1].imshow(b,interpolation='nearest')
-    # plt.show()
-    #============================================================
-
-    #============================================================
-    # import tifffile as tf
-    # imgPath = r"E:\data2\2015-05-28-Average-Ai93-Rorb-Scnn1a-map\AverageVasMap_Ai93.tif"
-    # img = tf.imread(imgPath)
-    # edges = get_area_edges(img)
-    # plt.show()
-    #============================================================
-
-    #============================================================
-    # aa=np.zeros((15,15),dtype=np.uint8)
-    # aa[4,5]=1
-    # aa[5,6]=1
-    # aa[12:15,8:13]=1
-    # bb=remove_small_patches(aa,5)
-    # f,ax=plt.subplots(1,2)
-    # ax[0].imshow(aa,interpolation='nearest');ax[1].imshow(bb,interpolation='nearest')
-    # plt.show()
-    #============================================================
-
-    #============================================================
-    # a=5; b=7
-    # print distance(a,b)
-    #
-    # c=[5,6]; d=[8,2]
-    # print distance(c,d)
-    #
-    # e=np.random.rand(5,6); f=np.random.rand(5,6)
-    # print distance(e,f)
-    #============================================================
-
-    #============================================================
-    # a=np.array(range(15)+range(10)[::-1]).reshape((5,5))
-    # print a
-    # labeled,_ = ni.label(a>7)
-    # peakCoor = np.array(np.where(a==np.amax(a))).transpose()[0]
-    # print peakCoor
-    # peakMask = get_marked_masks(labeled,peakCoor)
-    # plt.imshow(peakMask,interpolation='nearest')
-    # plt.show()
-    #============================================================
-
-    #============================================================
-    # mov = np.arange(64).reshape((4,4,4))
-    # print mov
-    #
-    # mask1 = np.zeros((4,4)); mask1[2,2]=1; mask1[1,1]=1
-    # trace1 = get_trace(mov,mask1,maskMode='binary')
-    # assert(trace1[2] == 39.5)
-    #
-    # mask2 = np.zeros((4,4),dtype=np.float); mask2[:]=np.nan; mask2[2,2]=1; mask2[1,1]=1
-    # trace2 = get_trace(mov,mask2,maskMode='binaryNan')
-    # assert(trace2[2] == 39.5)
-    #
-    # mask3 = np.zeros((4,4),dtype=np.float); mask3[2,2]=1; mask3[1,1]=2
-    # trace3 = get_trace(mov,mask3,maskMode='weighted')
-    # assert(trace3[2] == 58)
-    #
-    # mask4 = np.zeros((4,4),dtype=np.float); mask4[:]=np.nan; mask4[2,2]=1; mask4[1,1]=2
-    # trace4 = get_trace(mov,mask4,maskMode='weightedNan')
-    # assert(trace4[2] == 58)
-    #============================================================
-
-    #============================================================
-    mov = np.arange(64).reshape((4,4,4))
-    np.save(r'E:\data\python_temp_folder\test_array.npy',mov)
-    bl_obj = BinarySlicer(r'E:\data\python_temp_folder\test_array.npy')
-
-    mask1 = np.zeros((4,4)); mask1[2,2]=1; mask1[1,1]=1
-    mask2 = np.zeros((4,4)); mask2[3,0]=1; mask2[3,1]=1
-
-    masks = {'mask1':mask1, 'mask2':mask2}
-    traces = get_trace_binaryslicer3(bl_obj,masks,mask_mode='binary',loading_frame_num=2)
-    print traces
-    assert(traces['trace_mask1'][2] == 39.5)
-    assert(traces['trace_mask2'][3] == 60.5)
-    #============================================================
 
     print 'for debug'
 
