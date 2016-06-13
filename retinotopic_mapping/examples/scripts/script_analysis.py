@@ -32,14 +32,7 @@ trial = rm.loadTrial(trialName)
 
 trial.params=params
 
-_=trial._getSignMap(isPlot=True);plt.show()
-_=trial._getRawPatchMap(isPlot=True);plt.show()
-_=trial._getRawPatches(isPlot=True);plt.show()
-_=trial._getDeterminantMap(isPlot=True);plt.show()
-_=trial._getEccentricityMap(isPlot=True);plt.show()
-_=trial._splitPatches(isPlot=True);plt.show()
-_=trial._mergePatches(isPlot=True);plt.show()
-
+trial.processTrial(isPlot=True)
 
 trialDict = trial.generateTrialDict()
 trial.plotTrial(isSave=isSave,saveFolder=currFolder)

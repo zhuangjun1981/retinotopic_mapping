@@ -960,17 +960,17 @@ class RetinotopicMappingTrial(object):
                  dateRecorded, # int, date recorded, yearmonthday
                  comments='', # str, comments of this particular trial
                  params ={
-                          'phaseMapFilterSigma':1,
-                          'signMapFilterSigma':10,
-                          'signMapThr':0.3,
-                          'eccMapFilterSigma':5.,
-                          'splitLocalMinCutStep':10.,
-                          'mergeOverlapThr':0.05,
+                          'phaseMapFilterSigma':1.,
+                          'signMapFilterSigma':9.,
+                          'signMapThr':0.35,
+                          'eccMapFilterSigma':10.,
+                          'splitLocalMinCutStep':5.,
+                          'mergeOverlapThr':0.1,
                           'closeIter':3,
                           'openIter':3,
-                          'dilationIter':20,
+                          'dilationIter':15,
                           'borderWidth':1,
-                          'smallPatchThr':200,
+                          'smallPatchThr':100,
                           'visualSpacePixelSize':0.5,
                           'visualSpaceCloseIter':15,
                           'splitOverlapThr':1.1
@@ -1574,13 +1574,20 @@ class RetinotopicMappingTrial(object):
 
     def processTrial(self, isPlot=False):
         self.cleanMaps()
-        self._getSignMap(isPlot=isPlot)
-        self._getRawPatchMap(isPlot=isPlot)
-        self._getRawPatches(isPlot=isPlot)
-        self._getDeterminantMap(isPlot=isPlot)
-        self._getEccentricityMap(isPlot=isPlot)
-        self._splitPatches(isPlot=isPlot)
-        self._mergePatches(isPlot=isPlot)
+        _ = self._getSignMap(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._getRawPatchMap(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._getRawPatches(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._getDeterminantMap(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._getEccentricityMap(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._splitPatches(isPlot=isPlot)
+        if isPlot: plt.show()
+        _ = self._mergePatches(isPlot=isPlot)
+        if isPlot: plt.show()
 
     def generateTrialDict(self,
                           keysToRetain=('altPosMap', 'aziPosMap', 'altPowerMap', 'aziPowerMap', 'params',
