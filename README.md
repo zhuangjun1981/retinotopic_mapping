@@ -1,6 +1,6 @@
 #retinotopic_mapping package  
 
-by Jun Zhuang, 2016 @ AIBS
+by Jun Zhuang, 2016 @ AIBS  
 junz AT alleninstitute DOT org  
 
 This package contains a code base for visual area auto-segmentation of mouse visual cortex by doing 
