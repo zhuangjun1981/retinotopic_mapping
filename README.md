@@ -26,8 +26,10 @@ https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_map
 
 
 ####Install:
-`cd <package_path>`  
-`python setup.py install`
+```
+cd <package_path>
+python setup.py install
+```
 
 
 ####Dependencies:
