@@ -2129,6 +2129,42 @@ class RetinotopicMappingTrial(object):
 
         return plotAxis.get_figure()
 
+    def plotPatchBorders(self, patches, plotAxis=None, plotName=True, plotVasMap=True, isTitle=True, isColor=True,
+                         positiveColor='#ff0000', negativeColor='#0000ff', borderWidth=2, fontSize=15):
+
+        try:zoom = self.vasculatureMap.shape[0] / self.altPosMap.shape[0]
+        except AttributeError:zoom = 1
+
+        name = self.getName()
+
+        if not plotAxis:
+            f=plt.figure(figsize=(10,10))
+            plotAxis=f.add_subplot(111)
+
+        if (plotVasMap) and (self.vasculatureMap is not None):
+            try:plotAxis.imshow(self.vasculatureMap, cmap = 'gray', interpolation = 'nearest')
+            except AttributeError: plotAxis.invert_yaxis();pass
+        else: plotAxis.invert_yaxis()
+
+        for key, patch in patches.iteritems():
+            if isColor:
+                if patch.sign == 1:plotColor=positiveColor
+                elif patch.sign == -1:plotColor=negativeColor
+                else:plotColor='#000000'
+            else:plotColor='#000000'
+
+            currArray = ni.binary_erosion(patch.array,iterations=1)
+            im = pt.plot_mask_borders(currArray, plotAxis=plotAxis, color=plotColor, zoom=zoom, borderWidth=borderWidth)
+            if plotName:
+                center=patch.getCenter()
+                plotAxis.text(center[1]*zoom,center[0]*zoom,key,verticalalignment='center', horizontalalignment='center',color=plotColor,fontsize=fontSize)
+
+        plotAxis.set_axis_off()
+
+        if isTitle:plotAxis.set_title(name)
+
+        return plotAxis.get_figure()
+
     def getBaselineFluorscence(self):
         """
         get mean baseline fluorescence of each visual area
