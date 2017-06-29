@@ -32,7 +32,7 @@ import numpy as np
 from ctypes import c_long, c_ulong, CFUNCTYPE, POINTER
 from ctypes import create_string_buffer, c_double, c_void_p, c_char_p
 
-from toolbox.misc.timer import timeit
+#from toolbox.misc.timer import timeit
 
 
 ##############################################################################

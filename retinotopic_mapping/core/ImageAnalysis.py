@@ -10,7 +10,8 @@ from matplotlib import cm
 import matplotlib.colors as col
 import skimage.morphology as sm
 import FileTools as ft
-from retinotopic_mapping.core import PlottingTools as pt
+#from retinotopic_mapping.core import PlottingTools as pt
+import core.PlottingTools as pt
 try: import cv2
 except ImportError as e: print e
 try: from toolbox.misc import BinarySlicer
