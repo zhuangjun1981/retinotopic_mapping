@@ -1,4 +1,4 @@
-#retinotopic_mapping package  
+# retinotopic_mapping package  
 
 by Jun Zhuang  
 &copy; 2016 Allen Institute  
@@ -22,19 +22,19 @@ Please check the jupyter notebook in the '\examples' folder for the usage.
 https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.ipynb
 
 
-####Language:
+#### Language:
 
 1. python 2.7
 
 
-####Install:
+#### Install:
 ```
 cd <package_path>
 python setup.py install
 ```
 
 
-####Dependencies:
+#### Dependencies:
 
 1. numpy, version 1.10.4 or later
 2. scipy, version 0.17.0 or later
@@ -44,7 +44,7 @@ python setup.py install
 6. tifffile, version 0.7.0 or later
 
 
-####References:
+#### References:
 
 1. Garrett ME, Nauhaus I, Marshel JH, Callaway EM (2014) Topography and areal organization of mouse visual cortex. J Neurosci 34:12587-12600.
 
@@ -57,7 +57,7 @@ python setup.py install
 5. Sereno MI, McDonald CT, Allman JM (1994) Analysis of retinotopic maps in extrastriate cortex. Cereb Cortex 4:601-620.
 
 
-####Issues:
+#### Issues:
 
 1. Most image analysis parameters are defined as number of pixels, not microns.
 2. Works in windows, but not fully tested on Mac and Linux.
