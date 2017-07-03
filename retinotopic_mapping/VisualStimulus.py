@@ -5,7 +5,6 @@
 
 Visual Stimulus codebase implements several classes to interact with 
 """
-
 from psychopy import visual, event
 import os
 import datetime
@@ -14,11 +13,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from random import shuffle
-import tifffile as tiff
 import core.FileTools as ft
 import core.ImageAnalysis as ia
 import IO.nidaq as iodaq
-
 
 def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """
@@ -32,7 +29,6 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     refresh_rate : float
         the refresh rate of imaging monitor measured in Hz    
     check_point : tuple, optional
-        
         
     Returns
     -------
@@ -57,7 +53,6 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     long_frame = max(frame_duration)*1000
     long_frame_ind = np.nonzero(frame_duration==np.max(frame_duration))[0][0]
     
-    
     frame_stats = '\n'
     frame_stats += 'Total number of frames    : %d. \n' % num_frames
     frame_stats += 'Total length of display   : %.5f second. \n' % disp_true
@@ -80,7 +75,6 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     print frame_stats
     
     return frame_duration, frame_stats
-
 
 def in_hull(p, hull):
     """
@@ -111,7 +105,6 @@ def in_hull(p, hull):
         hull = Delaunay(hull)
 
     return hull.find_simplex(p)>=0
-
 
 def get_warped_square(deg_coord_x,deg_coord_y,center,width,
                       height,ori,foreground_color=1.,background_color=0.):
@@ -188,7 +181,7 @@ def get_circle_mask(map_x, map_y, center, radius):
     circle_mask : 
         binary circle mask, takes values in [0.,1.]
     """
-
+    
     if map_x.shape != map_y.shape: 
          raise ValueError, 'map_x and map_y should have same shape!'
 
@@ -529,7 +522,6 @@ class Indicator(object):
         return int(center_width), int(center_height)
 
     def get_frames(self):
-
         """
         if not synchronized with stimulation, get frame numbers of each update
         of indicator
@@ -581,7 +573,6 @@ class Stim(object):
             duration of gap period after stimulus, measured in seconds
         """
     
-    
         self.monitor = monitor
         self.indicator = indicator
         self.background = background
@@ -624,7 +615,6 @@ class Stim(object):
         self.postgap_frame_num = int(self.postgap_dur*self.monitor.refresh_rate)
         self.clear()
 
-
 class UniformContrast(Stim):
     """
     Generate full field uniform luminance for recording spontaneous activity.
@@ -633,7 +623,6 @@ class UniformContrast(Stim):
     The full field uniform luminance stimulus presents a fixed background color
     which is normally taken to be grey. 
     """
-
     def __init__(self, monitor, indicator, duration, color=0., pregap_dur=2., 
                  postgap_dur=3., background=0., coordinate='degree'):
         """
@@ -755,12 +744,10 @@ class UniformContrast(Stim):
 
         return full_seq, full_dict
 
-
 class FlashingCircle(Stim):
     """
     flashing circle stimulus
     """
-
     def __init__(self,
                  monitor,
                  indicator,
@@ -953,7 +940,6 @@ class FlashingCircle(Stim):
 
         return full_seq, full_dict
 
-
 class SparseNoise(Stim):
     """
     generate sparse noise stimulus integrates flashing indicator for photodiode
@@ -1004,7 +990,6 @@ class SparseNoise(Stim):
         iteration : int, optional
             number of times to present stimulus, defaults to `1`
         """
-
 
         self.stim_name = 'SparseNoise'
         self.grid_space = grid_space
@@ -1249,7 +1234,6 @@ class SparseNoise(Stim):
 
         return full_seq, full_dict
 
-
 class DriftingGratingCircle(Stim):
     """
     class of drifting grating circle stimulus
@@ -1304,6 +1288,7 @@ class DriftingGratingCircle(Stim):
         iteration = int, optional
             number of times the stimulus is displayed, defaults to `1`
         """
+        
         self.stim_name = 'DriftingGratingCircle'
         self.center = center
         self.sf_list = sf_list
@@ -1367,6 +1352,7 @@ class DriftingGratingCircle(Stim):
         frame_per_cycle : 
             number of frames for each circle
         """
+        
         block_frame_num = int(self.block_dur * self.monitor.refresh_rate)
 
         frame_per_cycle = int(self.monitor.refresh_rate / tf)
@@ -1419,6 +1405,7 @@ class DriftingGratingCircle(Stim):
              during gap frames the second through the eighth elements should 
              be 'None'.
         """
+        
         frames = []
         off_params = [0, None,None,None,None,None,None,None,-1.]
 
@@ -1814,14 +1801,12 @@ class KSstim(Stim):
         sweep_num = np.size(sweeps,0) # Number of sweeps vertical or horizontal
         displayframe_num = sweep_frame*sweep_num # total frame number for 1 iter
                                                                               
-        
         #frames for one iteration
         iter_frames=[] 
         
         #add frames for gaps
         for i in range(self.pregap_frame_num):
             iter_frames.append([0,None,None,-1])
-        
         
         #add frames for display
         is_reverse=[]
@@ -1969,7 +1954,6 @@ class KSstimAllDir(object):
                  iteration=1,
                  pregap_dur=2.,
                  postgap_dur=3.):
-        
         """
         Initialize stimulus
         
@@ -2112,7 +2096,6 @@ class DisplaySequence(object):
     """
     Display the numpy sequence from memory
     """        
-    
     def __init__(self,
                  log_dir,
                  backupdir=None,
@@ -2191,6 +2174,7 @@ class DisplaySequence(object):
         file_num_NI_lines : 
             defaults to '0:7'
         """
+        
         self.sequence = None
         self.seq_log = {}
         self.psychopy_mon = psychopy_mon
@@ -2262,7 +2246,6 @@ class DisplaySequence(object):
         """
         self.sequence, self.seq_log = stim.generate_movie()
         self.clear()
-
 
     def trigger_display(self):
         """
@@ -2440,7 +2423,6 @@ class DisplaySequence(object):
              raise NameError, "`trigger` not in " \
              "{'negative_edge','positive_edge', 'high_level','low_level'}!"
 
-
     def _get_file_name(self):
         """
         generate the file name of log file
@@ -2487,7 +2469,6 @@ class DisplaySequence(object):
 
         return file_number
         
-
     def _display(self, window, stim):
         
         # display frames
@@ -2544,10 +2525,8 @@ class DisplaySequence(object):
         if self.keep_display == True: 
              print '\nDisplay successfully completed.'
 
-
     def flag_to_close(self):
         self.keep_display = False
-
 
     def _update_display_status(self):
 
@@ -2560,13 +2539,11 @@ class DisplaySequence(object):
             self.keep_display = False
             print "Keyboard stop signal detected. Stop displaying. \n"
 
-
     def set_display_order(self, display_order):
         
         self.display_order = display_order
         self.clear()
     
-
     def set_display_iteration(self, display_iter):
         
         if display_iter % 1 == 0:
@@ -2575,7 +2552,6 @@ class DisplaySequence(object):
             raise ArithmeticError, "`display_iter` should be a whole number."
         self.clear()
         
-
     def save_log(self):
         
         if self.display_length is None:
@@ -2640,7 +2616,6 @@ class DisplaySequence(object):
             else:
                 return None
 
-
     def clear(self):
         """ clear display information. """
         self.display_length = None
@@ -2651,157 +2626,5 @@ class DisplaySequence(object):
         self.file_name = None
         self.keep_display = None
 
-
 if __name__ == "__main__":
-
-    #==============================================================================================================================
-     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=16.22,downsample_rate=5)
-     indicator=Indicator(mon)
-     KS_stim=KSstim(mon,indicator)
-     display_iter = 2
-     # print (len(KSstim.generate_frames())*display_iter)/float(mon.refresh_rate)
-     ds=DisplaySequence(log_dir=r'C:\data',backupdir=r'C:\data',is_triggered=True,display_iter=2,display_screen=1)
-     ds.set_stim(KS_stim)
-     ds.trigger_display()
-     plt.show()
-    #==============================================================================================================================
-
-   
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=16.22,downsample_rate=10)
-#     indicator=Indicator(mon)
-#     flashing_circle=FlashingCircle(mon,indicator)
-#     display_iter = 2
-#     print (len(flashing_circle.generate_frames())*display_iter)/float(mon.refresh_rate)
-#     ds=DisplaySequence(log_dir=r'C:\data',backupdir=r'C:\data',is_triggered=True,display_iter=2,display_screen=1)
-#     ds.set_stim(flashing_circle)
-#     ds.trigger_display()
-#     plt.show()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=20)
-#     mon_points = np.transpose(np.array([mon.deg_coord_x.flatten(),mon.deg_coord_y.flatten()]))
-#     indicator=Indicator(mon)
-#     sparse_noise=SparseNoise(mon,indicator, subregion=(-20.,20.,40.,60.), grid_space=(10, 10))
-#     grid_points = sparse_noise._generate_grid_points_sequence()
-#     gridLocations = np.array([l[0] for l in grid_points])
-#     plt.plot(mon_points[:,0],mon_points[:,1],'or',mec='#ff0000',mfc='none')
-#     plt.plot(gridLocations[:,0], gridLocations[:,1],'.k')
-#     plt.show()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=20)
-#     mon_points = np.transpose(np.array([mon.deg_coord_x.flatten(),mon.deg_coord_y.flatten()]))
-#     indicator=Indicator(mon)
-#     sparse_noise=SparseNoise(mon,indicator,subregion=(-20.,20.,40.,60.))
-#     grid_points = sparse_noise._generate_grid_points_sequence()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=20)
-#     mon_points = np.transpose(np.array([mon.deg_coord_x.flatten(),mon.deg_coord_y.flatten()]))
-#     indicator=Indicator(mon)
-#     sparse_noise=SparseNoise(mon,indicator,subregion=(-20.,20.,40.,60.))
-#     sparse_noise.generate_frames()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon = Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=5)
-#     frame = get_warped_square(mon.deg_coord_x,mon.deg_coord_y,(20.,25.),4.,4.,0.,foreground_color=1,background_color=0)
-#     plt.imshow(frame,cmap='gray',vmin=-1,vmax=1,interpolation='nearest')
-#     plt.show()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=5)
-#     mon_points = np.transpose(np.array([mon.deg_coord_x.flatten(),mon.deg_coord_y.flatten()]))
-#     indicator=Indicator(mon)
-#     sparse_noise=SparseNoise(mon,indicator)
-#     ds=DisplaySequence(log_dir=r'C:\data',backupdir=None,is_triggered=False,is_sync_pulse_pulse=False,display_screen=1)
-#     ds.set_stim(sparse_noise)
-#     ds.trigger_display()
-#     plt.show()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=16.22,downsample_rate=20)
-     indicator=Indicator(mon)
-     KS_stim_all_dir=KSstimAllDir(mon,indicator,step_width=0.3)
-     ds=DisplaySequence(log_dir=r'C:\data',backupdir=None,display_iter = 2,is_triggered=False,is_sync_pulse_pulse=False,display_screen=1)
-     ds.set_stim(KS_stim_all_dir)
-     ds.trigger_display()
-     plt.show()
-    #==============================================================================================================================
-
-    #==============================================================================================================================
-#     mon=Monitor(resolution=(1080, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=16.22,downsample_rate=5)
-#     indicator=Indicator(mon)
-#    
-#     grating = get_grating(mon.deg_coord_x, mon.deg_coord_y, ori=0., spatial_freq=0.1, center=(60.,0.), contrast=1)
-#     print grating.max()
-#     print grating.min()
-#     plt.imshow(grating,cmap='gray',interpolation='nearest',vmin=0., vmax=1.)
-#     plt.show()
-#    
-#     drifting_grating = DriftingGratingCircle(mon,indicator, sf_list=(0.08,0.16),
-#                                              tf_list=(4.,8.), dire_list=(0.,0.1),
-#                                              con_list=(0.5,1.), size_list=(5.,10.),)
-#     print '\n'.join([str(cond) for cond in drifting_grating._generate_all_conditions()])
-#    
-#     drifting_grating2 = DriftingGratingCircle(mon,indicator,
-#                                               center=(60.,0.),
-#                                               sf_list=[0.08, 0.16],
-#                                               tf_list=[4.,2.],
-#                                               dire_list=[np.pi/6],
-#                                               con_list=[1.,0.5],
-#                                               size_list=[40.],
-#                                               block_dur=2.,
-#                                               pregap_dur=2.,
-#                                               postgap_dur=3.,
-#                                               midgap_dur=1.)
-#     frames =  drifting_grating2.generate_frames()
-#     print '\n'.join([str(frame) for frame in frames])
-#    
-#     ds=DisplaySequence(log_dir=r'C:\data',backupdir=None,display_iter = 2,is_triggered=False,is_sync_pulse_pulse=False,is_interpolate=False,display_screen=1)
-#     ds.set_stim(drifting_grating2)
-#     ds.trigger_display()
-#     plt.show()
-    #==============================================================================================================================
-
-    # ==============================================================================================================================
-#     mon=Monitor(resolution=(1200, 1920),dis=13.5,mon_width_cm=88.8,mon_height_cm=50.1,C2T_cm=33.1,C2A_cm=46.4,mon_tilt=30,downsample_rate=5)
-#     indicator=Indicator(mon)
-#     uniform_contrast = UniformContrast(mon,indicator, duration=10., color=0.)
-#     ds=DisplaySequence(log_dir=r'C:\data',backupdir=None,display_iter=2,is_triggered=False,is_sync_pulse_pulse=False,display_screen=1)
-#     ds.set_stim(uniform_contrast)
-#     ds.trigger_display()
-#     plt.show()
-    # ==============================================================================================================================
-
-    # ==============================================================================================================================
-#    mon = Monitor(resolution=(1080, 1920), dis=13.5, mon_width_cm=88.8, mon_height_cm=50.1, C2T_cm=33.1, C2A_cm=46.4, mon_tilt=16.22,
-#                  downsample_rate=5)
-#    indicator = Indicator(mon)
-#    drifting_grating2 = DriftingGratingCircle(mon, indicator,
-#                                              center=(60., 0.),
-#                                              sf_list=[0.08],
-#                                              tf_list=[4.],
-#                                              dire_list=np.arange(0, 2 * np.pi, np.pi / 4),
-#                                              con_list=[1.],
-#                                              size_list=[20.],
-#                                              block_dur=2.,
-#                                              pregap_dur=2.,
-#                                              postgap_dur=3.,
-#                                              midgap_dur=1.)
-#
-#    ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=True, is_sync_pulse_pulse=True,
-#                         is_interpolate=False,display_screen=1)
-#    ds.set_stim(drifting_grating2)
-#    ds.trigger_display()
-#
-#    phases = drifting_grating2._generate_phase_list(4.)
-#    print phases
-    # ==============================================================================================================================
-#    print 'blah'
+     print 'To Test'
