@@ -1,22 +1,17 @@
-
-
 __author__ = 'junz'
 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate
 import scipy.ndimage as ni
-from matplotlib import cm
-import matplotlib.colors as col
+
 import skimage.morphology as sm
 import FileTools as ft
-#from retinotopic_mapping.core import PlottingTools as pt
 import core.PlottingTools as pt
-try: import cv2
-except ImportError as e: print e
-try: from toolbox.misc import BinarySlicer
-except ImportError as e: print e
-
+try: 
+     import cv2
+except ImportError as e: 
+     print e
 
 def resample(t1,y1,interval,kind='linear', isPlot = False):
 
@@ -93,7 +88,8 @@ def array_nor_mean(A):
 
 def array_nor_mean_std(A):
     '''
-    normalize array by minus mean and then devided by standard deviation, data type will be switch to np.float
+    normalize array by minus mean and then devided by standard deviation, 
+    data type will be switched to np.float
     '''
     A=A.astype(np.float)
     B=(A-np.mean(A.flatten()))/np.std(A.flatten())
@@ -115,17 +111,6 @@ def distance(p0, p1):
 
     p0 and p1 should be a 1d array, with each element for each dimension
     '''
-
-
-    #old code======================================================================
-    # if (len(p0.shape) > 1) or (len(p1.shape) > 1):
-    #     raise LookupError, 'Both input arrays should be 1d array!!'
-    #
-    # if p0.shape != p1.shape:
-    #     raise LookupError, 'The two input arrays should have same dimensions.'
-    #
-    # distance = math.sqrt(np.sum(((p0.astype(np.float)-p1.astype(np.float))**2)))
-    #===============================================================================
 
     if not isinstance(p0, np.ndarray):p0 = np.array(p0)
     if not isinstance(p1, np.ndarray):p1 = np.array(p1)
