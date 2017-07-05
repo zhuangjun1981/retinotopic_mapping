@@ -4,16 +4,11 @@ Created on Fri Oct 31 11:07:20 2014
 
 @author: junz
 """
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import colorsys
 import matplotlib.colors as col
 import scipy.ndimage as ni
-
 import tifffile as tf
 import ImageAnalysis as ia
 import cv2

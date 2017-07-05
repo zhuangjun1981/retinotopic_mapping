@@ -14,9 +14,9 @@ import cv2
 import matplotlib.colors as col
 from matplotlib import cm
 
-import core.FileTools as ft
-import core.ImageAnalysis as ia
-import core.PlottingTools as pt
+from tools import FileTools as ft
+from tools import ImageAnalysis as ia
+from tools import PlottingTools as pt
 
 
 

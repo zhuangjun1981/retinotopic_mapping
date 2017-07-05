@@ -9,7 +9,8 @@ import ImageAnalysis as ia
 import tifffile as tf
 
 
-try: import cv2
+try: 
+     import cv2
 except ImportError as e: print 'can not import OpenCV. ' + e
 
 

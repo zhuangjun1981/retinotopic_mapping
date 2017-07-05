@@ -6,7 +6,7 @@ Created on Thu Oct 30 14:46:38 2014
 """
 import os
 import matplotlib.pyplot as plt
-import retinotopic_mapping.core.FileTools as ft
+from tools import FileTools as ft
 import retinotopic_mapping.RetinotopicMapping as rm
 
 
