@@ -3,7 +3,7 @@ __author__ = 'junz'
 import os
 import matplotlib.pyplot as plt
 import retinotopic_mapping.RetinotopicMapping as rm
-import retinotopic_mapping.core.FileTools as ft
+from tools import FileTools as ft
 
 
 trialName = "160211_M214522_Trial1.pkl"

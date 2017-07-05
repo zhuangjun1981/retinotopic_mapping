@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-@author: junz
-
-
 Visual Stimulus codebase implements several classes to interact with 
 """
 from psychopy import visual, event
@@ -12,10 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-import Stimulus as stim
-from MonitorSetup import Monitor, Indicator
-import core.FileTools as ft
-import IO.nidaq as iodaq
+
+from tools import FileTools as ft
+from tools.IO import nidaq as iodaq
 
 def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """

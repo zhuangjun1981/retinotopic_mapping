@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 05 09:43:55 2017
+Notes
+-----
 
-@author: johny
 """
 import numpy as np
 
@@ -10,6 +10,48 @@ class Monitor(object):
     """
     monitor object created by Jun, has the method "remap" to generate the 
     spherical corrected coordinates in degrees
+    
+    This object contains the relevant data for the monitor used within a 
+    given experimental setup. When initialized, the rectangular coordinates
+    of the pixels on the monitor are computed and stored as `lin_coord_x`, 
+    `lin_coord_y`. The rectangular coordinates are then transformed and 
+    warped by calling the `remap` method to populate the `deg_coord_x` and
+    `deg_coord_y` attributes.
+   
+    Parameters
+    ----------
+    resolution : tuple
+        value of the monitor resolution
+    dis : float 
+         distance from eyeball to monitor (in cm)
+    mon_width_cm : float
+        width of monitor (in cm)
+    mon_height_cm : float
+        height of monitor (in cm)
+    C2T_cm : float
+        distance from gaze center to monitor top
+    C2A_cm : float
+        distance from gaze center to anterior edge of the monitor
+    mon_tilt : float
+        angle between mouse body axis and monitor plane, in degrees
+    visual_field : str from {'right','left'}, optional
+        the eye that is facing the monitor, defaults to 'right'
+    deg_coord_x : ndarray, optional
+         array of warped x pixel coordinates, defaults to `None`
+    deg_coord_y : ndarray, optional
+         array of warped y pixel coordinates, defaults to `None`
+    name : str, optional
+         name of the monitor, defaults to `testMonitor`
+    gamma : optional
+         for gamma correction, defaults to `None`
+    gamma_grid : optional
+         for gamme correction, defaults to `None`
+    luminance : optional
+         monitor luminance, defaults to `None`
+    downsample_rate : int, optional
+         downsample rate of monitor pixels, defaults to 10
+    refresh_rate : float, optional
+        the refresh rate of the monitor in Hz, defaults to 60
     """
     def __init__(self, 
                  resolution, 
@@ -31,53 +73,12 @@ class Monitor(object):
         """
         Initialize monitor object.
         
-        This object contains the relevant data for the monitor used within a 
-        given experimental setup. When initialized, the rectangular coordinates
-        of the pixels on the monitor are computed and stored as `lin_coord_x`, 
-        `lin_coord_y`. The rectangular coordinates are then transformed and 
-        warped by calling the `remap` method to populate the `deg_coord_x` and
-        `deg_coord_y` attributes.
-        
-        Parameters
-        ----------
-        resolution : tuple
-            value of the monitor resolution
-        dis : float 
-             distance from eyeball to monitor (in cm)
-        mon_width_cm : float
-            width of monitor (in cm)
-        mon_height_cm : float
-            height of monitor (in cm)
-        C2T_cm : float
-            distance from gaze center to monitor top
-        C2A_cm : float
-            distance from gaze center to anterior edge of the monitor
-        mon_tilt : float
-            angle between mouse body axis and monitor plane, in degrees
-        visual_field : str from {'right','left'}, optional
-            the eye that is facing the monitor, defaults to 'right'
-        deg_coord_x : ndarray, optional
-             array of warped x pixel coordinates, defaults to `None`
-        deg_coord_y : ndarray, optional
-             array of warped y pixel coordinates, defaults to `None`
-        name : str, optional
-             name of the monitor, defaults to `testMonitor`
-        gamma : optional
-             for gamma correction, defaults to `None`
-        gamma_grid : optional
-             for gamme correction, defaults to `None`
-        luminance : optional
-             monitor luminance, defaults to `None`
-        downsample_rate : int, optional
-             downsample rate of monitor pixels, defaults to 10
-        refresh_rate : float, optional
-            the refresh rate of the monitor in Hz, defaults to 60 
         """
                      
         if resolution[0] % downsample_rate != 0 \
                        or resolution[1] % downsample_rate != 0:           
            raise ArithmeticError, 'Resolution pixel numbers are not' \
-           'divisible by down sampling rate'
+           ' divisible by down sampling rate'
         
         self.resolution = resolution
         self.dis = dis
@@ -166,8 +167,7 @@ class Monitor(object):
         warp the linear pixel coordinates and populate the `deg_coord_x` and 
         `deg_coord_y` attributes. 
          
-        Function is called immediately as soon as the monitor object is 
-        initialized.
+        Function is called when the monitor object is initialized.
         """
         
         resolution = [0,0]        
@@ -179,7 +179,6 @@ class Monitor(object):
         
         new_map_x = np.zeros(resolution,dtype=np.float16)
         new_map_y = np.zeros(resolution,dtype=np.float16)
-        
         
         for j in range(resolution[1]):
             new_map_x[:, j] = ((180.0 / np.pi) * 
@@ -197,6 +196,22 @@ class Monitor(object):
 class Indicator(object):
     """
     flashing indicator for photodiode
+    
+    Parameters
+    ----------
+    monitor : monitor object
+        The monitor used within the experimental setup
+    width_cm : float, optional
+        width of the size of the indicator in cm, defaults to `3.`
+    height_cm : float, optional
+         height of the size of the indicator in cm, defaults to `3.`
+    position : str from {'northeast','northwest','southwest','southeast'}
+         the placement of the indicator, defaults to 'northeast'
+    is_sync : bool, optional
+         determines whether the indicator is synchronized with the stimulus,
+         defaults to True.
+    freq : float, optional
+        frequency of photodiode, defaults to `2.`
     """
     def __init__(self,
                  monitor,
@@ -207,22 +222,6 @@ class Indicator(object):
                  freq = 2.):
         """
         Initialize indicator object
-       
-        Parameters
-        ----------
-        monitor : monitor object
-            The monitor used within the experimental setup
-        width_cm : float, optional
-            width of the size of the indicator in cm, defaults to `3.`
-        height_cm : float, optional
-             height of the size of the indicator in cm, defaults to `3.`
-        position : str from {'northeast','northwest','southwest','southeast'}
-             the placement of the indicator, defaults to 'northeast'
-        is_sync : bool, optional
-             determines whether the indicator is synchronized with the stimulus,
-             defaults to True.
-        freq : float, optional
-            frequency of photodiode, defaults to `2.`
         """
         
         self.monitor=monitor
@@ -278,7 +277,8 @@ class Indicator(object):
             center_height = screen_height - self.height_pixel / 2
 
         else:
-            raise LookupError, '`position` not in {"northeast","southeast","northwest","southwest"}'
+            raise LookupError, '`position` attribute not in' \
+            ' {"northeast","northwest","southeast","southwest"}'
 
         return int(center_width), int(center_height)
 
