@@ -1259,7 +1259,7 @@ class KSstim(Stim):
     square_center: tuple, optional
         coordinate of center point, defaults to `(0,0)`
     flicker_frame : int, optional
-        number of frames to complete one on and off flicker, defaults to `10`
+        number of frames in one flicker, defaults to `10`
     sweep_width : float, optional
         width of sweeps measured in units cm or degs if coordinate value
         is 'linear' or 'degree' respectively. defaults to `20`
