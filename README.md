@@ -5,7 +5,7 @@ by Jun Zhuang
 email: junz&lt;AT&gt;alleninstitute&lt;DOT&gt;org  
 
 For a more thorough introduction and explanation of the module please 
-see our [documentation](http://retinotopic-mapping.readthedocs.io/en/latest/).
+see our [documentation](http://retinotopic-mapping.readthedocs.io/).
 
 The retinotopic mapping package is a self-contained module
 for performing automated segmentation of the mouse
