@@ -16,6 +16,7 @@ Welcome to Retinotopic Mapping's  documentation!
    examples
    api
 
+
 Indices and tables
 ==================
 
