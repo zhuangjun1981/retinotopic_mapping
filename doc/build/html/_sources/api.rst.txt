@@ -20,12 +20,12 @@ and `StimulusRoutines` modules.
 
 Monitor
 +++++++
-.. autoclass:: retinotopic_mapping.MonitorSetup.Monitor
+.. autoclass:: Monitor
    :members: 
 
 Indicator
 +++++++++
-.. autoclass:: retinotopic_mapping.MonitorSetup.Indicator
+.. autoclass:: Indicator
    :members:
 
 StimulusRoutines Module
@@ -33,32 +33,32 @@ StimulusRoutines Module
 
 UniformContrast
 +++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.UniformContrast
+.. autoclass:: UniformContrast
    :members:
 
 FlashingCircle
 ++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.FlashingCircle
+.. autoclass:: FlashingCircle
    :members:
 
 SparseNoise
 +++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.SparseNoise
+.. autoclass:: SparseNoise
    :members:
 
 DriftingGratingCircle
 +++++++++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.DriftingGratingCircle
+.. autoclass:: DriftingGratingCircle
    :members:
 
 KSstim
 ++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.KSstim
+.. autoclass:: KSstim   
    :members:
 
 KSstimAllDir
 ++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.KSstimAllDir
+.. autoclass:: KSstimAllDir
    :members:
 
  
@@ -75,7 +75,7 @@ will be stored on the computer used for the experiment.
 DisplaySequence 
 +++++++++++++++++++++++++
 
-.. autoclass:: retinotopic_mapping.DisplayStimulus.DisplaySequence 
+.. autoclass:: DisplaySequence
    :members:
 
 
