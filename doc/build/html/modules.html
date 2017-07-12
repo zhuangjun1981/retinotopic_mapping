@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installing &mdash; Retinotopic Mapping 1.0.0 documentation</title>
+  <title>retinotopic_mapping &mdash; Retinotopic Mapping 1.0.0 documentation</title>
   
 
   
@@ -37,9 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/>
-        <link rel="next" title="Getting Started" href="intro.html"/>
-        <link rel="prev" title="About" href="about.html"/> 
+    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -92,14 +90,9 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#operating-systems-supported">Operating Systems Supported</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#making-sure-pydaqmx-works">Making sure PyDAQmx works</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
@@ -147,13 +140,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Installing</li>
+      <li>retinotopic_mapping</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -166,60 +159,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installing">
-<h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
-<p>To install <strong>RetinotopicMapping</strong> download the package (insert link here)
-manually and from the command line type in the following:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">package</span><span class="o">&gt;</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre></div>
-</div>
-<p>or with pip</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">retinotopic_mapping</span>
-</pre></div>
-</div>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ol class="arabic simple">
-<li>numpy, version 1.10.4 or later</li>
-<li>scipy, version 0.17.0 or later</li>
-<li>matplotlib, version 1.5.1 or later</li>
-<li>OpenCV-Python, version 2.4.8 or later</li>
-<li>scikit-image, version 0.12.3 or later</li>
-<li>tifffile, version 0.7.0 or later</li>
-<li>PyDAQmx, version …<ul>
-<li>also requires National Instruments DAQmx driver</li>
+  <div class="section" id="retinotopic-mapping">
+<h1>retinotopic_mapping<a class="headerlink" href="#retinotopic-mapping" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="retinotopic_mapping.html">retinotopic_mapping package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#subpackages">Subpackages</a><ul class="simple">
 </ul>
 </li>
-</ol>
-</div></blockquote>
-</div>
-<div class="section" id="operating-systems-supported">
-<h2>Operating Systems Supported<a class="headerlink" href="#operating-systems-supported" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Windows</li>
-<li>Mac</li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping.DisplayStimulus">retinotopic_mapping.DisplayStimulus module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping.MonitorSetup">retinotopic_mapping.MonitorSetup module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="retinotopic_mapping.html#notes">Notes</a></li>
 </ul>
-</div>
-<div class="section" id="making-sure-pydaqmx-works">
-<h2>Making sure PyDAQmx works<a class="headerlink" href="#making-sure-pydaqmx-works" title="Permalink to this headline">¶</a></h2>
-<p>The PyDAQmx module allows users to integrate National Instruments
-data-acquisition hardware into their experimental setup (see their
-<a class="reference external" href="https://pythonhosted.org/PyDAQmx/">documentation</a> for more information).</p>
-<p>To get PyDAQmx to function correctly there are a couple of important
-points to mention:</p>
-<ul class="simple">
-<li>The NIDAQmx driver must first be installed</li>
-<li>Once NIDAQmx driver is installed it is not guaranteed that the
-module will work, so it is important to know how to troubleshoot
-this issue. The main issue is tracking down where two files
-are on your computer, a filepath ending with <code class="docutils literal"><span class="pre">DAQMX.h</span></code> and another
-path ending with <code class="docutils literal"><span class="pre">nicaiu.dll</span></code>. The PyDAQmx module tries to find
-these files for you, but if it cannot, the user needs to manually
-find and enter the path within the <cite>DAQmxConfig.py</cite> file.
-See <a class="reference external" href="https://pythonhosted.org/PyDAQmx/installation.html">this</a>
-page for a more thorough explanation).</li>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping.RetinotopicMapping">retinotopic_mapping.RetinotopicMapping module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping.Stimulus">retinotopic_mapping.Stimulus module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping.for_debugging">retinotopic_mapping.for_debugging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.html#module-retinotopic_mapping">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -231,15 +190,6 @@ page for a more thorough explanation).</li>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="intro.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="about.html" class="btn btn-neutral" title="About" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

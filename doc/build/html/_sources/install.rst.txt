@@ -33,7 +33,7 @@ Operating Systems Supported
 
 * Windows
 
-* Linux/Unix
+* Mac
 
 
 Making sure PyDAQmx works

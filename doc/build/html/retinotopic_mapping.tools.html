@@ -1,0 +1,1068 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>retinotopic_mapping.tools package &mdash; Retinotopic Mapping 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Retinotopic Mapping
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Retinotopic Mapping</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>retinotopic_mapping.tools package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/retinotopic_mapping.tools.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="retinotopic-mapping-tools-package">
+<h1>retinotopic_mapping.tools package<a class="headerlink" href="#retinotopic-mapping-tools-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="retinotopic_mapping.tools.IO.html">retinotopic_mapping.tools.IO package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.tools.IO.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.tools.IO.html#module-retinotopic_mapping.tools.IO.nidaq">retinotopic_mapping.tools.IO.nidaq module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retinotopic_mapping.tools.IO.html#module-retinotopic_mapping.tools.IO">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-retinotopic_mapping.tools.FileTools">
+<span id="retinotopic-mapping-tools-filetools-module"></span><h2>retinotopic_mapping.tools.FileTools module<a class="headerlink" href="#module-retinotopic_mapping.tools.FileTools" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.batchCopy">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">batchCopy</code><span class="sig-paren">(</span><em>pathList</em>, <em>destinationFolder</em>, <em>isDelete=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.batchCopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>copy everything in the pathList into destinationFolder
+return a list of paths which can not be copied.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.copy">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">copy</code><span class="sig-paren">(</span><em>src</em>, <em>dest</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>copy everything from one path to another path. Work for both direcory and file.
+if src is a file, it will be copied into dest
+if src is a directory, the dest will have the same content as src</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.generateAVI">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">generateAVI</code><span class="sig-paren">(</span><em>saveFolder</em>, <em>fileName</em>, <em>matrix</em>, <em>frameRate=25.0</em>, <em>encoder=’XVID’</em>, <em>zoom=1</em>, <em>isDisplay=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.generateAVI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>saveFolder</strong> – </li>
+<li><strong>fileName</strong> – can be with ‘.avi’ or without ‘.avi’</li>
+<li><strong>matrix</strong> – can be 3 dimensional (gray value) or 4 dimensional
+if the length of the 4th dimension equals 3, it will be considered as rgb
+if the length of the 4th dimension equals 4, it will be considered as rgba</li>
+<li><strong>frameRate</strong> – </li>
+<li><strong>encoder</strong> – </li>
+<li><strong>zoom</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">generate the .avi movie file</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.getLog">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">getLog</code><span class="sig-paren">(</span><em>logPath</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.getLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>get log dictionary from a specific path (including file names)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawJCam">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawJCam</code><span class="sig-paren">(</span><em>path</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>headerLength=96</em>, <em>columnNumIndex=14</em>, <em>rowNumIndex=15</em>, <em>frameNumIndex=16</em>, <em>decimation=None</em>, <em>exposureTimeIndex=17</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawJCam" title="Permalink to this definition">¶</a></dt>
+<dd><p>import raw JCam files into np.array</p>
+<blockquote>
+<div>raw file format:
+data type: 32 bit sigle precision floating point number
+data format: big-endian single-precision float, high-byte-first motorola
+header length: 96 floating point number
+column number index: 14
+row number index: 15
+frame number index: 16
+exposure time index: 17</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawJCamF">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawJCamF</code><span class="sig-paren">(</span><em>path</em>, <em>saveFolder=None</em>, <em>dtype=dtype(‘uint16’)</em>, <em>headerLength=116</em>, <em>tailerLength=218</em>, <em>column=2048</em>, <em>row=2048</em>, <em>frame=None</em>, <em>crop=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawJCamF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawJPhys">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawJPhys</code><span class="sig-paren">(</span><em>path</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>headerLength=96</em>, <em>channels=(‘photodiode2’</em>, <em>’read’</em>, <em>’trigger’</em>, <em>’photodiode’)</em>, <em>sf=10000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawJPhys" title="Permalink to this definition">¶</a></dt>
+<dd><p>import raw JPhys files into np.array
+one dictionary contains header for each channel
+the other contains values for each for each channel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawJPhys2">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawJPhys2</code><span class="sig-paren">(</span><em>path</em>, <em>imageFrameNum</em>, <em>photodiodeThr=0.95</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>headerLength=96</em>, <em>channels=(‘photodiode2’</em>, <em>’read’</em>, <em>’trigger’</em>, <em>’photodiode’)</em>, <em>sf=10000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawJPhys2" title="Permalink to this definition">¶</a></dt>
+<dd><p>extract important information from JPhys file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawNewJPhys">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawNewJPhys</code><span class="sig-paren">(</span><em>path</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>headerLength=96</em>, <em>channels=(‘photodiode2’</em>, <em>’read’</em>, <em>’trigger’</em>, <em>’photodiode’</em>, <em>’sweep’</em>, <em>’visualFrame’</em>, <em>’runningRef’</em>, <em>’runningSig’</em>, <em>’reward’</em>, <em>’licking’)</em>, <em>sf=10000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawNewJPhys" title="Permalink to this definition">¶</a></dt>
+<dd><p>import new style raw JPhys files into np.array
+one dictionary contains header for each channel
+the other contains values for each for each channel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.importRawNewJPhys2">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">importRawNewJPhys2</code><span class="sig-paren">(</span><em>path</em>, <em>imageFrameNum</em>, <em>photodiodeThr=0.95</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>headerLength=96</em>, <em>channels=(‘photodiode2’</em>, <em>’read’</em>, <em>’trigger’</em>, <em>’photodiode’</em>, <em>’sweep’</em>, <em>’visualFrame’</em>, <em>’runningRef’</em>, <em>’runningSig’</em>, <em>’reward’</em>, <em>’licking’)</em>, <em>sf=10000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.importRawNewJPhys2" title="Permalink to this definition">¶</a></dt>
+<dd><p>extract important information from new style JPhys file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.int2str">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">int2str</code><span class="sig-paren">(</span><em>num</em>, <em>length=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.int2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate a string representation for a integer with a given length
+:param num: input number
+:param length: length of the string
+:return: string represetation of the integer</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.list_all_files">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">list_all_files</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.list_all_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>get a list of full path of all files in a folder (including subfolder)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.loadFile">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">loadFile</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.loadFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.readBinaryFile">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">readBinaryFile</code><span class="sig-paren">(</span><em>path</em>, <em>position</em>, <em>count=1</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>whence=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.readBinaryFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>read arbitary part of a binary file,
+data type defined by dtype,
+start position defined by position (counts accordinating to dtype)
+length defined by count.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.readBinaryFile2">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">readBinaryFile2</code><span class="sig-paren">(</span><em>f</em>, <em>position</em>, <em>count=1</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>whence=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.readBinaryFile2" title="Permalink to this definition">¶</a></dt>
+<dd><p>similar as readBinaryFile but without opening and closing file object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.readBinaryFile3">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">readBinaryFile3</code><span class="sig-paren">(</span><em>f</em>, <em>position</em>, <em>count=1</em>, <em>dtype=dtype(‘&gt;f4’)</em>, <em>whence=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.readBinaryFile3" title="Permalink to this definition">¶</a></dt>
+<dd><p>reading arbituray byte from file without opening and closing file object
+not using np.fromfile</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.FileTools.saveFile">
+<code class="descclassname">retinotopic_mapping.tools.FileTools.</code><code class="descname">saveFile</code><span class="sig-paren">(</span><em>path</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.FileTools.saveFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-retinotopic_mapping.tools.ImageAnalysis">
+<span id="retinotopic-mapping-tools-imageanalysis-module"></span><h2>retinotopic_mapping.tools.ImageAnalysis module<a class="headerlink" href="#module-retinotopic_mapping.tools.ImageAnalysis" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">ROI</code><span class="sig-paren">(</span><em>mask</em>, <em>pixelSize=None</em>, <em>pixelSizeUnit=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>class of binary ROI</p>
+<dl class="staticmethod">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.from_h5_group">
+<em class="property">static </em><code class="descname">from_h5_group</code><span class="sig-paren">(</span><em>h5Group</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.from_h5_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>load ROI (either ROI or WeightedROI) object from a hdf5 data group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_binary_mask">
+<code class="descname">get_binary_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_binary_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate binary mask of the ROI, return 2d array, with 0s and 1s, dtype np.uint8</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_binary_trace">
+<code class="descname">get_binary_trace</code><span class="sig-paren">(</span><em>mov</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_binary_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>return trace of this ROI (binary format, 0s and 1s) in a given movie</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_center">
+<code class="descname">get_center</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the center coordinates [Y, X] of the centroid of the mask</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_indices">
+<code class="descname">get_indices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_indices" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">index list of the pixels in the ROI</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_nan_mask">
+<code class="descname">get_nan_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_nan_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate float mask of the ROI, return 2d array, with nans and 1s, dtype np.float32</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.get_pixel_area">
+<code class="descname">get_pixel_area</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.get_pixel_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the area coverage of the ROI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.plot_binary_mask">
+<code class="descname">plot_binary_mask</code><span class="sig-paren">(</span><em>plotAxis=None</em>, <em>color=’#ff0000’</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.plot_binary_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>return display image (RGBA uint8 format) which can be plotted by plt.imshow, alpha: transparency 0-1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.plot_binary_mask_border">
+<code class="descname">plot_binary_mask_border</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.plot_binary_mask_border" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.ROI.to_h5_group">
+<code class="descname">to_h5_group</code><span class="sig-paren">(</span><em>h5Group</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.ROI.to_h5_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>add attributes and dataset to a h5 data group</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">WeightedROI</code><span class="sig-paren">(</span><em>mask</em>, <em>pixelSize=None</em>, <em>pixelSizeUnit=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.ImageAnalysis.ROI" title="retinotopic_mapping.tools.ImageAnalysis.ROI"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.ImageAnalysis.ROI</span></code></a></p>
+<dl class="staticmethod">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.from_h5_group">
+<em class="property">static </em><code class="descname">from_h5_group</code><span class="sig-paren">(</span><em>h5Group</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.from_h5_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>load WeightedROI (either ROI or WeightedROI) object from a hdf5 data group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_center">
+<code class="descname">get_weighted_center</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_center_in_coordinate">
+<code class="descname">get_weighted_center_in_coordinate</code><span class="sig-paren">(</span><em>yCor</em>, <em>xCor</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_center_in_coordinate" title="Permalink to this definition">¶</a></dt>
+<dd><p>return weighted center of the ROI in the coordinate system defined by np.meshgrid(xCor, yCor)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_mask">
+<code class="descname">get_weighted_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_nan_mask">
+<code class="descname">get_weighted_nan_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_nan_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_trace">
+<code class="descname">get_weighted_trace</code><span class="sig-paren">(</span><em>mov</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.get_weighted_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>return trace of this ROI in a given movie</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.WeightedROI.plot_weighted_mask">
+<code class="descname">plot_weighted_mask</code><span class="sig-paren">(</span><em>plotAxis=None</em>, <em>color=’#ff0000’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.WeightedROI.plot_weighted_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>return display image (RGBA uint8 format) which can be plotted by plt.imshow</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.array_diff">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">array_diff</code><span class="sig-paren">(</span><em>a0</em>, <em>a1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.array_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate the sum of pixel-wise difference between two arrays</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.array_nor">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">array_nor</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.array_nor" title="Permalink to this definition">¶</a></dt>
+<dd><p>normalize a np.array to the scale [0, 1]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.array_nor_mean">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">array_nor_mean</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.array_nor_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>normalize array by minus mean, data type will be switch to np.float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.array_nor_mean_std">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">array_nor_mean_std</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.array_nor_mean_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>normalize array by minus mean and then devided by standard deviation, 
+data type will be switched to np.float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.array_nor_median">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">array_nor_median</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.array_nor_median" title="Permalink to this definition">¶</a></dt>
+<dd><p>normalize array by minus median, data type will be switch to np.float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.binarize">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">binarize</code><span class="sig-paren">(</span><em>array</em>, <em>threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.binarize" title="Permalink to this definition">¶</a></dt>
+<dd><p>binarize array to 0s and 1s, by cutting at threshold</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.boxcartime_dff">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">boxcartime_dff</code><span class="sig-paren">(</span><em>data</em>, <em>window</em>, <em>fs</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.boxcartime_dff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Created on Mon Nov 24 14:37:02 2014</p>
+<p>[dff] = boxcartime_dff(data[t,y,x], rollingwindow[in s], samplerate[in ms])
+boxcar average uses scipy.signal package, imported locally</p>
+<p>&#64;author: mattv</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.center_image">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">center_image</code><span class="sig-paren">(</span><em>img</em>, <em>centerPixel</em>, <em>newSize=512</em>, <em>borderValue=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.center_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>center a certain image in a new canvas</p>
+<p>the pixel defined by ‘centerPixel’ in the original image will be at the center of the output image
+the size of output image is defined by ‘newSize’</p>
+<p>empty pixels will be filled with zeros</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.discretize">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">discretize</code><span class="sig-paren">(</span><em>array</em>, <em>binSize</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.discretize" title="Permalink to this definition">¶</a></dt>
+<dd><p>discretize the array by binSize</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.distance">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">distance</code><span class="sig-paren">(</span><em>p0</em>, <em>p1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate distance between two points, can be multi-dimensinal</p>
+<p>p0 and p1 should be a 1d array, with each element for each dimension</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.expand_image">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">expand_image</code><span class="sig-paren">(</span><em>img</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.expand_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.expand_image_cv2">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">expand_image_cv2</code><span class="sig-paren">(</span><em>img</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.expand_image_cv2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.generate_oval_mask">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">generate_oval_mask</code><span class="sig-paren">(</span><em>shape</em>, <em>center</em>, <em>width</em>, <em>height</em>, <em>isplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.generate_oval_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.generate_rectangle_mask">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">generate_rectangle_mask</code><span class="sig-paren">(</span><em>shape</em>, <em>center</em>, <em>width</em>, <em>height</em>, <em>isplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.generate_rectangle_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_area_edges">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_area_edges</code><span class="sig-paren">(</span><em>img</em>, <em>firstGaussianSigma=50.0</em>, <em>medianFilterWidth=100.0</em>, <em>areaThr=(0.1</em>, <em>0.9)</em>, <em>edgeThrRange=(5</em>, <em>16)</em>, <em>secondGaussianSigma=10.0</em>, <em>thr=0.2</em>, <em>borderWidth=2</em>, <em>lengthThr=20</em>, <em>isPlot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_area_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>get binary edge of areas</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_average_movie">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_average_movie</code><span class="sig-paren">(</span><em>mov</em>, <em>frameTS</em>, <em>onsetTimes</em>, <em>chunkDur</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_average_movie" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mov</strong> – image movie</li>
+<li><strong>frameTS</strong> – the timestamps for each frame of the raw movie</li>
+<li><strong>onsetTimes</strong> – time stamps of onset of each trigger</li>
+<li><strong>chunkDur</strong> – duration of each chunk</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">averageed movie of all chunks</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_marked_masks">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_marked_masks</code><span class="sig-paren">(</span><em>labeled</em>, <em>markCoor</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_marked_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>return one binary masks which contain the marked coordinate
+labeled (maps labeled by scipy.ndimage.label function)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_masks">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_masks</code><span class="sig-paren">(</span><em>labeled</em>, <em>minArea=None</em>, <em>maxArea=None</em>, <em>isSort=True</em>, <em>keyPrefix=None</em>, <em>labelLength=3</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>get mask dictionary from labeled maps (labeled by scipy.ndimage.label function)
+area range of each mask was defined by minArea and maxArea
+isSort: if True, sort masks by areas, big to small
+keyPrefix: the prefix of key
+labelLength: the number of characters of key</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_trace">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_trace</code><span class="sig-paren">(</span><em>movie</em>, <em>mask</em>, <em>maskMode=’binary’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>get a trace across a movie with averaged value in a mask</p>
+<dl class="docutils">
+<dt>maskMode: ‘binary’: ones in roi, zeros outside</dt>
+<dd>‘binaryNan’: ones in roi, nans outside
+‘weighted’: weighted values in roi, zeros outside (note: all pixels equal to zero will be considered outside roi
+‘weightedNan’: weighted values in roi, nans outside</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_trace_binaryslicer</code><span class="sig-paren">(</span><em>bl_obj</em>, <em>mask</em>, <em>mask_mode=’binary’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bl_obj</strong> – the binary slicer object of a large matrix</li>
+<li><strong>mask</strong> – the mask</li>
+<li><strong>mask_mode</strong> – same as ‘mask_mode’ in function get_trace</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>maskMode: ‘binary’: ones in roi, zeros outside</dt>
+<dd>‘binaryNan’: ones in roi, nans outside
+‘weighted’: weighted values in roi, zeros outside (note: all pixels equal to zero will be considered outside roi
+‘weightedNan’: weighted values in roi, nans outside</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">extracted trace</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer2">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_trace_binaryslicer2</code><span class="sig-paren">(</span><em>bl_obj</em>, <em>mask</em>, <em>mask_mode=’binary’</em>, <em>loading_frame_num=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer2" title="Permalink to this definition">¶</a></dt>
+<dd><p>get trace for a given mask from a BinarySlicer object, by loading chunk each time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bl_obj</strong> – the binary slicer object of a large matrix</li>
+<li><strong>mask</strong> – the mask</li>
+<li><strong>mask_mode</strong> – same as ‘mask_mode’ in function get_trace</li>
+<li><strong>loading_frame_num</strong> – frame number of each chunk</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>maskMode: ‘binary’: ones in roi, zeros outside</dt>
+<dd>‘binaryNan’: ones in roi, nans outside
+‘weighted’: weighted values in roi, zeros outside (note: all pixels equal to zero will be considered outside roi
+‘weightedNan’: weighted values in roi, nans outside</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">extracted trace</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer3">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">get_trace_binaryslicer3</code><span class="sig-paren">(</span><em>bl_obj</em>, <em>masks</em>, <em>mask_mode=’binary’</em>, <em>loading_frame_num=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.get_trace_binaryslicer3" title="Permalink to this definition">¶</a></dt>
+<dd><p>get trace for a given mask from a BinarySlicer object, by loading chunk each time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bl_obj</strong> – the binary slicer object of a large matrix</li>
+<li><strong>masks</strong> – a dictionary of masks</li>
+<li><strong>mask_mode</strong> – same as ‘mask_mode’ in function get_trace</li>
+<li><strong>loading_frame_num</strong> – frame number of each chunk</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>maskMode: ‘binary’: ones in roi, zeros outside</dt>
+<dd>‘binaryNan’: ones in roi, nans outside
+‘weighted’: weighted values in roi, zeros outside (note: all pixels equal to zero will be considered outside roi
+‘weightedNan’: weighted values in roi, nans outside</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">extracted trace</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.harmonic_amplitude">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">harmonic_amplitude</code><span class="sig-paren">(</span><em>f</em>, <em>period</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.harmonic_amplitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate the amplitude and phase of the n-th harmonic components of a
+function. the input function should have whole number times of period of
+the fundamental harmonic.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.hit_or_miss">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">hit_or_miss</code><span class="sig-paren">(</span><em>coor</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.hit_or_miss" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if a cooridnate (coor) is in a mask, input mask can be int or float, nan and zero will considered as outside, any
+non-nan, non-zero pixel will be considered as inside. Mask does not need to be continuous.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.is_adjacent">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">is_adjacent</code><span class="sig-paren">(</span><em>array1</em>, <em>array2</em>, <em>borderWidth=2</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.is_adjacent" title="Permalink to this definition">¶</a></dt>
+<dd><p>decide if two patches are adjacent within border width</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.moveImage">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">moveImage</code><span class="sig-paren">(</span><em>img</em>, <em>Xoffset</em>, <em>Yoffset</em>, <em>width</em>, <em>height</em>, <em>borderValue=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.moveImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>move image defined by Xoffset and Yoffset</p>
+<p>new canvas size is defined by width and height</p>
+<p>empty pixels will be filled with zeros</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.normalize_movie">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">normalize_movie</code><span class="sig-paren">(</span><em>movie</em>, <em>baselinePic=None</em>, <em>baselineType=’mean’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.normalize_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>return average image, movie minus avearage, and dF over F for each pixel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.remove_small_patches">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">remove_small_patches</code><span class="sig-paren">(</span><em>mask, areaThr=100, structure=[[1, 1, 1], [1, 1, 1], [1, 1, 1]]</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.remove_small_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove small isolated patches</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.resample">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">resample</code><span class="sig-paren">(</span><em>t1</em>, <em>y1</em>, <em>interval</em>, <em>kind=’linear’</em>, <em>isPlot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.resample" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t1</strong> – time stamps of original data</li>
+<li><strong>y1</strong> – value of original data (relative to t1)</li>
+<li><strong>interval</strong> – the intervals of resampled time stamps, second</li>
+<li><strong>kind</strong> – interpolation type, same as ‘scipy.interpolate.interp1d’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">t2, y2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.resample2">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">resample2</code><span class="sig-paren">(</span><em>t1</em>, <em>y1</em>, <em>t2</em>, <em>kind=’linear’</em>, <em>isPlot=False</em>, <em>bounds_error=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.resample2" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t1</strong> – time stamps of original data</li>
+<li><strong>y1</strong> – value of original data (relative to t1)</li>
+<li><strong>t2</strong> – time stamps for resample</li>
+<li><strong>kind</strong> – interpolation type, same as ‘scipy.interpolate.interp1d’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">y2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.resize_image">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">resize_image</code><span class="sig-paren">(</span><em>img</em>, <em>outputShape</em>, <em>fillValue=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.resize_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>resize every frame of a 3-d matrix to defined output shape
+if the original image is too big it will be truncated
+if the original image is too small, value defined as fillValue will filled in. default: 0</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.rigid_transform">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">rigid_transform</code><span class="sig-paren">(</span><em>img</em>, <em>zoom=None</em>, <em>rotation=None</em>, <em>offset=None</em>, <em>outputShape=None</em>, <em>mode=’constant’</em>, <em>cval=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.rigid_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>rigid transformation of a 2d-image or 3d-matrix by using scipy
+:param img: input image/matrix
+:param zoom:
+:param rotation: in degree, counterclock wise
+:param offset: tuple (xoffset, yoffset) pixel value of starting point of output image
+:param outputShape: the shape of output image, (height, width)
+:return: new image or matrix after transformation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">rigid_transform_cv2</code><span class="sig-paren">(</span><em>img</em>, <em>zoom=None</em>, <em>rotation=None</em>, <em>offset=None</em>, <em>outputShape=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2" title="Permalink to this definition">¶</a></dt>
+<dd><p>rigid transformation of a 2d-image or 3d-matrix by using opencv
+:param img: input image/matrix
+:param zoom:
+:param rotation: in degree, counterclock wise
+:param offset: tuple (xoffset, yoffset) pixel value of starting point of output image
+:param outputShape: the shape of output image, (height, width)
+:return: new image or matrix after transformation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2_2d">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">rigid_transform_cv2_2d</code><span class="sig-paren">(</span><em>img</em>, <em>zoom=None</em>, <em>rotation=None</em>, <em>offset=None</em>, <em>outputShape=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>rigid transformation of a 2d-image by using opencv
+:param img: input image/matrix
+:param zoom:
+:param rotation: in degree, counterclock wise
+:param offset: tuple (xoffset, yoffset) pixel value of starting point of output image
+:param outputShape: the shape of output image, (height, width)
+:return: new image or matrix after transformation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2_3d">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">rigid_transform_cv2_3d</code><span class="sig-paren">(</span><em>img</em>, <em>zoom=None</em>, <em>rotation=None</em>, <em>offset=None</em>, <em>outputShape=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.rigid_transform_cv2_3d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.rotate_image">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">rotate_image</code><span class="sig-paren">(</span><em>img</em>, <em>angle</em>, <em>borderValue=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.rotate_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotate an image conterclock wise by an angle defined by ‘angle’ in degree</p>
+<p>pixels go out side will be tropped
+pixels with no value will be filled as zeros</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.seed_pixel">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">seed_pixel</code><span class="sig-paren">(</span><em>markers</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.seed_pixel" title="Permalink to this definition">¶</a></dt>
+<dd><p>marker centroid of every marked local minimum</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.sort_masks">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">sort_masks</code><span class="sig-paren">(</span><em>masks</em>, <em>keyPrefix=”</em>, <em>labelLength=3</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.sort_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>sort a dictionary of binary masks, big to small</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.temp_downsample">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">temp_downsample</code><span class="sig-paren">(</span><em>A</em>, <em>rate</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.temp_downsample" title="Permalink to this definition">¶</a></dt>
+<dd><p>down sample a 3-d array in 0 direction</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.temporal_filter_movie">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">temporal_filter_movie</code><span class="sig-paren">(</span><em>mov</em>, <em>Fs</em>, <em>Flow</em>, <em>Fhigh</em>, <em>mode=’box’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.temporal_filter_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.z_downsample">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">z_downsample</code><span class="sig-paren">(</span><em>img</em>, <em>downSampleRate</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.z_downsample" title="Permalink to this definition">¶</a></dt>
+<dd><p>downsample input image in z direction</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.zoom_image">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">zoom_image</code><span class="sig-paren">(</span><em>img</em>, <em>zoom</em>, <em>interpolation=’cubic’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.zoom_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>zoom a 2d image. if zoom is a single value, it will apply to both axes, if zoom has two values it will be applied to
+height and width respectively
+zoom[0]: height
+zoom[1]: width</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.ImageAnalysis.zscore">
+<code class="descclassname">retinotopic_mapping.tools.ImageAnalysis.</code><code class="descname">zscore</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.ImageAnalysis.zscore" title="Permalink to this definition">¶</a></dt>
+<dd><p>return Z score of an array.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-retinotopic_mapping.tools.PlottingTools">
+<span id="retinotopic-mapping-tools-plottingtools-module"></span><h2>retinotopic_mapping.tools.PlottingTools module<a class="headerlink" href="#module-retinotopic_mapping.tools.PlottingTools" title="Permalink to this headline">¶</a></h2>
+<p>Created on Fri Oct 31 11:07:20 2014</p>
+<p>&#64;author: junz</p>
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.alpha_blending">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">alpha_blending</code><span class="sig-paren">(</span><em>image</em>, <em>alphaData</em>, <em>vmin</em>, <em>vmax</em>, <em>cmap=’Paired’</em>, <em>sectionNum=10</em>, <em>background=-1</em>, <em>interpolation=’nearest’</em>, <em>isSave=False</em>, <em>savePath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.alpha_blending" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate image with transparency weighted by another matrix.</p>
+<p>Plot numpy array ‘image’ with colormap ‘cmap’. And define the tranparency 
+of each pixel by the value in another numpy array alphaData.</p>
+<p>All the elements in alphaData should be non-negative.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.bar_graph">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">bar_graph</code><span class="sig-paren">(</span><em>left</em>, <em>height</em>, <em>error</em>, <em>errorDir=’both’</em>, <em>width=0.1</em>, <em>plotAxis=None</em>, <em>lw=3</em>, <em>faceColor=’#000000’</em>, <em>edgeColor=’none’</em>, <em>capSize=10</em>, <em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.bar_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot a single bar with error bar</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.binary_2_rgba">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">binary_2_rgba</code><span class="sig-paren">(</span><em>img</em>, <em>foregroundColor=’#ff0000’</em>, <em>backgroundColor=’#000000’</em>, <em>foregroundAlpha=255</em>, <em>backgroundAlpha=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.binary_2_rgba" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate display image in (RGBA).(np.uint8) format which can be displayed by imshow
+:param img: input image, should be a binary array (np.bool, or np.(u)int
+:param foregroundColor: color for 1 in the array, RGB str, i.e. ‘#ff0000’
+:param backgroundColor: color for 0 in the array, RGB str, i.e. ‘#ff00ff’
+:param foregroundAlpha: alpha for 1 in the array, int, 0-255
+:param backgroundAlpha: alpha for 1 in the array, int, 0-255
+:return: displayImg, (RGBA).(np.uint8) format, ready for imshow</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.get_color_str">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">get_color_str</code><span class="sig-paren">(</span><em>R</em>, <em>G</em>, <em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.get_color_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>get hex color string from R,G,B value (integer with uint8 format)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.get_rgb">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">get_rgb</code><span class="sig-paren">(</span><em>colorStr</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.get_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>get R,G,B int value from a hex color string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.grid_axis">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">grid_axis</code><span class="sig-paren">(</span><em>rowNum</em>, <em>columnNum</em>, <em>totalPlotNum</em>, <em>**kwarg</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.grid_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>return figure handles and axis handels for multiple subplots and figures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.hot_2_rgb">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">hot_2_rgb</code><span class="sig-paren">(</span><em>hot</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.hot_2_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the RGB value as format as hex string from the decimal ratio of hot colormap (from 0 to 1)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.merge_normalized_images">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">merge_normalized_images</code><span class="sig-paren">(</span><em>imgList</em>, <em>isFilter=True</em>, <em>sigma=50</em>, <em>mergeMethod=’mean’</em>, <em>dtype=&lt;type ‘numpy.float32’&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.merge_normalized_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>merge images in a list in to one, for each image, local intensity variability will be removed by subtraction of
+gaussian filtered image. Then all images will be collapsed by the mergeMethod in to single image</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.plot_mask">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">plot_mask</code><span class="sig-paren">(</span><em>mask</em>, <em>plotAxis=None</em>, <em>color=’#ff0000’</em>, <em>zoom=1</em>, <em>borderWidth=None</em>, <em>closingIteration=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.plot_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot mask borders in a given color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.plot_mask_borders">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">plot_mask_borders</code><span class="sig-paren">(</span><em>mask</em>, <em>plotAxis=None</em>, <em>color=’#ff0000’</em>, <em>zoom=1</em>, <em>borderWidth=2</em>, <em>closingIteration=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.plot_mask_borders" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot mask (ROI) borders by using pyplot.contour function. all the 0s and Nans in the input mask will be considered
+as background, and non-zero, non-nan pixel will be considered in ROI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.random_color">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">random_color</code><span class="sig-paren">(</span><em>numOfColor=10</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.random_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate as list of random colors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.save_figure_without_borders">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">save_figure_without_borders</code><span class="sig-paren">(</span><em>f</em>, <em>savePath</em>, <em>removeSuperTitle=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.save_figure_without_borders" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove borders of a figure</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.scalar_2_rgba">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">scalar_2_rgba</code><span class="sig-paren">(</span><em>img</em>, <em>color=’#ff0000’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.scalar_2_rgba" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate display a image in (RGBA).(np.uint8) format which can be displayed by imshow
+alpha is defined by values in the img
+:param img: input image
+:param alphaMatrix: matrix of alpha
+:param foreGroundColor: color for 1 in the array, RGB str, i.e. ‘#ff0000’
+:return: displayImg, (RGBA).(np.uint8) format, ready for imshow</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.show_movie">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">show_movie</code><span class="sig-paren">(</span><em>path</em>, <em>mode=’raw’</em>, <em>baselinePic=None</em>, <em>baselineType=’mean’</em>, <em>cmap=’gray’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.show_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot tf movie in the way defined by mode</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.standalone_color_bar">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">standalone_color_bar</code><span class="sig-paren">(</span><em>vmin</em>, <em>vmax</em>, <em>cmap</em>, <em>sectionNum=10</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.standalone_color_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot a stand alone color bar.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.tile_axis">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">tile_axis</code><span class="sig-paren">(</span><em>f</em>, <em>rowNum</em>, <em>columnNum</em>, <em>topDownMargin=0.05</em>, <em>leftRightMargin=0.05</em>, <em>rowSpacing=0.05</em>, <em>columnSpacing=0.05</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.tile_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.PlottingTools.value_2_rgb">
+<code class="descclassname">retinotopic_mapping.tools.PlottingTools.</code><code class="descname">value_2_rgb</code><span class="sig-paren">(</span><em>value</em>, <em>cmap</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.PlottingTools.value_2_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the RGB value as format as hex string from the decimal ratio of a given colormap (from 0 to 1)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-retinotopic_mapping.tools">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-retinotopic_mapping.tools" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, JY.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

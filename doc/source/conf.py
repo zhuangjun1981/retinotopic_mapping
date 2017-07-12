@@ -21,6 +21,7 @@ from psychopy import visual, event
 sys.path.append('/Users/johnyearsley/Documents/Allen Institute/Coding/retinotopic_mapping/')
 
 import retinotopic_mapping
+
 from retinotopic_mapping.tools import FileTools as ft
 
 

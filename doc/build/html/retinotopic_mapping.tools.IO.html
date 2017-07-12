@@ -1,0 +1,1450 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>retinotopic_mapping.tools.IO package &mdash; Retinotopic Mapping 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Retinotopic Mapping
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Retinotopic Mapping</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>retinotopic_mapping.tools.IO package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/retinotopic_mapping.tools.IO.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="retinotopic-mapping-tools-io-package">
+<h1>retinotopic_mapping.tools.IO package<a class="headerlink" href="#retinotopic-mapping-tools-io-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-retinotopic_mapping.tools.IO.nidaq">
+<span id="retinotopic-mapping-tools-io-nidaq-module"></span><h2>retinotopic_mapping.tools.IO.nidaq module<a class="headerlink" href="#module-retinotopic_mapping.tools.IO.nidaq" title="Permalink to this headline">¶</a></h2>
+<p>Created on Oct 26, 2012</p>
+<p>&#64;author: derricw</p>
+<p>#——————————————————————————
+nidaq.py
+#——————————————————————————</p>
+<p>Derric’s wrapper for DAQ from an NIDAQ board using the PyDAQmx library.</p>
+<p>Dependencies:
+Python27
+PyDAQmx (<a class="reference external" href="http://pypi.python.org/pypi/PyDAQmx">http://pypi.python.org/pypi/PyDAQmx</a>) #Tested using 1.2.3
+numpy (<a class="reference external" href="http://www.scipy.org/Download">http://www.scipy.org/Download</a>)
+scipy (<a class="reference external" href="http://www.scipy.org/Download">http://www.scipy.org/Download</a>)</p>
+<p>NIDAQmc C Reference:  #PyDAQmx maps one-to-one to the C library
+<a class="reference external" href="http://zone.ni.com/reference/en-XX/help/370471W-01/">http://zone.ni.com/reference/en-XX/help/370471W-01/</a></p>
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogFunctionOutput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">AnalogFunctionOutput</code><span class="sig-paren">(</span><em>device=’Dev1’, channels=[0], ftype=’sin’, frequency=1, amplitude=5, offset=0, phase=0, sample_rate=1000, voltage_range=[-10.0, 10.0], custom_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogFunctionOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Creates a wave output function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : GetDevices()[0]</p>
+<blockquote>
+<div><p>String, NIDAQ device id</p>
+</div></blockquote>
+<p><strong>channels</strong> : [0]</p>
+<blockquote>
+<div><p>List of integers, channels to write to</p>
+</div></blockquote>
+<p><strong>ftype</strong> : ‘sin’</p>
+<blockquote>
+<div><p>‘sin’,’saw’, ‘sqr’ or ‘custom’</p>
+</div></blockquote>
+<p><strong>frequency</strong> : 1</p>
+<blockquote>
+<div><p>wave frequency Hz</p>
+</div></blockquote>
+<p><strong>amplitude</strong> : 5</p>
+<blockquote>
+<div><p>wave amplitude volts</p>
+</div></blockquote>
+<p><strong>offset</strong> : 0</p>
+<blockquote>
+<div><p>wave offset volts</p>
+</div></blockquote>
+<p><strong>phase</strong> : 0</p>
+<blockquote>
+<div><p>wave initial phase (radians)</p>
+</div></blockquote>
+<p><strong>sample_rate</strong> : 1000</p>
+<blockquote>
+<div><p>output sample rate</p>
+</div></blockquote>
+<p><strong>buffer_size</strong> : 1000</p>
+<blockquote>
+<div><p>write buffer size</p>
+</div></blockquote>
+<p><strong>voltage_range</strong> : [-10.0, 10.0]</p>
+<blockquote>
+<div><p>Float bounds for voltages</p>
+</div></blockquote>
+<p><strong>custom_wave</strong> : None</p>
+<blockquote>
+<div><p>custom waveform (see ftype above) Must be numpy array of float64’s
+if multiply channels are desired, the custom array must be appropriately shaped</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>AnalogFunctionOutput</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">afo</span> <span class="o">=</span> <span class="n">AnalogFunctionOutput</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span><span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;sin&#39;</span><span class="p">,</span><span class="n">frequency</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">afo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#output for 10 seconds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">afo</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogFunctionOutput.DoneCallback">
+<code class="descname">DoneCallback</code><span class="sig-paren">(</span><em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogFunctionOutput.DoneCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Done callback.  Unregistered at this point.  Might just eliminate it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">AnalogInput</code><span class="sig-paren">(</span><em>device=’Dev1’, channels=[0], buffer_size=500, clock_speed=10000.0, terminal_config=’RSE’, voltage_range=[-10.0, 10.0], timeout=10.0, binary=None, dtype=&lt;type ‘numpy.float64’&gt;, custom_callback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<dl class="docutils">
+<dt>Gets analog input from NIDAQ device.</dt>
+<dd>Tested using several buffer sizes and channels on a NI USB-6210.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : ‘Dev1’</p>
+<blockquote>
+<div><p>NIDAQ device id</p>
+</div></blockquote>
+<p><strong>channels</strong> : [0]</p>
+<blockquote>
+<div><p>List of channels to read</p>
+</div></blockquote>
+<p><strong>buffer_size</strong> : 500</p>
+<blockquote>
+<div><p>Integer size of buffer to read</p>
+</div></blockquote>
+<p><strong>clock_speed</strong> : 10000.0</p>
+<blockquote>
+<div><p>Float sample clock speed</p>
+</div></blockquote>
+<p><strong>terminal_config</strong> : “RSE”</p>
+<blockquote>
+<div><p>String for terminal type: “RSE”,”Diff”</p>
+</div></blockquote>
+<p><strong>voltage_range</strong> : [-10.0,10.0]</p>
+<blockquote>
+<div><p>Float bounds for voltages</p>
+</div></blockquote>
+<p><strong>timout</strong> : 10.0</p>
+<blockquote>
+<div><p>Float timeout for read</p>
+</div></blockquote>
+<p><strong>tdms</strong> : None</p>
+<blockquote>
+<div><p>tdms file to write to.</p>
+</div></blockquote>
+<p><strong>binary</strong> : None</p>
+<blockquote>
+<div><p>binary file to write to</p>
+</div></blockquote>
+<p><strong>dtype</strong> : np.float64</p>
+<blockquote>
+<div><p>output data type</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>AnalogInput</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ai</span> <span class="o">=</span> <span class="n">AnalogInput</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span><span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">buffer_size</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ai</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#collects some data</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="n">ai</span><span class="o">.</span><span class="n">data</span> <span class="c1">#prints the current buffer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ai</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput.EveryNCallback">
+<code class="descname">EveryNCallback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput.EveryNCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Callback for buffer read.  Occurs automatically when <cite>self.buffer_size</cite></dt>
+<dd>samples are read.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput.cfg_sample_clock">
+<code class="descname">cfg_sample_clock</code><span class="sig-paren">(</span><em>rate=10000.0</em>, <em>source=”</em>, <em>edge=’rising’</em>, <em>mode=’continuous’</em>, <em>buffer_size=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput.cfg_sample_clock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Custom version of the clock config function.  Needs to re-register</dt>
+<dd>the NSamples callback.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput.default_callback">
+<code class="descname">default_callback</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput.default_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogInput.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>samples=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogInput.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Syncrhonous read.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogOutput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">AnalogOutput</code><span class="sig-paren">(</span><em>device=’Dev1’, channels=[0], voltage_range=[0.0, 5.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<dl class="docutils">
+<dt>Analog Output task.  </dt>
+<dd>Writes arrays of float64’s to an analog output channel at a specified sample rate.
+Value remains until changed, even after task is cleared.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : GetDevices()[0]</p>
+<blockquote>
+<div><p>String, NIDAQ device id</p>
+</div></blockquote>
+<p><strong>channels</strong> : [0]</p>
+<blockquote>
+<div><p>List of intergers, channels to write to</p>
+</div></blockquote>
+<p><strong>voltage_range</strong> : [0.0, 0.5]</p>
+<blockquote>
+<div><p>Float, bounds for voltages</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>AnalogOutput</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="mf">9.95</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float64</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span> <span class="c1">#create waveform of some sort</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ao</span> <span class="o">=</span> <span class="n">AnalogOutput</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span><span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ao</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ao</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1">#will write samples only once at the clock speed of board</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ao</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogOutput.DoneCallback">
+<code class="descname">DoneCallback</code><span class="sig-paren">(</span><em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogOutput.DoneCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Done callback.  Unregistered at this point.  Might just eliminate it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogOutput.Write">
+<code class="descname">Write</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogOutput.Write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.AnalogOutput.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.AnalogOutput.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a numpy array of float64’s to the analog output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">BaseTask</code><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyDAQmx.Task.Task</span></code></p>
+<p>Base class for NIDAQmx tasks.</p>
+<dl class="docutils">
+<dt>Base tasks aren’t pre-configured for anything.  They have some convenience</dt>
+<dd>methods for clock and trigger configuration, but haven’t set up any
+channels for IO yet.</dd>
+</dl>
+<p>They can still use all of the methods of the PyDAQmx Task object.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PyDAQmx.DAQmxConstants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span> <span class="o">=</span> <span class="n">BaseTask</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">CreateDOChan</span><span class="p">(</span><span class="s1">&#39;Dev1/port0/line0:4&#39;</span><span class="p">,</span>
+<span class="go">                   &#39;&#39;,</span>
+<span class="go">                   DAQmx_Val_ChanForAllLines)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">WriteDigitalLines</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">DAQmx_Val_GroupByChannel</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span>
+<span class="go">                        None, None)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.cfg_dig_start_trigger">
+<code class="descname">cfg_dig_start_trigger</code><span class="sig-paren">(</span><em>source</em>, <em>edge=’rising’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.cfg_dig_start_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures the start trigger.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>source (str): Start trigger source.
+edge (str): rising or falling edge</dd>
+<dt>Examples:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mytask</span><span class="o">.</span><span class="n">cfg_digital_start_trigger</span><span class="p">(</span><span class="s2">&quot;/Dev1/ai/StartTrigger&quot;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.cfg_sample_clock">
+<code class="descname">cfg_sample_clock</code><span class="sig-paren">(</span><em>rate</em>, <em>source=”</em>, <em>edge=’rising’</em>, <em>mode=’continuous’</em>, <em>buffer_size=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.cfg_sample_clock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures the sample clock.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>rate (float): Sample rate in Hz
+source (Optional[str]): name of source terminal
+edge (Optional[str]): rising or falling edge for example “r”
+mode (Optional[str]): sample mode for example “continuous”
+buffer_size (Optional[int]): write buffer size</dd>
+<dt>Examples:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mytask</span><span class="o">.</span><span class="n">cfg_sample_clock</span><span class="p">(</span><span class="s2">&quot;/Dev1/ai/SampleClock&quot;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears the task.  It cannot be restarted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.get_clock_terminal">
+<code class="descname">get_clock_terminal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.get_clock_terminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the terminal for the sample clock.</p>
+<p>Example output: “/Dev1/ai/SampleClock”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.get_start_trigger_term">
+<code class="descname">get_start_trigger_term</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.get_start_trigger_term" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the terminal for start trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.register_sample_callback">
+<code class="descname">register_sample_callback</code><span class="sig-paren">(</span><em>buffer_size</em>, <em>direction=’input’</em>, <em>synchronous=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.register_sample_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a sample callback for a buffer of N samples.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.set_timebase_divisor">
+<code class="descname">set_timebase_divisor</code><span class="sig-paren">(</span><em>divisor=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.set_timebase_divisor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supposed to set the divisor for the clock’s timebase.</p>
+<p>Doesn’t seem to work…</p>
+<p>#TODO: Call NI and ask them why this doesn’t work.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the task.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the task.  It can be restarted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.BaseTask.unregister_sample_callback">
+<code class="descname">unregister_sample_callback</code><span class="sig-paren">(</span><em>direction=’input’</em>, <em>synchronous=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask.unregister_sample_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a sample callback.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputPWM">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">CounterInputPWM</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>counter=’ctr0’</em>, <em>starting_edge=’rising’</em>, <em>min_val=0.0</em>, <em>max_val=1.0</em>, <em>units=’seconds’</em>, <em>timeout=10.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputPWM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Pulse Width Counter.</p>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputPWM.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputPWM.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current high width.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputPWM.setPulseWidthTerminal">
+<code class="descname">setPulseWidthTerminal</code><span class="sig-paren">(</span><em>terminal</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputPWM.setPulseWidthTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets to input terminal to measure pulse width.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">CounterInputU32</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>counter=’ctr0’</em>, <em>edge=’rising’</em>, <em>direction=’up’</em>, <em>initial_count=0</em>, <em>timeout=10.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Generic edge counter for single U32 counter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : str</p>
+<blockquote>
+<div><p>NI DAQ ID.  Ex: “Dev1”</p>
+</div></blockquote>
+<p><strong>counter</strong> : str</p>
+<blockquote>
+<div><p>Counter terminal.  Ex: ‘ctr0’</p>
+</div></blockquote>
+<p><strong>edge</strong> : str</p>
+<blockquote>
+<div><p>Edge to count.  Either “rising” or “falling”</p>
+</div></blockquote>
+<p><strong>direction</strong> : str</p>
+<blockquote>
+<div><p>Counter direction.  ‘up’ or ‘down’</p>
+</div></blockquote>
+<p><strong>initial_count</strong> : int</p>
+<blockquote>
+<div><p>Initial counter value.</p>
+</div></blockquote>
+<p><strong>timeout: float</strong></p>
+<blockquote class="last">
+<div><p>Read timeout.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32.EveryNCallback">
+<code class="descname">EveryNCallback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32.EveryNCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Callback for buffer read.  Occurs automatically when <cite>self.buffer_size</cite></dt>
+<dd>samples are read if buffered reading is enabled.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32.getCountEdgesTerminal">
+<code class="descname">getCountEdgesTerminal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32.getCountEdgesTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the terminal for edge counting input (str)</p>
+<p>Example output: “/Dev1/PFI8”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple scalar read of the current counter value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32.setCountEdgesTerminal">
+<code class="descname">setCountEdgesTerminal</code><span class="sig-paren">(</span><em>terminal</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32.setCountEdgesTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the edge counting input terminal.</p>
+<p>Example input: “Ctr0InternalOutput”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU32.setup_file_output">
+<code class="descname">setup_file_output</code><span class="sig-paren">(</span><em>path=None</em>, <em>file_type=’bin’</em>, <em>buffer_size=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU32.setup_file_output" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Sets up data output writing.  This alone is insufficient.  You must Also</dt>
+<dd>configure the sample clock.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">CounterInputU64</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>lsb_counter=’ctr0’</em>, <em>msb_counter=’ctr1’</em>, <em>edge=’rising’</em>, <em>direction=’up’</em>, <em>initial_count=0</em>, <em>timeout=10.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Counter32 pair cascaded into a 64-bit counter.</p>
+<dl class="docutils">
+<dt>The LSB counter counts each edge.  The MSB counter counts the LSB counter’s</dt>
+<dd>rollover.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : str</p>
+<blockquote>
+<div><p>NI DAQ ID.  Ex: “Dev1”</p>
+</div></blockquote>
+<p><strong>lsb_counter</strong> : str</p>
+<blockquote>
+<div><p>Counter terminal for least significant bits.  Ex: ‘ctr0’</p>
+</div></blockquote>
+<p><strong>msb_counter</strong> : str</p>
+<blockquote>
+<div><p>Counter terminal for most significant bits. Ex: ‘ctr1’</p>
+</div></blockquote>
+<p><strong>edge</strong> : str</p>
+<blockquote>
+<div><p>Edge to count.  Either “rising” or “falling”</p>
+</div></blockquote>
+<p><strong>direction</strong> : str</p>
+<blockquote>
+<div><p>Counter direction.  ‘up’ or ‘down’</p>
+</div></blockquote>
+<p><strong>initial_count</strong> : int</p>
+<blockquote class="last">
+<div><p>Initial counter value.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear counter task.  It cannot be restarted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.getCountEdgesTerminal">
+<code class="descname">getCountEdgesTerminal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.getCountEdgesTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the terminals for both edge counters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.read" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Reads both counters and returns the values as unsigned 32-bit integers.</dt>
+<dd>We have to read MSB twice if the new LSB data is smaller than the
+previous read (which occurs when the LSB rolls over), in case the
+MSB changed between the reads.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.setCountEdgesTerminal">
+<code class="descname">setCountEdgesTerminal</code><span class="sig-paren">(</span><em>terminal</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.setCountEdgesTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Sets the terminals for the LSB counter.  The MSB counter terminal has</dt>
+<dd>to be the output of the LSB counter so we don’t change it.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start counter task.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterInputU64.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterInputU64.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop counter task.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterOutputFreq">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">CounterOutputFreq</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>counter=’ctr0’</em>, <em>init_delay=0.0</em>, <em>freq=500000.0</em>, <em>duty_cycle=0.5</em>, <em>idle_state=’low’</em>, <em>timing=’hw’</em>, <em>buffer_size=1000000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterOutputFreq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Generic counter pulse output.  Specified in terms of frequency.
+See: <a class="reference external" href="http://zone.ni.com/reference/en-XX/help/370471Y-01/daqmxcfunc/daqmxcreatecopulsechanfreq/">http://zone.ni.com/reference/en-XX/help/370471Y-01/daqmxcfunc/daqmxcreatecopulsechanfreq/</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : str</p>
+<blockquote>
+<div><p>NI DAQ ID.  Ex: “Dev1”</p>
+</div></blockquote>
+<p><strong>counter</strong> : str</p>
+<blockquote>
+<div><p>Counter terminal.  Ex: ‘ctr0’</p>
+</div></blockquote>
+<p><strong>init_delay</strong> : float</p>
+<blockquote>
+<div><p>Initial delay in seconds after task start.</p>
+</div></blockquote>
+<p><strong>freq</strong> : float</p>
+<blockquote>
+<div><p>Pulse frequency in Hz</p>
+</div></blockquote>
+<p><strong>duty_cycle</strong> : float</p>
+<blockquote>
+<div><p>Duty cycle of pulse (Between 0.0 and 1.0)</p>
+</div></blockquote>
+<p><strong>idle_state</strong> : str</p>
+<blockquote>
+<div><p>Idle state of pulse.  ‘high’ or ‘low’</p>
+</div></blockquote>
+<p><strong>timing</strong> : str</p>
+<blockquote>
+<div><p>Timing type. ‘hw’ or ‘sw’</p>
+</div></blockquote>
+<p><strong>buffer_size</strong> : int</p>
+<blockquote class="last">
+<div><p>Buffer size (Only applies to software timing)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.CounterOutputFreq.getPulseTerminal">
+<code class="descname">getPulseTerminal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.CounterOutputFreq.getPulseTerminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the terminal for Pulse output (str)</p>
+<p>Example output: “/Dev1/PFI13”</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">Device</code><span class="sig-paren">(</span><em>device_name</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Device object.</p>
+<p>Autopopulated with functions that use “deviceName” as their first argument.</p>
+<dl class="docutils">
+<dt>Some methods (those that start with a lower-case letter), have been</dt>
+<dd>replaced with a method that automatically builds and parses the buffer</dd>
+<dt>Args:</dt>
+<dd>device_name (str): The device name Ex: “Dev1”</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">getDOPorts</span><span class="p">()</span>
+<span class="go">[&#39;Dev1/port0&#39;, &#39;Dev1/port1&#39;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device.getAIChannels">
+<code class="descname">getAIChannels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device.getAIChannels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device.getAOChannels">
+<code class="descname">getAOChannels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device.getAOChannels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device.getCIChannels">
+<code class="descname">getCIChannels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device.getCIChannels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device.getCOChannels">
+<code class="descname">getCOChannels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device.getCOChannels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.Device.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.Device.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">DigitalInput</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>port=0</em>, <em>lines=”</em>, <em>timeout=10.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Gets the state of the inputs from the NIDAQ Device/port specified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : ‘Dev1’</p>
+<blockquote>
+<div><p>String, NIDAQ device id (ex:’Dev1’)</p>
+</div></blockquote>
+<p><strong>port</strong> : 0</p>
+<blockquote>
+<div><p>Integer, port number to read data from</p>
+</div></blockquote>
+<p><strong>lines</strong> : “”</p>
+<blockquote>
+<div><p>Line string in nidaq format. Examples: ‘0’, ‘0:4’</p>
+</div></blockquote>
+<p><strong>timeout</strong> : 10.0</p>
+<blockquote>
+<div><p>Float, seconds to wait for samples</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>DigitalInput</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">task</span> <span class="o">=</span> <span class="n">DigitalInput</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;0:3&#39;</span><span class="p">)</span> <span class="c1">#device 1, port 0, lines 0:3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput.DoneCallback">
+<code class="descname">DoneCallback</code><span class="sig-paren">(</span><em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput.DoneCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Done callback.  Unregistered at this point.  Might just eliminate it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput.Read">
+<code class="descname">Read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput.Read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput.get_input_lines">
+<code class="descname">get_input_lines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput.get_input_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of lines on this port.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput.read" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Reads the current state of all input lines and returns them as a</dt>
+<dd>uint8 array.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">di</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">[0 1 0 1 0 1 0 1]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInput.readU32">
+<code class="descname">readU32</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInput.readU32" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Reads the current state of the input lines and returns them as a</dt>
+<dd>single uint32.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInputU32">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">DigitalInputU32</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>lines=32</em>, <em>timeout=10.0</em>, <em>clock_speed=10000.0</em>, <em>buffer_size=1000</em>, <em>binary=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInputU32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<dl class="docutils">
+<dt>Like the regular digital input but reads buffers sampled as a specified</dt>
+<dd>rate.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : str</p>
+<blockquote>
+<div><p>NIDAQ device id (ex:’Dev1’)</p>
+</div></blockquote>
+<p><strong>lines</strong> : int or str</p>
+<blockquote>
+<div><p>Lines to reserve and read data from:  32, “0:8”</p>
+</div></blockquote>
+<p><strong>timeout</strong> : float</p>
+<blockquote>
+<div><p>Seconds to wait for samples</p>
+</div></blockquote>
+<p><strong>clock_speed</strong> : float</p>
+<blockquote>
+<div><p>Sample clock speed</p>
+</div></blockquote>
+<p><strong>buffer_size</strong> : int</p>
+<blockquote>
+<div><p>Length of buffer to write to disk</p>
+</div></blockquote>
+<p><strong>binary</strong> : str</p>
+<blockquote>
+<div><p>Binary file to write to</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>DigitalInputU32</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">task</span> <span class="o">=</span> <span class="n">DigitalInputU32</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="c1"># all 32 lines</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">#collect some data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.DoneCallback">
+<code class="descname">DoneCallback</code><span class="sig-paren">(</span><em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.DoneCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Done callback.  Unregistered at this point.  Might just eliminate it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.EveryNCallback">
+<code class="descname">EveryNCallback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.EveryNCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Executed every N samples, where N is the buffer_size.  Reads the</dt>
+<dd>current buffer off of the DAQ.  Writes the samples to disk if
+a binary output file was specified.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.cfg_sample_clock">
+<code class="descname">cfg_sample_clock</code><span class="sig-paren">(</span><em>rate=10000.0</em>, <em>source=”</em>, <em>edge=’rising’</em>, <em>mode=’continuous’</em>, <em>buffer_size=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.cfg_sample_clock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Custom version of the clock config function.  Needs to re-register</dt>
+<dd>the NSamples callback.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalInputU32.clear" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Clears the task.  Also flushes and closes the binary file if it</dt>
+<dd>exists.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">DigitalOutput</code><span class="sig-paren">(</span><em>device=’Dev1’</em>, <em>port=0</em>, <em>lines=”</em>, <em>timeout=10.0</em>, <em>initial_state=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<p>Sets the current output state of all digital lines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : ‘Dev1’</p>
+<blockquote>
+<div><p>String, NIDAQ device id (ex:’Dev1’)</p>
+</div></blockquote>
+<p><strong>port</strong> : 0</p>
+<blockquote>
+<div><p>Integer, port number to write data to</p>
+</div></blockquote>
+<p><strong>lines</strong> : “0:3”</p>
+<blockquote>
+<div><p>Str, line range in format “start:end” inclusive.  If not provided, all
+lines on the port will be used.</p>
+</div></blockquote>
+<p><strong>timeout</strong> : 10.0</p>
+<blockquote>
+<div><p>Float, seconds for write timeout</p>
+</div></blockquote>
+<p><strong>initial_state</strong> : ‘high’</p>
+<blockquote>
+<div><p>String: ‘high’, ‘low’ or ndarray for a custom state</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>DigitalOutput</strong> : Task</p>
+<blockquote class="last">
+<div><p>Task object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">task</span> <span class="o">=</span> <span class="n">DigitalOutput</span><span class="p">(</span><span class="s1">&#39;Dev1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#device 1, port 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">get_output_lines</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">lines</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>##TODO: Can’t figure out how to get buffered finite write to work.</dt>
+<dd>continuous seems ok.</dd>
+</dl>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.Write">
+<code class="descname">Write</code><span class="sig-paren">(</span><em>data</em>, <em>samples_per_line=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.Write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.WriteBit">
+<code class="descname">WriteBit</code><span class="sig-paren">(</span><em>index</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.WriteBit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.cfg_sample_clock">
+<code class="descname">cfg_sample_clock</code><span class="sig-paren">(</span><em>freq</em>, <em>source=”</em>, <em>edge=’rising’</em>, <em>mode=’continuous’</em>, <em>buffer_size=10000</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.cfg_sample_clock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>For digital output tasks, we cannot imply a source, so I provide a</dt>
+<dd>default option that usually works if the user doesn’t supply one.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.get_output_lines">
+<code class="descname">get_output_lines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.get_output_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the output lines that are available to this task.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.readLines">
+<code class="descname">readLines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.readLines" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Reads the current state of the output lines and returns them as a</dt>
+<dd>uint8 array.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.readU32">
+<code class="descname">readU32</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.readU32" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Reads the current state of the output lines and returns them as a</dt>
+<dd>single uint32.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>samples_per_line=1</em>, <em>autostart=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a numpy array of data to set the current output state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : required</p>
+<blockquote>
+<div><p>ndarray, uint8, cols should be the number of lines. rows should be
+number of samples per channel</p>
+</div></blockquote>
+<p><strong>samples_per_line: 1</strong></p>
+<blockquote>
+<div><p>int, number of samples to write per line</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>##TODO: Automatically calculate samples per line based on array shape.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeBit">
+<code class="descname">writeBit</code><span class="sig-paren">(</span><em>index</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeBit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a single bit to the given line index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int</p>
+<blockquote>
+<div><p>Line (bit) to write to</p>
+</div></blockquote>
+<p><strong>value</strong> : int</p>
+<blockquote>
+<div><p>Value to write (1 or 0)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">task</span><span class="o">.</span><span class="n">writeBit</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># sets line 0 to 1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU16">
+<code class="descname">writeU16</code><span class="sig-paren">(</span><em>data</em>, <em>groupby=’c’</em>, <em>autostart=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU16" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a U16 ndarray to the digital channel.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data (numpy.ndarray): the data to write
+groupby (int or str): grouping type.
+autostart (int): whether to attempt to autostart.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU32">
+<code class="descname">writeU32</code><span class="sig-paren">(</span><em>data</em>, <em>groupby=’c’</em>, <em>autostart=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a U32 ndarray to the digital channel.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data (numpy.ndarray): the data to write
+groupby (int or str): grouping type.
+autostart (int): whether to attempt to autostart.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU8">
+<code class="descname">writeU8</code><span class="sig-paren">(</span><em>data</em>, <em>groupby=’c’</em>, <em>autostart=0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.DigitalOutput.writeU8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a U8 ndarray to the digital channel.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data (numpy.ndarray): the data to write
+groupby (int or str): grouping type.
+autostart (int): whether to attempt to autostart.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.EventInput">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">EventInput</code><span class="sig-paren">(</span><em>device=’Dev1’, bits=32, event_lines=[0], timeout=0.1, buffer_size=200, buffer_callback=None, force_synchronous_callback=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.EventInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#retinotopic_mapping.tools.IO.nidaq.BaseTask" title="retinotopic_mapping.tools.IO.nidaq.BaseTask"><code class="xref py py-class docutils literal"><span class="pre">retinotopic_mapping.tools.IO.nidaq.BaseTask</span></code></a></p>
+<dl class="docutils">
+<dt>Takes a list of digital lines and registers a NI task with an asynchronous</dt>
+<dd>event callback for change events on those lines.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>device</strong> : str</p>
+<blockquote>
+<div><p>Device ID for NIDAQ board.  Default “Dev1”</p>
+</div></blockquote>
+<p><strong>bits</strong> : int</p>
+<blockquote>
+<div><p>How many lines to read. Default 32</p>
+</div></blockquote>
+<p><strong>event_lines</strong> : list of ints</p>
+<blockquote>
+<div><p>Which lines should trigger a change event.  Default [0]</p>
+</div></blockquote>
+<p><strong>timeout</strong> : float</p>
+<blockquote>
+<div><p>Timeout for a single read in seconds</p>
+</div></blockquote>
+<p><strong>buffer_size</strong> : int</p>
+<blockquote>
+<div><p>Size of buffer to before triggering callback (doesn’t do anything)</p>
+</div></blockquote>
+<p><strong>buffer_callback</strong> : callable</p>
+<blockquote>
+<div><p>Custom callback function for a full buffer.</p>
+</div></blockquote>
+<p><strong>force_synchronous_callback</strong> : bool</p>
+<blockquote class="last">
+<div><p>Force callback in aquisition thread to ensure accuracy.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.EventInput.SignalCallback">
+<code class="descname">SignalCallback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.EventInput.SignalCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event callback for rising/falling edges.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.EventInput.print_data">
+<code class="descname">print_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.EventInput.print_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.EventInput.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.EventInput.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="retinotopic_mapping.tools.IO.nidaq.System">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">System</code><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>System state tracking.</p>
+<p>Autopopulated with the PyDAQmx methods associated with the system state.</p>
+<p>Added convenience methods as well for pythonicness.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">System</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getDevNames</span><span class="p">()</span>
+<span class="go">[&#39;Dev1&#39;, &#39;Dev2&#39;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="retinotopic_mapping.tools.IO.nidaq.System.getNIDAQVersion">
+<code class="descname">getNIDAQVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.System.getNIDAQVersion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_direction_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_direction_val</code><span class="sig-paren">(</span><em>direction</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_direction_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct direction type for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_edge_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_edge_val</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_edge_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct edge constant for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_elevation_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_elevation_val</code><span class="sig-paren">(</span><em>high_or_low</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_elevation_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct elevation value for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_group_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_group_val</code><span class="sig-paren">(</span><em>group</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_group_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct grouping type for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_input_terminal_config">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_input_terminal_config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_input_terminal_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct config value for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_mode_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_mode_val</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_mode_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct mode constant for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.get_synchronous_val">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">get_synchronous_val</code><span class="sig-paren">(</span><em>synchronous</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.get_synchronous_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the correct synchronous type for a given input.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="retinotopic_mapping.tools.IO.nidaq.syncit">
+<code class="descclassname">retinotopic_mapping.tools.IO.nidaq.</code><code class="descname">syncit</code><span class="sig-paren">(</span><em>digital_out_task</em>, <em>line</em>, <em>invert=False</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.tools.IO.nidaq.syncit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Function or method decorator that can be used for synchronization.  It sets</dt>
+<dd>the digital line high or low during the decorated function call.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>digital_out_task</strong> : DigitalOutput object</p>
+<blockquote>
+<div><p>DigitalOutput object that you’d like to use to send the signal.</p>
+</div></blockquote>
+<p><strong>line</strong> : int</p>
+<blockquote>
+<div><p>Which line to send the signal on.</p>
+</div></blockquote>
+<p><strong>invert</strong> : bool (False)</p>
+<blockquote>
+<div><p>Whether to invert the signal.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None (This is a decorator)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">do</span> <span class="o">=</span> <span class="n">DigitalOutput</span><span class="p">(</span><span class="s2">&quot;Dev1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">do</span><span class="o">.</span><span class="n">StartTask</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@syncit</span><span class="p">(</span><span class="n">do</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">do_stuff</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">do_stuff</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">do</span><span class="o">.</span><span class="n">ClearTask</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-retinotopic_mapping.tools.IO">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-retinotopic_mapping.tools.IO" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, JY.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
