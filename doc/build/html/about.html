@@ -94,10 +94,9 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">About</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-a-retinotopic-map">What is a retinotopic map?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-a-retinotopic-map">What is a retinotopic map?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citations">Citations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
@@ -173,35 +172,47 @@
 for performing automated segmentation of the mouse
 visual cortex. The experimental setup and analysis routine was
 modified from Garrett et al. 2014 (1), and closely follows
-the protocols and procedures documented in Juavinett et al. 2016
+the protocols and procedures documented in Juavinett et al. 2017
 (2).</p>
 <p>The code base contains several stimulus routines which are
 highly customizable and designed to give the user significant
 flexibility and control in creative experimental design. There
 are two distinct but connected aspects to the package:</p>
 <p>1. an online experimental component comprised of the
-<cite>MonitorSetup</cite>, <cite>StimulusRoutines</cite>, and <cite>DisplayStimulus</cite> modules</p>
+<code class="xref py py-mod docutils literal"><span class="pre">MonitorSetup</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">StimulusRoutines</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">DisplayStimulus</span></code>
+modules</p>
 <p>2. an offline automated analysis component provided
-by the <cite>RetinotopicMapping</cite> module</p>
+by the <code class="xref py py-mod docutils literal"><span class="pre">RetinotopicMapping</span></code> module</p>
+<div class="figure">
 <img alt="_images/vasculature.png" src="_images/vasculature.png" />
+</div>
 <div class="section" id="what-is-a-retinotopic-map">
 <h2>What is a retinotopic map?<a class="headerlink" href="#what-is-a-retinotopic-map" title="Permalink to this headline">¶</a></h2>
-<p>Retinotopic maps are a common tools used in systems
+<p>Retinotopic maps are a common tool used in systems
 neuroscience to understand how receptive fields are
 mapped onto particular regions of the brain. In the lower visual
-areas of certain species neurons are organized as a 2D representation
-of the visual image formed on the retina wherein neighboring regions
-of a particular image are represented by neighboring regions of
-the visual area.</p>
+areas of certain species, neurons are organized as a 2D representation
+of the visual image that is formed on the retina.</p>
+<div class="figure" id="id2">
 <a class="reference internal image-reference" href="_images/retinotopic_maps.png"><img alt="_images/retinotopic_maps.png" src="_images/retinotopic_maps.png" style="width: 961.2px; height: 396.0px;" /></a>
+<p class="caption"><span class="caption-text">Image taken from (2) in <a class="reference internal" href="#citations"><span class="std std-ref">Citations</span></a>.</span></p>
+</div>
+</div>
 <div class="section" id="contributors">
-<h3>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
+<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Jun Zhuang &#64;zhuang1981</li>
 <li>John Yearsley &#64;yearsj</li>
 <li>Derric Williams &#64;derricw</li>
 </ul>
 </div>
+<div class="section" id="citations">
+<span id="id1"></span><h2>Citations<a class="headerlink" href="#citations" title="Permalink to this headline">¶</a></h2>
+<p>1. Garrett ME, Nauhaus I, Marshel JH, Callaway EM (2014) Topography and
+areal organization of mouse visual cortex. J Neurosci 34:12587-12600.</p>
+<p>2. Juavinett AL, Nauhaus I, Garrett ME, Zhuang J, Callaway EM (2017).
+Automated identification of mouse visual areas with intrinsic signal
+imaging. Nature Protocols. 12: 32-43.</p>
 </div>
 </div>
 
