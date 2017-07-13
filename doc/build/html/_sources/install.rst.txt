@@ -12,7 +12,7 @@ or with pip
 
 .. code-block:: python
     
-    pip install retinotopic_mapping
+    pip install retinotopic_maps
 
 
 
