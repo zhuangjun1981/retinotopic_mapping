@@ -38,10 +38,10 @@ refresh_rate = 60  #enter your monitors height in Hz
 # respect to the monitor, don't worry about them for now we just need them
 # for all of the functions to work
 
-C2T_cm = 31.1
-C2A_cm = 41.91
+C2T_cm = mon_height_cm / 2.
+C2A_cm = mon_width_cm / 2.
 mon_tilt = 26.56
-dis = 20
+dis = 15.
 
 # Set the downsample rate; needs to be an integer `n` such that each resolution
 # number is divisble by `n`, 

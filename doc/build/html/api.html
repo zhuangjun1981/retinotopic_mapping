@@ -1,0 +1,1099 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Documentation &mdash; Retinotopic Mapping 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/>
+        <link rel="prev" title="Examples" href="examples.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Retinotopic Mapping
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#monitorsetup">MonitorSetup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#monitor">Monitor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indicator">Indicator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#stimulusroutines">StimulusRoutines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#uniformcontrast">UniformContrast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flashingcircle">FlashingCircle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sparsenoise">SparseNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#driftinggratingcircle">DriftingGratingCircle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ksstim">KSstim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ksstimalldir">KSstimAllDir</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#displaystimulus">DisplayStimulus</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#displaysequence">DisplaySequence</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Retinotopic Mapping</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="monitorsetup">
+<h2>MonitorSetup<a class="headerlink" href="#monitorsetup" title="Permalink to this headline">¶</a></h2>
+<p>Used to store the display monitor and particular geometry used within a given
+experimental setup. The <cite>Monitor</cite> class holds references to the sizing of the
+monitor that is used to display stimulus routines and contains the necessary
+geometrical description of where the subject’s eye is placed with respect to the
+display monitor. The <cite>Indicator</cite> class, on the other hand, is generally used in
+order to gain finer scales of temporal precision. This is done  by connecting a
+photodiode indicator to one of the corners of the display monitor and ideally
+synchronising the indicator with the triggering of specific stimulus events.</p>
+<p>The module will most definitely be used in conjunction with the <cite>DisplayStimulus</cite>
+and <cite>StimulusRoutines</cite> modules.</p>
+<div class="section" id="monitor">
+<h3>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.MonitorSetup.Monitor">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.MonitorSetup.</code><code class="descname">Monitor</code><span class="sig-paren">(</span><em>resolution</em>, <em>dis</em>, <em>mon_width_cm</em>, <em>mon_height_cm</em>, <em>C2T_cm</em>, <em>C2A_cm</em>, <em>mon_tilt</em>, <em>visual_field=’right’</em>, <em>deg_coord_x=None</em>, <em>deg_coord_y=None</em>, <em>name=’testMonitor’</em>, <em>gamma=None</em>, <em>gamma_grid=None</em>, <em>luminance=None</em>, <em>downsample_rate=10</em>, <em>refresh_rate=60.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>monitor object created by Jun, has the method “remap” to generate the 
+spherical corrected coordinates in degrees</p>
+<p>This object contains the relevant data for the monitor used within a 
+given experimental setup. When initialized, the rectangular coordinates
+of the pixels on the monitor are computed and stored as <cite>lin_coord_x</cite>, 
+<cite>lin_coord_y</cite>. The rectangular coordinates are then transformed and 
+warped by calling the <cite>remap</cite> method to populate the <cite>deg_coord_x</cite> and
+<cite>deg_coord_y</cite> attributes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>resolution</strong> : tuple</p>
+<blockquote>
+<div><p>value of the monitor resolution</p>
+</div></blockquote>
+<p><strong>dis</strong> : float</p>
+<blockquote>
+<div><p>distance from eyeball to monitor (in cm)</p>
+</div></blockquote>
+<p><strong>mon_width_cm</strong> : float</p>
+<blockquote>
+<div><p>width of monitor (in cm)</p>
+</div></blockquote>
+<p><strong>mon_height_cm</strong> : float</p>
+<blockquote>
+<div><p>height of monitor (in cm)</p>
+</div></blockquote>
+<p><strong>C2T_cm</strong> : float</p>
+<blockquote>
+<div><p>distance from gaze center to monitor top</p>
+</div></blockquote>
+<p><strong>C2A_cm</strong> : float</p>
+<blockquote>
+<div><p>distance from gaze center to anterior edge of the monitor</p>
+</div></blockquote>
+<p><strong>mon_tilt</strong> : float</p>
+<blockquote>
+<div><p>angle between mouse body axis and monitor plane, in degrees</p>
+</div></blockquote>
+<p><strong>visual_field</strong> : str from {‘right’,’left’}, optional</p>
+<blockquote>
+<div><p>the eye that is facing the monitor, defaults to ‘right’</p>
+</div></blockquote>
+<p><strong>deg_coord_x</strong> : ndarray, optional</p>
+<blockquote>
+<div><p>array of warped x pixel coordinates, defaults to <cite>None</cite></p>
+</div></blockquote>
+<p><strong>deg_coord_y</strong> : ndarray, optional</p>
+<blockquote>
+<div><p>array of warped y pixel coordinates, defaults to <cite>None</cite></p>
+</div></blockquote>
+<p><strong>name</strong> : str, optional</p>
+<blockquote>
+<div><p>name of the monitor, defaults to <cite>testMonitor</cite></p>
+</div></blockquote>
+<p><strong>gamma</strong> : optional</p>
+<blockquote>
+<div><p>for gamma correction, defaults to <cite>None</cite></p>
+</div></blockquote>
+<p><strong>gamma_grid</strong> : optional</p>
+<blockquote>
+<div><p>for gamme correction, defaults to <cite>None</cite></p>
+</div></blockquote>
+<p><strong>luminance</strong> : optional</p>
+<blockquote>
+<div><p>monitor luminance, defaults to <cite>None</cite></p>
+</div></blockquote>
+<p><strong>downsample_rate</strong> : int, optional</p>
+<blockquote>
+<div><p>downsample rate of monitor pixels, defaults to 10</p>
+</div></blockquote>
+<p><strong>refresh_rate</strong> : float, optional</p>
+<blockquote class="last">
+<div><p>the refresh rate of the monitor in Hz, defaults to 60</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.MonitorSetup.Monitor.remap">
+<code class="descname">remap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.remap" title="Permalink to this definition">¶</a></dt>
+<dd><p>warp the linear pixel coordinates and populate the <cite>deg_coord_x</cite> and 
+<cite>deg_coord_y</cite> attributes.</p>
+<p>Function is called when the monitor object is initialized.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indicator">
+<h3>Indicator<a class="headerlink" href="#indicator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.MonitorSetup.Indicator">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.MonitorSetup.</code><code class="descname">Indicator</code><span class="sig-paren">(</span><em>monitor</em>, <em>width_cm=3.0</em>, <em>height_cm=3.0</em>, <em>position=’northeast’</em>, <em>is_sync=True</em>, <em>freq=2.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Indicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>flashing indicator for photodiode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>The monitor used within the experimental setup</p>
+</div></blockquote>
+<p><strong>width_cm</strong> : float, optional</p>
+<blockquote>
+<div><p>width of the size of the indicator in cm, defaults to <cite>3.</cite></p>
+</div></blockquote>
+<p><strong>height_cm</strong> : float, optional</p>
+<blockquote>
+<div><p>height of the size of the indicator in cm, defaults to <cite>3.</cite></p>
+</div></blockquote>
+<p><strong>position</strong> : str from {‘northeast’,’northwest’,’southwest’,’southeast’}</p>
+<blockquote>
+<div><p>the placement of the indicator, defaults to ‘northeast’</p>
+</div></blockquote>
+<p><strong>is_sync</strong> : bool, optional</p>
+<blockquote>
+<div><p>determines whether the indicator is synchronized with the stimulus,
+defaults to True.</p>
+</div></blockquote>
+<p><strong>freq</strong> : float, optional</p>
+<blockquote class="last">
+<div><p>frequency of photodiode, defaults to <cite>2.</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.MonitorSetup.Indicator.get_frames">
+<code class="descname">get_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Indicator.get_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>if not synchronized with stimulation, get frame numbers of each update
+of indicator</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="stimulusroutines">
+<h2>StimulusRoutines<a class="headerlink" href="#stimulusroutines" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uniformcontrast">
+<h3>UniformContrast<a class="headerlink" href="#uniformcontrast" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.UniformContrast">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">UniformContrast</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>duration</em>, <em>color=0.0</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em>, <em>background=0.0</em>, <em>coordinate=’degree’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.UniformContrast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate full field uniform luminance for recording spontaneous activity.
+Inherits from Stim.</p>
+<p>The full field uniform luminance stimulus presents a fixed background color
+which is normally taken to be grey.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>inherited monitor object from <cite>Stim</cite> class</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>inherited indicator object from <cite>Stim</cite> class</p>
+</div></blockquote>
+<p><strong>duration</strong> : int</p>
+<blockquote>
+<div><p>amount of time (in seconds) the stimulus is presented</p>
+</div></blockquote>
+<p><strong>color</strong> : float, optional</p>
+<blockquote>
+<div><p>the choice of color to display in the stimulus, defaults to <cite>0.</cite> which
+is grey</p>
+</div></blockquote>
+<p><strong>pregap_dur</strong> : float, optional</p>
+<blockquote>
+<div><p>amount of time (in seconds) before the stimulus is presented, defaults
+to <cite>2.</cite></p>
+</div></blockquote>
+<p><strong>postgap_dur</strong> : float, optional</p>
+<blockquote>
+<div><p>amount of time (in seconds) after the stimulus is presented, defaults 
+to <cite>3.</cite></p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote class="last">
+<div><p>color during pre and post gap, defaults to <cite>0.</cite> which is grey</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.UniformContrast.generate_frames">
+<code class="descname">generate_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.UniformContrast.generate_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate a tuple of parameters of each frame.</p>
+<dl class="docutils">
+<dt>Information contained in each frame:</dt>
+<dd><dl class="first last docutils">
+<dt>first element - </dt>
+<dd>during display frames, value takes on 1 and value 
+is 0 otherwise</dd>
+<dt>second element - color of indicator</dt>
+<dd>during display value is equal to 1 and during gaps value is
+equal to -1</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.UniformContrast.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.UniformContrast.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate movie for uniform contrast display frame by frame</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>full_seq</strong> : list</p>
+<blockquote>
+<div><p>3-d array of the stimulus to be displayed. elements are of type unit8</p>
+</div></blockquote>
+<p><strong>full_dict</strong> : dict</p>
+<blockquote class="last">
+<div><p>dictionary containing the information of the stimulus</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="flashingcircle">
+<h3>FlashingCircle<a class="headerlink" href="#flashingcircle" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.FlashingCircle">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">FlashingCircle</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>coordinate=’degree’</em>, <em>center=(90.0</em>, <em>10.0)</em>, <em>radius=10.0</em>, <em>color=-1.0</em>, <em>iteration=1</em>, <em>flash_frame=3</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em>, <em>background=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.FlashingCircle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate flashing circle stimulus.</p>
+<p>Stimulus routine presents a circle centered at the position <cite>center</cite> 
+with given <cite>radius</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>contains display monitor information</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>contains indicator information</p>
+</div></blockquote>
+<p><strong>coordinate</strong> : str from {‘degree’,’linear’}, optional</p>
+<blockquote>
+<div><p>specifies coordinates, defaults to ‘degree’</p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote>
+<div><p>color of background. Takes values in [-1,1] where -1 is black and 1
+is white</p>
+</div></blockquote>
+<p><strong>stim_name</strong> : str</p>
+<blockquote>
+<div><p>Name of the stimulus</p>
+</div></blockquote>
+<p><strong>center</strong> : 2-tuple, optional</p>
+<blockquote>
+<div><p>center coordinate of the circle in degrees, defaults to <cite>(90.,10.)</cite></p>
+</div></blockquote>
+<p><strong>radius</strong> : float, optional</p>
+<blockquote>
+<div><p>radius of the circle, defaults to <cite>10.</cite></p>
+</div></blockquote>
+<p><strong>color</strong> : float, optional</p>
+<blockquote>
+<div><p>color of the circle, takes values in [-1,1], defaults to <cite>-1.</cite></p>
+</div></blockquote>
+<p><strong>iteration</strong> : int, optional</p>
+<blockquote>
+<div><p>total number of flashes, defaults to <cite>1</cite></p>
+</div></blockquote>
+<p><strong>flash_frame</strong> : int, optional</p>
+<blockquote class="last">
+<div><p>number of frames that circle is displayed during each presentation
+of the stimulus, defaults to <cite>3</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.FlashingCircle.generate_frames">
+<code class="descname">generate_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.FlashingCircle.generate_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to generate all the frames needed for the stimulation. 
+Returns a list of information of all frames as a list of tuples</p>
+<dl class="docutils">
+<dt>Information contained in each frame:</dt>
+<dd><dl class="first last docutils">
+<dt>first element <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>during a gap, the value is equal to 0 and during display the
+value is equal to 1</dd>
+<dt>second element <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>the value is equal to 1 on the frame that the stimulus begins,
+and is equal to 0 otherwise.</dd>
+<dt>third element <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>value corresponds to the current iteration</dd>
+<dt>fourth element <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>corresponds to the color of indicator and during stimulus 
+the value is equal to 1, whereas during a gap the value is 
+equal to 0</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.FlashingCircle.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.FlashingCircle.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate movie frame by frame.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sparsenoise">
+<h3>SparseNoise<a class="headerlink" href="#sparsenoise" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.SparseNoise">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">SparseNoise</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>background=0.0</em>, <em>coordinate=’degree’</em>, <em>grid_space=(10.0</em>, <em>10.0)</em>, <em>probe_size=(10.0</em>, <em>10.0)</em>, <em>probe_orientation=0.0</em>, <em>probe_frame_num=3</em>, <em>subregion=None</em>, <em>sign=’ON-OFF’</em>, <em>iteration=1</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.SparseNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate sparse noise stimulus integrates flashing indicator for photodiode</p>
+<p>This stimulus routine presents quasi-random noise in a specified region of
+the monitor. The <cite>background</cite> color can be customized but defaults to a
+grey value. Can specify the <cite>subregion</cite> of the monitor where the pixels
+will flash on and off (black and white respectively)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>contains display monitor information</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>contains indicator information</p>
+</div></blockquote>
+<p><strong>coordinate</strong> : str from {‘degree’,’linear’}, optional</p>
+<blockquote>
+<div><p>specifies coordinates, defaults to ‘degree’</p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote>
+<div><p>color of background. Takes values in [-1,1] where -1 is black and 1
+is white</p>
+</div></blockquote>
+<p><strong>stim_name</strong> : str</p>
+<blockquote>
+<div><p>Name of stimulus</p>
+</div></blockquote>
+<p><strong>grid_space</strong> : 2-tuple of floats, optional</p>
+<blockquote>
+<div><p>first coordinate is altitude, second coordinate is azimuth</p>
+</div></blockquote>
+<p><strong>probe_size</strong> : 2-tuple of floats, optional</p>
+<blockquote>
+<div><p>size of flicker probes. First coordinate defines the width, and
+second coordinate defines the height</p>
+</div></blockquote>
+<p><strong>probe_orientation</strong> : float, optional</p>
+<blockquote>
+<div><p>orientation of flicker probes</p>
+</div></blockquote>
+<p><strong>probe_frame_num</strong> : int, optional</p>
+<blockquote>
+<div><p>number of frames for each square presentation</p>
+</div></blockquote>
+<p><strong>subregion :</strong></p>
+<blockquote>
+<div><p>the region on the monitor that will display the sparse noise,
+list or tuple</p>
+</div></blockquote>
+<p><strong>sign</strong> : {‘ON-OFF’, ‘ON’, ‘OFF’}, optional</p>
+<blockquote>
+<div><p>determines which pixels appear in the <cite>subregion</cite>, defaults to 
+<cite>‘ON-Off’</cite> so that both on and off pixels appear. If <cite>‘ON</cite> selected 
+only on pixels (white) are displayed in the noise <cite>subregion while if 
+`’OFF’</cite> is selected only off (black) pixels are displayed in the noise</p>
+</div></blockquote>
+<p><strong>iteration</strong> : int, optional</p>
+<blockquote class="last">
+<div><p>number of times to present stimulus, defaults to <cite>1</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.SparseNoise.generate_frames">
+<code class="descname">generate_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.SparseNoise.generate_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to generate all the frames needed for SparseNoise stimulus</p>
+<p>returns a list of information of all frames as a list of tuples</p>
+<dl class="docutils">
+<dt>Information contained in each frame:</dt>
+<dd><dl class="first docutils">
+<dt>first element - int</dt>
+<dd>when stimulus is displayed value is equal to 1, otherwise
+equal to 0,</dd>
+<dt>second element - tuple, </dt>
+<dd>retinotopic location of the center of current square,[azi,alt]</dd>
+<dt>third element - </dt>
+<dd>polarity of current square, 1 -&gt; bright, -1-&gt; dark</dd>
+<dt>forth element - color of indicator</dt>
+<dd><dl class="first last docutils">
+<dt>if synchronized <span class="classifier-delimiter">:</span> <span class="classifier">value equal to 0 when stimulus is not </span></dt>
+<dd>begin displayed, and 1 for onset frame of stimulus for 
+each square, -1 for the rest.</dd>
+<dt>if non-synchronized: values alternate between -1 and 1 </dt>
+<dd>at defined frequency</dd>
+</dl>
+</dd>
+</dl>
+<p class="last">for gap frames the second and third elements should be ‘None’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.SparseNoise.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.SparseNoise.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate movie for display frame by frame</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="driftinggratingcircle">
+<h3>DriftingGratingCircle<a class="headerlink" href="#driftinggratingcircle" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.DriftingGratingCircle">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">DriftingGratingCircle</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>background=0.0</em>, <em>coordinate=’degree’</em>, <em>center=(60.0</em>, <em>0.0)</em>, <em>sf_list=(0.08</em>, <em>)</em>, <em>tf_list=(4.0</em>, <em>)</em>, <em>dire_list=(0.0</em>, <em>)</em>, <em>con_list=(0.5</em>, <em>)</em>, <em>size_list=(5.0</em>, <em>)</em>, <em>block_dur=2.0</em>, <em>midgap_dur=0.5</em>, <em>iteration=1</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.DriftingGratingCircle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate drifting grating circle stimulus</p>
+<p>Stimulus routine presents drifting checkerboard grating stimulus inside 
+of a circle centered at <cite>center</cite>. The drifting gratings are determined by 
+spatial and temporal frequencies, directionality, contrast, and radius of
+the circle. The routine can generate several different gratings within 
+one presentation by specifying multiple values of the parameters which
+characterize the stimulus.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>contains display monitor information</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>contains indicator information</p>
+</div></blockquote>
+<p><strong>coordinate</strong> : str from {‘degree’,’linear’}, optional</p>
+<blockquote>
+<div><p>specifies coordinates, defaults to ‘degree’</p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote>
+<div><p>color of background. Takes values in [-1,1] where -1 is black and 1
+is white</p>
+</div></blockquote>
+<p><strong>center</strong> : 2-tuple of floats, optional</p>
+<blockquote>
+<div><p>coordintes for center of the stimulus (azimuth, argument)</p>
+</div></blockquote>
+<p><strong>sf_list</strong> : n-tuple, optional</p>
+<blockquote>
+<div><p>list of spatial frequencies in cycles/unit, defaults to <cite>(0.08)</cite></p>
+</div></blockquote>
+<p><strong>tf_list</strong> : n-tuple, optional</p>
+<blockquote>
+<div><p>list of temportal frequencies in Hz, defaults to <cite>(4.)</cite></p>
+</div></blockquote>
+<p><strong>dire_list</strong> : n-tuple, optional</p>
+<blockquote>
+<div><p>list of directions in degrees, defaults to <cite>(0.)</cite></p>
+</div></blockquote>
+<p><strong>con_list</strong> : n-tuple, optional</p>
+<blockquote>
+<div><p>list of contrasts taking values in [0.,1.], defaults to <cite>(0.5)</cite></p>
+</div></blockquote>
+<p><strong>size_list</strong> : n-tuple</p>
+<blockquote>
+<div><p>list of radii of circles, unit defined by <cite>self.coordinate</cite>, defaults
+to <cite>(5.)</cite></p>
+</div></blockquote>
+<p><strong>block_dur = float, optional</strong></p>
+<blockquote>
+<div><p>duration of each condition in seconds, defaults to <cite>2.</cite></p>
+</div></blockquote>
+<p><strong>midgap_dur = float, optional</strong></p>
+<blockquote>
+<div><p>duration of gap between conditions, defaults to <cite>0.5</cite></p>
+</div></blockquote>
+<p><strong>iteration = int, optional</strong></p>
+<blockquote class="last">
+<div><p>number of times the stimulus is displayed, defaults to <cite>1</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.DriftingGratingCircle.generate_frames">
+<code class="descname">generate_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.DriftingGratingCircle.generate_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to generate all the frames needed for DriftingGratingCircle
+returns a list of information of all frames as a list of tuples</p>
+<dl class="docutils">
+<dt>Information contained in each frame:</dt>
+<dd><dl class="first docutils">
+<dt>first element -</dt>
+<dd>value equal to 1 during stimulus and 0 otherwise</dd>
+<dt>second element - </dt>
+<dd>on first frame in a cycle value takes on 1, and otherwise is
+equal to 0.</dd>
+<dt>third element -</dt>
+<dd>spatial frequency</dd>
+<dt>forth element -</dt>
+<dd>temporal frequency</dd>
+<dt>fifth element - </dt>
+<dd>direction, [0, 2*pi)</dd>
+<dt>sixth element -</dt>
+<dd>contrast</dd>
+<dt>seventh element - </dt>
+<dd>size (radius of the circle)</dd>
+<dt>eighth element - </dt>
+<dd>phase, [0, 2*pi)</dd>
+<dt>ninth element -</dt>
+<dd>indicator color [-1, 1]. Value is equal to 1 on the first
+frame of each cycle, -1 during gaps and otherwise 0.</dd>
+</dl>
+<p class="last">during gap frames the second through the eighth elements should 
+be ‘None’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.DriftingGratingCircle.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.DriftingGratingCircle.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate movie frame by frame</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="ksstim">
+<h3>KSstim<a class="headerlink" href="#ksstim" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">KSstim</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>background=0.0</em>, <em>coordinate=’degree’</em>, <em>square_size=25.0</em>, <em>square_center=(0</em>, <em>0)</em>, <em>flicker_frame=10</em>, <em>sweep_width=20.0</em>, <em>step_width=0.15</em>, <em>direction=’B2U’</em>, <em>sweep_frame=1</em>, <em>iteration=1</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate Kalatsky &amp; Stryker stimulus</p>
+<p>Kalatsky &amp; Stryker (KS) stimulus routine presents checkerboard gratings 
+that drift against a fixed <cite>background</cite> color.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>object storing experimental monitor setup information</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>object storing photodiode indicator information</p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote>
+<div><p>background color of stimulus, takes values in [-1,1]. defaults to 
+<cite>0.</cite></p>
+</div></blockquote>
+<p><strong>coordinate</strong> : str, optional</p>
+<blockquote>
+<div><p>coordinate representation, either ‘degree’ or ‘linear’, defaults
+to ‘degree’</p>
+</div></blockquote>
+<p><strong>square_size</strong> : float, optional</p>
+<blockquote>
+<div><p>size of flickering square, defaults to <cite>25.</cite></p>
+</div></blockquote>
+<p><strong>square_center: tuple, optional</strong></p>
+<blockquote>
+<div><p>coordinate of center point, defaults to <cite>(0,0)</cite></p>
+</div></blockquote>
+<p><strong>flicker_frame</strong> : int, optional</p>
+<blockquote>
+<div><p>number of frames in one flicker, defaults to <cite>10</cite></p>
+</div></blockquote>
+<p><strong>sweep_width</strong> : float, optional</p>
+<blockquote>
+<div><p>width of sweeps measured in units cm or degs if coordinate value
+is ‘linear’ or ‘degree’ respectively. defaults to <cite>20</cite></p>
+</div></blockquote>
+<p><strong>step_width</strong> : float, optional</p>
+<blockquote>
+<div><p>width of steps measured in units cm or degs if coordinate value
+is ‘linear’ or ‘degree’ respectively. defaults to <cite>0.15</cite></p>
+</div></blockquote>
+<p><strong>direction</strong> : {‘B2U’,’U2B’,’L2R’,’R2L’}, optional</p>
+<blockquote>
+<div><p>the direction of sweep movement, defaults to ‘B2U’. ‘B2U’ means 
+stim is presented from the bottom to the top of the screen, whereas
+‘U2B’ is from the top to the bottom. ‘L2R’ is left to right and ‘R2L’
+is right to left</p>
+</div></blockquote>
+<p><strong>sweep_frame</strong> : int, optional</p>
+<blockquote>
+<div><p>roughly determines speed of the drifting grating, defaults to <cite>1</cite></p>
+</div></blockquote>
+<p><strong>iteration</strong> : int, optional</p>
+<blockquote>
+<div><p>number of times that the stimulus will be repeated, defaults to <cite>1</cite></p>
+</div></blockquote>
+<p><strong>pregap_dur</strong> : float, optional</p>
+<blockquote>
+<div><p>number of seconds before stimulus is presented, defaults to <cite>2</cite></p>
+</div></blockquote>
+<p><strong>postgap_dur</strong> : float, optional</p>
+<blockquote class="last">
+<div><p>number of seconds after stimulus is presented, defaults to <cite>2</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim.generate_frames">
+<code class="descname">generate_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.generate_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to generate all the frames needed for KS stimulation
+returnins a list of information of all frames as a list of tuples</p>
+<dl class="docutils">
+<dt>Information contained in each frame:</dt>
+<dd><blockquote class="first">
+<div><dl class="docutils">
+<dt>first element -</dt>
+<dd>during stimulus value is equal to 1 and 0 otherwise</dd>
+<dt>second element - </dt>
+<dd>square polarity, 1-&gt;not reversed; -1-&gt;reversed</dd>
+<dt>third element: </dt>
+<dd>sweeps, index in sweep table</dd>
+<dt>forth element - </dt>
+<dd><dl class="first last docutils">
+<dt>color of indicator</dt>
+<dd>synchronized: gap-&gt;-1, sweep on -&gt; 1
+non-synchronized: alternating between -1 and 1 at defined frequency</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p class="last">for gap frames the second and third elements should be ‘None’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to Generate Kalatsky &amp; Stryker visual stimulus frame by frame</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim.generate_squares">
+<code class="descname">generate_squares</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.generate_squares" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate checker board squares</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim.generate_sweeps">
+<code class="descname">generate_sweeps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.generate_sweeps" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate full screen sweep sequence</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstim.plot_squares">
+<code class="descname">plot_squares</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.plot_squares" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot checkerboard squares</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="ksstimalldir">
+<h3>KSstimAllDir<a class="headerlink" href="#ksstimalldir" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstimAllDir">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">KSstimAllDir</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>coordinate=’degree’</em>, <em>background=0.0</em>, <em>square_size=25</em>, <em>square_center=(0</em>, <em>0)</em>, <em>flicker_frame=6</em>, <em>sweep_width=20.0</em>, <em>step_width=0.15</em>, <em>sweep_frame=1</em>, <em>iteration=1</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstimAllDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate Kalatsky &amp; Stryker stimulation in all four direction contiuously</p>
+<p>Generalizes the KS stimulus routine so that the drifting gratings can go
+in all four directions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
+<blockquote>
+<div><p>contains display monitor information</p>
+</div></blockquote>
+<p><strong>indicator</strong> : indicator object</p>
+<blockquote>
+<div><p>contains indicator information</p>
+</div></blockquote>
+<p><strong>coordinate</strong> : str from {‘degree’,’linear’}, optional</p>
+<blockquote>
+<div><p>specifies coordinates, defaults to ‘degree’</p>
+</div></blockquote>
+<p><strong>background</strong> : float, optional</p>
+<blockquote>
+<div><p>color of background. Takes values in [-1,1] where -1 is black and 1
+is white</p>
+</div></blockquote>
+<p><strong>square_size</strong> : int, optional</p>
+<blockquote>
+<div><p>size of flickering square, defaults to 25.</p>
+</div></blockquote>
+<p><strong>square_center</strong> : tuple, optional</p>
+<blockquote>
+<div><p>coordinate of center point of the square, defaults to (0,0)</p>
+</div></blockquote>
+<p><strong>flicker_frame</strong> : int, optional</p>
+<blockquote>
+<div><p>number of frames per flicker while stimulus is being presented,
+defaults to <cite>6</cite></p>
+</div></blockquote>
+<p><strong>sweep_width</strong> : float, optional</p>
+<blockquote>
+<div><p>width of sweeps. defaults to <cite>20.</cite></p>
+</div></blockquote>
+<p><strong>step_width</strong> : float, optional</p>
+<blockquote>
+<div><p>width of steps. defaults to <cite>0.15</cite>.</p>
+</div></blockquote>
+<p><strong>sweep_frame</strong> : int, optional</p>
+<blockquote>
+<div><p>roughly determines speed of the drifting grating, defaults to <cite>1</cite></p>
+</div></blockquote>
+<p><strong>iteration</strong> : int, optional</p>
+<blockquote>
+<div><p>number of times stimulus will be presented, defaults to <cite>1</cite></p>
+</div></blockquote>
+<p><strong>pregap_dur</strong> : float, optional</p>
+<blockquote>
+<div><p>number of seconds before stimulus is presented, defaults to <cite>2.</cite></p>
+</div></blockquote>
+<p><strong>postgap_dur</strong> : float, optional</p>
+<blockquote class="last">
+<div><p>number of seconds after stimulus is presented, defaults to <cite>3.</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.KSstimAllDir.generate_movie">
+<code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstimAllDir.generate_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate stimulus movie frame by frame</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="displaystimulus">
+<h2>DisplayStimulus<a class="headerlink" href="#displaystimulus" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="displaysequence">
+<h3>DisplaySequence<a class="headerlink" href="#displaysequence" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.DisplayStimulus.</code><code class="descname">DisplaySequence</code><span class="sig-paren">(</span><em>log_dir</em>, <em>backupdir=None</em>, <em>display_iter=1</em>, <em>display_order=1</em>, <em>mouse_id=’Test’</em>, <em>user_id=’Name’</em>, <em>psychopy_mon=’testMonitor’</em>, <em>is_interpolate=False</em>, <em>is_triggered=False</em>, <em>trigger_NI_dev=’Dev1’</em>, <em>trigger_NI_port=1</em>, <em>trigger_NI_line=0</em>, <em>is_sync_pulse_pulse=True</em>, <em>sync_pulse_NI_dev=’Dev1’</em>, <em>sync_pulse_NI_port=1</em>, <em>sync_pulse_NI_line=1</em>, <em>display_trigger_event=’negative_edge’</em>, <em>display_screen=0</em>, <em>initial_background_color=0</em>, <em>file_num_NI_dev=’Dev1’</em>, <em>file_num_NI_port=‘0’</em>, <em>file_num_NI_lines=‘0:7’</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the numpy sequence from memory</p>
+<dl class="method">
+<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>clear display information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.set_any_array">
+<code class="descname">set_any_array</code><span class="sig-paren">(</span><em>any_array</em>, <em>log_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.set_any_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>to display any numpy 3-d array.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.set_stim">
+<code class="descname">set_stim</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.set_stim" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate sequence of stimulus to be displayed.</p>
+<p>Calls the <cite>generate_movie</cite> method of the respective stim object and 
+populates the attributes <cite>self.sequence</cite> and <cite>self.seq_log</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stim</strong> : Stim object</p>
+<blockquote class="last">
+<div><p>the type of stimulus to be presented in the experiment</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.trigger_display">
+<code class="descname">trigger_display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.trigger_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display stimulus</p>
+<p>Prepares all of the necessary parameters to display stimulus and store
+the data collected.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="examples.html" class="btn btn-neutral" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, JY.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
