@@ -40,7 +40,7 @@ of the mouse cortex using the `Retinotopic.py` module
 https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.ipynb
 
 ### Contributors:
-* Jun Zhuang @zhuang1981
+* Jun Zhuang @zhuangj
 * John Yearseley @yearsj
 * Derric Williams @derricw
 
@@ -60,7 +60,7 @@ python setup.py install
 
 1. numpy, version 1.10.4 or later
 2. scipy, version 0.17.0 or later
-3. OpenCV-Python, version 2.4.8 or later
+3. OpenCV-Python, version 2.4.8 or later but not 3
 4. scikit-image, version 0.12.3 or later
 5. matplotlib, version 1.5.1 or later
 6. tifffile, version 0.7.0 or later

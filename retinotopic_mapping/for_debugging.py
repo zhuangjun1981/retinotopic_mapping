@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Example script to test that everything is working. Running this script is a 
+Example script to test that everything is working. Running this script is a
 good first step for trying to debug your experimental setup and is also a
-great tool to familiarize yourself with the parameters that are used to 
+great tool to familiarize yourself with the parameters that are used to
 generate each specific stimulus.
 
 !!!IMPORTANT!!!
@@ -11,9 +11,9 @@ running all you need to do is press either one of the 'Esc' or 'q' buttons.
 """
 
 import numpy as np
-import Stimulus as stim
+import StimulusRoutines as stim
 from MonitorSetup import Monitor, Indicator
-from DisplayStimulus import DisplaySequence 
+from DisplayStimulus import DisplaySequence
 
 """
 To get up and running quickly before performing any experiments it is 
@@ -34,7 +34,7 @@ mon_width_cm = 38 #enter your monitors width in cm
 mon_height_cm = 40 #enter your monitors height in cm
 refresh_rate = 60  #enter your monitors height in Hz
 #==============================================================================
-# The following variables correspond to the geometry of the mouse with 
+# The following variables correspond to the geometry of the mouse with
 # respect to the monitor, don't worry about them for now we just need them
 # for all of the functions to work
 
@@ -44,7 +44,7 @@ mon_tilt = 26.56
 dis = 15.
 
 # Set the downsample rate; needs to be an integer `n` such that each resolution
-# number is divisble by `n`, 
+# number is divisble by `n`,
 downsample_rate = 4
 
 # Initialize the monitor and indicator objects
@@ -65,14 +65,14 @@ you might need to start debugging!
 """
 #========================== Uniform Contrast Stimulus =========================
 #uniform_contrast = stim.UniformContrast(mon,
-#                                        indicator, 
-#                                        duration=10., 
+#                                        indicator,
+#                                        duration=10.,
 #                                        color=0.)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     display_iter=2,
 #                     is_triggered=False,
-#                     is_sync_pulse_pulse=False,
+#                     is_sync_pulse=False,
 #                     display_screen=1)
 #
 #ds.set_stim(uniform_contrast)
@@ -82,8 +82,8 @@ you might need to start debugging!
 
 #======================= Flashing Circle Stimulus =============================
 #flashing_circle = stim.FlashingCircle(mon,
-#                                      indicator, 
-#                                      radius=20., 
+#                                      indicator,
+#                                      radius=20.,
 #                                      flash_frame=10)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
@@ -97,10 +97,10 @@ you might need to start debugging!
 
 #======================== Sparse Noise Stimulus ===============================
 #sparse_noise = stim.SparseNoise(mon,
-#                                indicator, 
-#                                subregion=(-20.,20.,40.,60.), 
-#                                grid_space=(10, 10), 
-#                                background=0., 
+#                                indicator,
+#                                subregion=(-20.,20.,40.,60.),
+#                                grid_space=(10, 10),
+#                                background=0.,
 #                                sign='ON')
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=r'C:\data',
@@ -116,7 +116,7 @@ you might need to start debugging!
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     is_triggered=False,
-#                     is_sync_pulse_pulse=False,
+#                     is_sync_pulse=False,
 #                     display_screen=1)
 #ds.set_stim(sparse_noise)
 #ds.trigger_display()
@@ -125,17 +125,17 @@ you might need to start debugging!
 
 #======================= Drifting Grating Circle Stimulus =====================
 #drifting_grating = stim.DriftingGratingCircle(mon,
-#                                              indicator, 
+#                                              indicator,
 #                                              sf_list=(0.08,0.16),
-#                                              tf_list=(4.,8.), 
+#                                              tf_list=(4.,8.),
 #                                              dire_list=(0.,0.1),
-#                                              con_list=(0.5,1.), 
+#                                              con_list=(0.5,1.),
 #                                              size_list=(5.,10.),)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     display_iter = 2,
 #                     is_triggered=False,
-#                     is_sync_pulse_pulse=False,
+#                     is_sync_pulse=False,
 #                     is_interpolate=False,
 #                     display_screen=1)
 #ds.set_stim(drifting_grating)
@@ -154,12 +154,12 @@ you might need to start debugging!
 #                                               pregap_dur=2.,
 #                                               postgap_dur=3.,
 #                                               midgap_dur=1.)
-# 
+#
 #ds=DisplaySequence(log_dir=r'C:\data',
 #                   backupdir=None,
 #                   display_iter = 2,
 #                   is_triggered=False,
-#                   is_sync_pulse_pulse=False,
+#                   is_sync_pulse=False,
 #                   is_interpolate=False,
 #                   display_screen=1)
 #ds.set_stim(drifting_grating2)
@@ -171,7 +171,7 @@ you might need to start debugging!
 #KS_stim = stim.KSstim(mon,
 #                    indicator,
 #                    coordinate='degree',
-#                    sweep_frame=1, 
+#                    sweep_frame=1,
 #                    flicker_frame=100)
 #
 #ds = DisplaySequence(log_dir=r'C:\data',
@@ -189,7 +189,7 @@ you might need to start debugging!
 #                     backupdir=None,
 #                     display_iter = 2,
 #                     is_triggered=False,
-#                     is_sync_pulse_pulse=False,
+#                     is_sync_pulse=False,
 #                     display_screen=1)
 #ds.set_stim(KS_stim_all_dir)
 #ds.trigger_display()
