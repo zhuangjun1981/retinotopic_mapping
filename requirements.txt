@@ -1,6 +1,6 @@
 numpy>1.10.4
 scipy>0.17.0
-opencv-python>2.4.8
+opencv-python>2.4.8, but not with opencv3
 scikit-image>0.12.3
 psychopy < 1.84
 pyglet > 1.1
