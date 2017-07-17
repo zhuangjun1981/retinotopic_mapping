@@ -37,6 +37,13 @@ of the visual image that is formed on the retina.
 
    Image taken from (2) in :ref:`citations`.
 
+The following video gives an example of a retinopic map, showing
+how a moving dot is represented in the mouse brain. 
+
+.. raw:: html
+   
+   <video height="400" width="600" controls src="_static/retinotopy_video.mp4"></video>
+   
 
 Contributors
 +++++++++++++
