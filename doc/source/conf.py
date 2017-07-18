@@ -21,7 +21,7 @@ from psychopy import visual, event
 sys.path.append('/Users/johnyearsley/Documents/Allen Institute/Coding/retinotopic_mapping/')
 #sys.path.insert(0, os.path.abspath("../"))
 
-#import retinotopic_mapping
+import retinotopic_mapping
 
 
 

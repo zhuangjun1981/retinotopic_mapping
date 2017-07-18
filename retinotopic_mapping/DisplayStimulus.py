@@ -16,7 +16,7 @@ import time
 
 
 from tools import FileTools as ft
-from tools.IO import nidaq as iodaq
+#from tools.IO import nidaq as iodaq
 
 def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """

@@ -58,6 +58,9 @@ mon = Monitor(resolution=resolution,
             downsample_rate=downsample_rate)
 ind = Indicator(mon)
 
+dg = stim.DriftingGratingCircle(mon,ind,tf_list=(4.,8.),iteration=2)
+a = dg.generate_frames_by_index()
+b = dg.generate_frames()
 """ Now for the fun stuff! Each block of code below shows an example of
 the stimulus routines that are currently implemented in the codebase. Uncomment
 each block and run the script to view the stimulus presentations. This is where

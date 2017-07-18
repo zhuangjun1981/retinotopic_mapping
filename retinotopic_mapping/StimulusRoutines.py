@@ -1355,39 +1355,49 @@ class DriftingGratingCircle(Stim):
         return tuple(frames)
     
     def generate_frames_by_index(self):
-        frames = []
+        single_run_frames = []
         off_params = [0, None,None,None,None,None,None,None,-1.]
-        midgap_frames = int(self.midgap_dur*self.monitor.refresh_rate)
+        midgap_frame_num = int(self.midgap_dur*self.monitor.refresh_rate)
         
-        all_conditions = self._generate_all_conditions()
         
-        for condition in all_conditions:
-            sf, tf, dire, con, size = condition
+        for i in range(self.iteration):
+            single_run_frames += [[off_params, self.pregap_frame_num]]
             
-            # Compute phase list
-            phases, frame_per_cycle = self._generate_phase_list(tf)
+            # Compute all combinations of defining parameters
+            all_conditions = self._generate_all_conditions()
             
-            phases = phases[:frame_per_cycle]
-            
-            if (dire % (np.pi * 2)) >= np.pi:
-                     phases = [-phase for phase in phases]
-            
-            # Make each unique frame parameters
-            for phase in phases: 
-
-                # mark first frame of each cycle
-                # if phase == 0 then it is first frame of a cycle
-                if phase == 0:
-                    first_in_cycle = 1
-                else:
-                    first_in_cycle = 0
-                    
-                temp = [1, sf, tf, dire, con, size, phase, first_in_cycle]
-                 
-                frames.append(temp)
+            for j, condition in enumerate(all_conditions):
+                if j!=0:
+                    single_run_frames += [[off_params, midgap_frame_num]]
+                sf, tf, dire, con, size = condition
+                
+                # Compute phase list
+                phases, frame_per_cycle = self._generate_phase_list(tf)
+                
+                phases = phases[:frame_per_cycle]
+                
+                stim_on = []
+                
+                if (dire % (np.pi * 2)) >= np.pi:
+                         phases = [-phase for phase in phases]
+                
+                # Make each unique frame parameters
+                for k, phase in enumerate(phases): 
+    
+                    # mark first frame of each cycle
+                    # if phase == 0 then it is first frame of a cycle
+                    if k == 0:
+                        stim_on += [[1, sf, tf, dire, con, size, phase, 1]]
+                    else:
+                        stim_on += [[1, sf, tf, dire, con, size, phase, 0]]
+                        
+                     
+                single_run_frames += [(stim_on, frame_per_cycle)]
         #frames = [tuple(frames) for frame in frames]
         
-        return frames
+        single_run_frames += [[off_params, self.postgap_frame_num]]
+        
+        return single_run_frames
     
     def generate_movie_by_index(self):
         self.frames = self.generate_frames_by_index()
@@ -1410,6 +1420,8 @@ class DriftingGratingCircle(Stim):
                                 - self.indicator.height_pixel/2)
         indicator_height_max = (self.indicator.center_height_pixel 
                                 + self.indicator.height_pixel / 2)
+        
+        
 
 
     def _generate_circle_mask_dict(self):
