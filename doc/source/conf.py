@@ -16,7 +16,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os, sys
-#from psychopy import visual, event
+from psychopy import visual, event
 
 sys.path.append('/Users/johnyearsley/Documents/Allen Institute/Coding/retinotopic_mapping/')
 #sys.path.insert(0, os.path.abspath("../"))
