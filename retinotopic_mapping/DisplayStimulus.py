@@ -507,14 +507,14 @@ class DisplaySequence(object):
 
         return file_number
     
-    def _display_more_complicated(self,window,stim):
+    def _display_DriftingGratingCircle_by_index(self,window,stim):
+        """display by index routine for DriftingGratingCircle """
         # display frames by index
         time_stamps = []
         start_time = time.clock()
         num_iters = len(self.num_disp_iters)
         
         # frames stored in self.sequence
-        # 
         if self.is_sync_pulse:
             syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
                                                 self.sync_pulse_NI_port, 
@@ -522,15 +522,21 @@ class DisplaySequence(object):
             syncPulseTask.StartTask()
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
         
+        # compute list of indices for grabbing different frame blocks
         cumsum = list(np.cumsum(self.num_unique_block_frames))
-        
         cumsum.insert(0,0)
         
+        
         for i in range(len(cumsum)-1):
+            # each loop will grab either a single frame or list of frames
+            # corresponding to a particular display block. In this case
+            # blocks of size 1 correspond to gaps in stimulus (pre,mid,post etc)
+            # and blocks of size > 1 correspond to one period of a particular 
+            # display condition
             frame_list = self.sequence[cumsum[i]:cumsum[i+1],:,:]
             
             if frame_list.shape[0] == 1:
-                # then we have grabbed a gap so just repeat
+                # then we have a gap which repeats depending on `num_disp_iters`
                 for j in range(self.num_disp_iters[i]):
                     stim.setImage(frame_list[0])
                     stim.draw()
@@ -541,7 +547,6 @@ class DisplaySequence(object):
                          _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
         
                     #show visual stim
-    
                     window.flip()
                     
                     #set syncPuls signal
@@ -550,12 +555,12 @@ class DisplaySequence(object):
                     
                     self._update_display_status()
             else:
+                # then we are in a display block and have a list corresponding 
+                # to one period of temporal frequency in a cycle that will be 
+                # repeated until reaching `blockgap_frame_num`
                 m = 0
                 while m <= self.num_disp_iters[i]:
                     for frames in frame_list:
-                        # then we are in a display block so we need to repeat cycle
-                        # until we reach the necessary number
-                        
                         stim.setImage(frames)
                         stim.draw()
                         time_stamps.append(time.clock()-start_time)
@@ -564,20 +569,16 @@ class DisplaySequence(object):
                         if self.is_sync_pulse: 
                              _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
             
-                        #show visual stim
-                        
+                        #show visual stim 
                         window.flip()
                         
                         #set syncPuls signal
                         if self.is_sync_pulse: 
                             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                        
                         self._update_display_status()
-                    
                     
                         m += 1
                     
-                        
         stop_time = time.clock()
         window.close()                
           
@@ -593,8 +594,9 @@ class DisplaySequence(object):
         if self.keep_display == True: 
              print '\nDisplay successfully completed.'
     
-    
-    def _display_less_complicated(self,window,stim):
+    def _display_other_stim_by_index(self,window,stim):
+        """ display by index routine for simpler stim routines """
+        
         # display frames by index
         time_stamps = []
         start_time = time.clock()
@@ -622,7 +624,6 @@ class DisplaySequence(object):
             num_disp_frames = self.num_disp_iters[i % num_iters]
                  
             for m in range(num_disp_frames):
-            
                 stim.setImage(self.sequence[frame_num][::-1,:])
                 stim.draw()
                 time_stamps.append(time.clock()-start_time)
@@ -632,13 +633,11 @@ class DisplaySequence(object):
                      _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
     
                 #show visual stim
-
                 window.flip()
                 
                 #set syncPuls signal
                 if self.is_sync_pulse: 
                     _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                
                 self._update_display_status()
             
             i += 1
@@ -663,20 +662,11 @@ class DisplaySequence(object):
         if self.stim_name == 'DriftingGratingCircle':
             # call indexing function that can take care of all the annoying
             # stuff
-            
-            """
-            while length of the particular drifiting grating is less than 
-            block_gap_dur (which is block_gap * mon ref_rate) repeat the 
-            frame block 
-            
-            use modular arithmetic, e.g. while length < 120 loop through given 
-            list of frequencies ...
-            """
-            pass
-            self._display_more_complicated(window,stim)
+    
+            self._display_DriftingGratingCircle_by_index(window,stim)
             
         else:
-            self._display_less_complicated(window,stim)
+            self._display_other_stim_by_index(window,stim)
         
         
         

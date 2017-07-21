@@ -1535,7 +1535,6 @@ class DriftingGratingCircle(Stim):
                 single_run_frames += stim_on
                 num_frame_repeats.append(block_gap_num)
                 
-#        single_run_frames = [tuple(frames) for frame in frames]
         
         single_run_frames += [off_params]
         num_unique_block_frames.append(1)
