@@ -16,7 +16,7 @@ import time
 
 
 from tools import FileTools as ft
-#from tools.IO import nidaq as iodaq
+from tools.IO import nidaq as iodaq
 
 def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """
@@ -251,7 +251,13 @@ class DisplaySequence(object):
             the type of stimulus to be presented in the experiment
         """
         if self.by_index:
-            self.sequence, self.num_disp_iters, self.seq_log = stim.generate_movie_by_index()
+            (self.sequence, 
+             self.num_unique_block_frames, 
+             self.num_disp_iters, 
+             self.seq_log) = stim.generate_movie_by_index()
+            
+            self.stim_name = stim.stim_name
+
             self.clear()
         elif self.by_index and stim.stim_name == 'KSstim':
             raise ValueError, 'index display not available for KSstim routines'
@@ -501,13 +507,98 @@ class DisplaySequence(object):
 
         return file_number
     
-    def _display_by_index(self, window, stim):
-        
+    def _display_more_complicated(self,window,stim):
         # display frames by index
         time_stamps = []
         start_time = time.clock()
         num_iters = len(self.num_disp_iters)
         
+        # frames stored in self.sequence
+        # 
+        if self.is_sync_pulse:
+            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
+                                                self.sync_pulse_NI_port, 
+                                                self.sync_pulse_NI_line)
+            syncPulseTask.StartTask()
+            _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+        
+        cumsum = list(np.cumsum(self.num_unique_block_frames))
+        
+        cumsum.insert(0,0)
+        
+        for i in range(len(cumsum)-1):
+            frame_list = self.sequence[cumsum[i]:cumsum[i+1],:,:]
+            
+            if frame_list.shape[0] == 1:
+                # then we have grabbed a gap so just repeat
+                for j in range(self.num_disp_iters[i]):
+                    stim.setImage(frame_list[0])
+                    stim.draw()
+                    time_stamps.append(time.clock()-start_time)
+                
+                    #set syncPuls signal
+                    if self.is_sync_pulse: 
+                         _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+        
+                    #show visual stim
+    
+                    window.flip()
+                    
+                    #set syncPuls signal
+                    if self.is_sync_pulse: 
+                        _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                    
+                    self._update_display_status()
+            else:
+                m = 0
+                while m <= self.num_disp_iters[i]:
+                    for frames in frame_list:
+                        # then we are in a display block so we need to repeat cycle
+                        # until we reach the necessary number
+                        
+                        stim.setImage(frames)
+                        stim.draw()
+                        time_stamps.append(time.clock()-start_time)
+                        
+                        #set syncPuls signal
+                        if self.is_sync_pulse: 
+                             _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+            
+                        #show visual stim
+                        
+                        window.flip()
+                        
+                        #set syncPuls signal
+                        if self.is_sync_pulse: 
+                            _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                        
+                        self._update_display_status()
+                    
+                    
+                        m += 1
+                    
+                        
+        stop_time = time.clock()
+        window.close()                
+          
+        if self.is_sync_pulse:
+             syncPulseTask.StopTask()
+        
+        self.time_stamp = np.array(time_stamps)
+        self.display_length = stop_time-start_time
+
+        if self.display_frames is not None:
+            self.display_frames = self.display_frames[:i]
+
+        if self.keep_display == True: 
+             print '\nDisplay successfully completed.'
+    
+    
+    def _display_less_complicated(self,window,stim):
+        # display frames by index
+        time_stamps = []
+        start_time = time.clock()
+        num_iters = len(self.num_disp_iters)
         
         if self.is_sync_pulse:
             syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
@@ -566,6 +657,29 @@ class DisplaySequence(object):
 
         if self.keep_display == True: 
              print '\nDisplay successfully completed.'
+    
+    def _display_by_index(self, window, stim):
+        
+        if self.stim_name == 'DriftingGratingCircle':
+            # call indexing function that can take care of all the annoying
+            # stuff
+            
+            """
+            while length of the particular drifiting grating is less than 
+            block_gap_dur (which is block_gap * mon ref_rate) repeat the 
+            frame block 
+            
+            use modular arithmetic, e.g. while length < 120 loop through given 
+            list of frequencies ...
+            """
+            pass
+            self._display_more_complicated(window,stim)
+            
+        else:
+            self._display_less_complicated(window,stim)
+        
+        
+        
         
     def _display(self, window, stim):
         
