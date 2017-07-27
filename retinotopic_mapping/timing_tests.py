@@ -6,6 +6,7 @@ Created on Fri Jul 21 09:31:10 2017
 @author: johnyearsley
 """
 import unittest
+from timeit import timeit
 
 
 def time_DriftingGratingCircle_by_index(sf_list=(.08,.16),
@@ -28,7 +29,6 @@ def time_DriftingGratingCircle_by_index(sf_list=(.08,.16),
         the time, in seconds, it took to generate the stimulus movie.
         
     """
-    from timeit import timeit
     
     # write the setup code. you can change the parameters inside of the string
     # for testing purposes
@@ -92,7 +92,6 @@ def time_DriftingGratingCircle_non_index(sf_list=(.08,.16),
         the time, in seconds, it took to generate the stimulus movie.
         
     """
-    from timeit import timeit
     
     # write the setup code. you can change the parameters inside of the string
     # for testing purposes
@@ -136,7 +135,7 @@ dg = stim.DriftingGratingCircle(mon,
     
     return avg_time
 
-def time_SparseNoise_by_index(number=1):
+def time_SparseNoise_by_index(probe_frame_num=12,number=1):
     """ Compute amount of time, in seconds, to generate frames by index for 
     SparseNoise stimulus routine.
     
@@ -151,8 +150,6 @@ def time_SparseNoise_by_index(number=1):
         average amount of time to generate the stimulus movie
         
     """
-    
-    from timeit import timeit
     
     s = '''
 import StimulusRoutines as stim
@@ -180,15 +177,15 @@ mon = Monitor(resolution=resolution,
             downsample_rate=downsample_rate)
 ind = Indicator(mon, position='southwest')
 
-sn = stim.SparseNoise(mon,ind,iteration=2,probe_frame_num=3)
-'''
+sn = stim.SparseNoise(mon,ind,iteration=2,probe_frame_num=%r)
+''' % probe_frame_num
 
     total_time = timeit('sn.generate_movie_by_index()', setup=s, number=number)
     avg_time = total_time / number
     
     return avg_time
 
-def time_SparseNoise_non_index(number=1):
+def time_SparseNoise_non_index(probe_frame_num=12,number=1):
     """ Compute amount of time, in seconds, to generate frames by index for 
     SparseNoise stimulus routine.
     
@@ -203,8 +200,6 @@ def time_SparseNoise_non_index(number=1):
         average amount of time to generate the stimulus movie
         
     """
-    
-    from timeit import timeit
     
     s = '''
 import StimulusRoutines as stim
@@ -232,8 +227,8 @@ mon = Monitor(resolution=resolution,
             downsample_rate=downsample_rate)
 ind = Indicator(mon, position='southwest')
 
-sn = stim.SparseNoise(mon,ind,iteration=2,probe_frame_num=3)
-'''
+sn = stim.SparseNoise(mon,ind,iteration=2,probe_frame_num=%r)
+''' % probe_frame_num
 
     total_time = timeit('sn.generate_movie()', setup=s, number=number)
     avg_time = total_time / number
@@ -250,15 +245,16 @@ if __name__ == '__main__':
     time_non_index_DG = time_DriftingGratingCircle_non_index()
     speedup_DG = time_non_index_DG / time_by_index_DG
     
-    time_by_index_SN = time_SparseNoise_by_index()
-    time_non_index_SN = time_SparseNoise_non_index()
-    speedup_SN = time_by_index_SN / time_non_index_SN
+    time_by_index_SN = time_SparseNoise_by_index(probe_frame_num=20)
+    time_non_index_SN = time_SparseNoise_non_index(probe_frame_num=20)
+    speedup_SN = time_non_index_SN / time_by_index_SN
     
-    print 'DriftingGrating index routine  : %r seconds' % round(time_by_index_DG,2)
+    print '\n===== Timing Analysis for Index Routine ====='
+    print 'DriftingGrating by index routine  : %r seconds' % round(time_by_index_DG,2)
     print 'DriftingGrating non index routine : %r seconds' % round(time_non_index_DG,2)
     print 'Amount of speedup : %r x' % round(speedup_DG,2)
     
-    print 'SparseNoise index routine : %r seconds' % round(time_by_index_SN,2)
+    print 'SparseNoise by index routine : %r seconds' % round(time_by_index_SN,2)
     print 'SparseNoise non index routine : %r seconds' %round(time_non_index_SN,2)
     print 'Amount of speedup : %r x' % round(speedup_SN,2)
     

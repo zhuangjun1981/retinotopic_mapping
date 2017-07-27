@@ -559,7 +559,7 @@ class DisplaySequence(object):
                 # to one period of temporal frequency in a cycle that will be 
                 # repeated until reaching `blockgap_frame_num`
                 m = 0
-                while m <= self.num_disp_iters[i]:
+                while self.keep_display and m <= self.num_disp_iters[i]:
                     for frames in frame_list:
                         stim.setImage(frames)
                         stim.draw()
@@ -781,19 +781,19 @@ class DisplaySequence(object):
         displayLog.pop('sequence')
         logFile.update({'presentation':displayLog})
 
-        file_name =  self.file_name + ".pkl"
+        file_name =  self.file_name + ".hdf5"
         
         #generate full log dictionary
         path = os.path.join(directory, file_name)
-        ft.saveFile(path,logFile)
-        print ".pkl file generated successfully."
+        ft.saveFile_HD5(path,logFile)
+        print ".hdf5 file generated successfully."
         
         backupFileFolder = self._get_backup_folder()
         if backupFileFolder is not None:
             if not (os.path.isdir(backupFileFolder)): 
                  os.makedirs(backupFileFolder)
             backupFilePath = os.path.join(backupFileFolder,file_name)
-            ft.saveFile(backupFilePath,logFile)
+            ft.saveFile_HD5(backupFilePath,logFile)
             print ".pkl backup file generate successfully"
         else:
             print "did not find backup path, no backup has been saved."
