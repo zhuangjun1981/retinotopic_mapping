@@ -47,7 +47,7 @@ dis = 15.
 # number is divisble by `n`,
 downsample_rate = 4
 
-# Initialize the monitor and indicator objects
+# Initialize the monitor and ind objects
 mon = Monitor(resolution=resolution,
             dis=dis,
             mon_width_cm=mon_width_cm,
@@ -56,8 +56,11 @@ mon = Monitor(resolution=resolution,
             C2A_cm=C2A_cm,
             mon_tilt=mon_tilt,
             downsample_rate=downsample_rate)
-indicator = Indicator(mon)
+ind = Indicator(mon)
 
+dg = stim.DriftingGratingCircle(mon,ind,tf_list=(4.,8.),iteration=2)
+a = dg.generate_frames_by_index()
+b = dg.generate_frames()
 """ Now for the fun stuff! Each block of code below shows an example of
 the stimulus routines that are currently implemented in the codebase. Uncomment
 each block and run the script to view the stimulus presentations. This is where
@@ -65,7 +68,7 @@ you might need to start debugging!
 """
 #========================== Uniform Contrast Stimulus =========================
 #uniform_contrast = stim.UniformContrast(mon,
-#                                        indicator,
+#                                        ind,
 #                                        duration=10.,
 #                                        color=0.)
 #ds = DisplaySequence(log_dir=r'C:\data',
@@ -82,12 +85,14 @@ you might need to start debugging!
 
 #======================= Flashing Circle Stimulus =============================
 #flashing_circle = stim.FlashingCircle(mon,
-#                                      indicator,
+#                                      ind,
 #                                      radius=20.,
 #                                      flash_frame=10)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     is_triggered=False,
+#                     is_sync_pulse=False,
+#                     by_index=False,
 #                     display_iter=2,
 #                     display_screen=1)
 #ds.set_stim(flashing_circle)
@@ -97,7 +102,7 @@ you might need to start debugging!
 
 #======================== Sparse Noise Stimulus ===============================
 #sparse_noise = stim.SparseNoise(mon,
-#                                indicator,
+#                                ind,
 #                                subregion=(-20.,20.,40.,60.),
 #                                grid_space=(10, 10),
 #                                background=0.,
@@ -112,7 +117,7 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Sparse Noise pt 2 ====================================
-#sparse_noise = stim.SparseNoise(mon,indicator)
+#sparse_noise = stim.SparseNoise(mon,ind)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     is_triggered=False,
@@ -124,13 +129,13 @@ you might need to start debugging!
 
 
 #======================= Drifting Grating Circle Stimulus =====================
-#drifting_grating = stim.DriftingGratingCircle(mon,
-#                                              indicator,
-#                                              sf_list=(0.08,0.16),
-#                                              tf_list=(4.,8.),
-#                                              dire_list=(0.,0.1),
-#                                              con_list=(0.5,1.),
-#                                              size_list=(5.,10.),)
+dg = stim.DriftingGratingCircle(mon,
+                                              ind,
+                                              sf_list=(0.08,0.16),
+                                              tf_list=(4.0,8.0),
+                                              dire_list=(0.,),
+                                              con_list=(0.5,1.),
+                                              size_list=(5.,10.))
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     display_iter = 2,
@@ -143,7 +148,7 @@ you might need to start debugging!
 
 #======================== Drifting Grating pt 2 ===============================
 #drifting_grating2 = stim.DriftingGratingCircle(mon,
-#                                               indicator,
+#                                               ind,
 #                                               center=(60.,0.),
 #                                               sf_list=[0.08, 0.16],
 #                                               tf_list=[4.,2.],
@@ -169,7 +174,7 @@ you might need to start debugging!
 
 #===================== Kalatsky&Stryker Stimulus ==============================
 #KS_stim = stim.KSstim(mon,
-#                    indicator,
+#                    ind,
 #                    coordinate='degree',
 #                    sweep_frame=1,
 #                    flicker_frame=100)
@@ -184,7 +189,7 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Kalatsky&Stryker pt 2 ================================
-#KS_stim_all_dir = stim.KSstimAllDir(mon,indicator,step_width=0.3)
+#KS_stim_all_dir = stim.KSstimAllDir(mon,ind,step_width=0.3)
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     display_iter = 2,

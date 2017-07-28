@@ -1,18 +1,28 @@
 Installing
 ==========
-To install **RetinotopicMapping** download the package (insert link here)
-manually and from the command line type in the following:
+
+Manual install
++++++++++++++++
+To manually install **RetinotopicMapping** you can  download the package 
+`here <https://pypi.python.org/pypi?name=retinotopic-maps&version=2.0.0&:action=display>`_.
+
+Then open the command line, move to the directory that the package was 
+installed in and run the `setup.py` file like follows:
 
 .. code-block:: python
 
-   cd <path to package>
+   cd <full path to the package location>
    python setup.py install
 
-or with pip 
+
+PIP install
+++++++++++++
+An even simpler way to install the package is with pip. To do so type the following
+in the command line:
 
 .. code-block:: python
     
-    pip install retinotopic_mapping
+    pip install retinotopic_maps
 
 
 
@@ -58,4 +68,9 @@ points to mention:
   page for a more thorough explanation).
 
 
+.. note::
+   This is the most likely issue to come up in debugging. Chances
+   are if you are having a related issue it either has something
+   to do with not supplying a correct path or  making improper 
+   import statements somewhere in your script.
 

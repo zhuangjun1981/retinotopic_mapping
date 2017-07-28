@@ -319,6 +319,79 @@ class UniformContrast(Stim):
                  [(0, -1)] * self.postgap_frame_num
 
         return tuple(frames)
+    
+    def generate_frames_by_index(self):
+        """ generate frames by index """
+        
+        display_frame_num = int(self.duration * self.monitor.refresh_rate)
+        
+        # Parameters that define the stimulus
+        frames = ((0,-1), (1,1.), (0,-1))
+        
+        #Number of times each respective parameter will be displayed
+        num_iters = (self.pregap_frame_num, 
+                     display_frame_num, 
+                     self.postgap_frame_num)
+        
+        return frames, num_iters
+    
+    def generate_movie_by_index(self):
+        """ by index """
+        self.frames, num_iters = self.generate_frames_by_index()
+        
+        num_unique_frames = len(self.frames)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+
+        # Initialize numpy array of 0's as placeholder for stimulus routine
+        full_sequence = np.zeros((num_unique_frames,
+                                  num_pixels_width,
+                                  num_pixels_height),
+                                  dtype=np.float16)
+        
+        # Compute pixel coordinates for indicator
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel/2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel/2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel/2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel/2)
+        
+        background = self.background*np.ones((num_pixels_width,
+                                              num_pixels_height),
+                                              dtype=np.float16)
+        
+        display = self.color*np.ones((num_pixels_width,
+                                      num_pixels_height),
+                                      dtype=np.float16)
+        
+        for i in range(num_unique_frames):
+            curr_frame = self.frames[i]
+            
+            if curr_frame[0] == 0:
+                stim_sequence = background
+            else:
+                stim_sequence = display
+            
+            # Insert indicator pixels 
+            stim_sequence[indicator_height_min:indicator_height_max,
+                          indicator_width_min:indicator_width_max] = curr_frame[1]
+            
+            full_sequence[i] = stim_sequence
+            
+        monitor_dict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        NF_dict = dict(self.__dict__)
+        NF_dict.pop('monitor')
+        NF_dict.pop('indicator')
+        full_dict = {'stimulation' : NF_dict,
+                     'monitor' : monitor_dict,
+                     'indicator' : indicator_dict}
+
+        
+        return full_sequence, None, num_iters, full_dict
 
     def generate_movie(self):
         """
@@ -339,14 +412,14 @@ class UniformContrast(Stim):
                              self.monitor.deg_coord_x.shape[1]),
                              dtype=np.float16)
 
-        indicator_width_min = (self.indicator.center_width_pixel -
-                               (self.indicator.width_pixel / 2))
-        indicator_width_max = (self.indicator.center_width_pixel +
-                               (self.indicator.width_pixel / 2))
-        indicator_height_min = (self.indicator.center_height_pixel -
-                                (self.indicator.height_pixel / 2))
-        indicator_height_max = (self.indicator.center_height_pixel +
-                                (self.indicator.height_pixel / 2))
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel/2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
                               np.size(self.monitor.deg_coord_x, 1)),
@@ -528,6 +601,91 @@ class FlashingCircle(Stim):
         frames = [tuple(x) for x in frames]
 
         return tuple(frames)
+    
+    def generate_frames_by_index(self):
+        """ generate stimulus by unique frames """
+        start = (0,1,-1)
+        circle_on = (1,0,1)
+        circle_off = (0,0,-1)
+        
+        frames = (start, circle_off, circle_on, circle_off)
+        
+        
+        return frames
+    
+    def generate_movie_by_index(self):
+        """ generate unique frames of stimulus movie """
+        
+        # compute unique frame parameters
+        self.frames = self.generate_frames_by_index()
+        
+        # sum(num_repeats) == number of total frames in one iteration.
+        # each value of num_repeats corresponds to the number of times
+        # to display each respective unique frame.
+        num_repeats = (1,
+                       self.pregap_frame_num-1,
+                       self.flash_frame,
+                       self.postgap_frame_num)
+        
+        num_unique_frames = len(self.frames)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+        
+        full_sequence = np.zeros((num_unique_frames,
+                                  num_pixels_width,
+                                  num_pixels_height), 
+                                  dtype=np.float16)
+        
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel/2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel/2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel/2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
+        
+        background = self.background*np.ones((num_pixels_width,
+                                              num_pixels_height), 
+                                              dtype=np.float16)
+        
+        if self.coordinate == 'degree':
+            map_x = self.monitor.deg_coord_x
+            map_y = self.monitor.deg_coord_y
+
+        elif self.coordinate == 'linear':
+            map_x = self.monitor.lin_coord_x
+            map_y = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+            
+        circle_mask = get_circle_mask(map_x, map_y, 
+                                  self.center, self.radius).astype(np.float16)
+        
+        for i in range(num_unique_frames):
+            curr_frame = self.frames[i]
+            
+            if curr_frame[0] == 0:
+                curr_FC_seq = background
+            else:
+                curr_FC_seq = self.color*circle_mask - background*(circle_mask-1)
+                                
+            curr_FC_seq[indicator_height_min:indicator_height_max,
+                        indicator_width_min:indicator_width_max] = curr_frame[2]
+            
+            full_sequence[i] = curr_FC_seq
+            
+        mondict=dict(self.monitor.__dict__)
+        indicator_dict=dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        NFdict=dict(self.__dict__)
+        NFdict.pop('monitor')
+        NFdict.pop('indicator')
+        full_dict={'stimulation':NFdict,
+                   'monitor':mondict,
+                   'indicator':indicator_dict}
+
+        return full_sequence, None, num_repeats, full_dict
 
     def generate_movie(self):
         """
@@ -652,7 +810,7 @@ class SparseNoise(Stim):
                  grid_space=(10.,10.),
                  probe_size=(10.,10.),
                  probe_orientation=0.,
-                 probe_frame_num=3,
+                 probe_frame_num=6,
                  subregion=None,
                  sign='ON-OFF',
                  iteration=1,
@@ -705,11 +863,16 @@ class SparseNoise(Stim):
 
         Returns
         -------
-        grid_points : n x 2 array, refined [azi, alt] pairs of probe centers going to be displayed
+        grid_points : n x 2 array, 
+            refined [azi, alt] pairs of probe centers going to be displayed
         """
 
-        rows = np.arange(self.subregion[0], self.subregion[1] + self.grid_space[0], self.grid_space[0])
-        columns = np.arange(self.subregion[2], self.subregion[3] + self.grid_space[1], self.grid_space[1])
+        rows = np.arange(self.subregion[0], 
+                         self.subregion[1] + self.grid_space[0], 
+                         self.grid_space[0])
+        columns = np.arange(self.subregion[2], 
+                            self.subregion[3] + self.grid_space[1], 
+                            self.grid_space[1])
 
         xx, yy = np.meshgrid(columns, rows)
 
@@ -868,6 +1031,118 @@ class SparseNoise(Stim):
         frames = [tuple(x) for x in frames]
 
         return tuple(frames)
+    
+    def generate_frames_by_index(self):
+        frames = []
+        num_repeats = []
+        
+        off_params = [0,None,None,-1]
+        
+        
+        
+        
+        
+        if self.probe_frame_num == 1:
+            indicator_on_frame = 1
+        elif self.probe_frame_num > 1:
+            indicator_on_frame = self.probe_frame_num // 2
+        else:
+            raise ValueError('`probe_frame_num` should be an int larger than 0!')
+
+        indicator_off_frame = self.probe_frame_num - indicator_on_frame
+        
+        """ when generated normally (not by index) there is a conditional asking
+        if the pregap_frame_nums are greater than 0. Is this reasonable? Or should
+        there just always be pregap_frame_nums?"""
+        
+        for i in range(self.iteration):
+            if self.pregap_frame_num != 0:
+                # then add off_params to frames
+                frames.append(off_params)
+                num_repeats.append(self.pregap_frame_num)
+            
+            iter_grid_points = self._generate_grid_points_sequence()
+            
+            for grid_point in iter_grid_points:
+                frames.append([1,grid_point[0],grid_point[1],1])
+                num_repeats.append(indicator_on_frame)
+            
+                frames.append([1,grid_point[0],grid_point[1],-1])
+                num_repeats.append(indicator_off_frame)
+                
+            if self.postgap_frame_num != 0:
+                # then add off_params to frames
+                frames.append(off_params)
+                num_repeats.append(self.postgap_frame_num)
+                
+        """ Might be difficult to add in non synchronized indicator without
+        first generating all of the frames. Is this important?"""
+        
+        frames = tuple(frames)
+        frames = [tuple(x) for x in frames]
+        
+        return tuple(frames), num_repeats
+    
+    def generate_movie_by_index(self):
+        self.frames, num_repeats = self.generate_frames_by_index()
+        
+        num_unique_frames = len(self.frames)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+        
+        if self.coordinate=='degree':
+             coord_x=self.monitor.deg_coord_x
+             coord_y=self.monitor.deg_coord_y
+        elif self.coordinate=='linear':
+             coord_x=self.monitor.lin_coord_x
+             coord_y=self.monitor.lin_coord_y
+
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
+        
+        full_seq = self.background* np.ones((num_unique_frames,
+                                             num_pixels_width,
+                                             num_pixels_height),
+                                             dtype=np.float16)
+        
+        for i, frame in enumerate(self.frames):
+            if frame[0] == 1:
+                disp_mat = get_warped_square(coord_x,
+                                             coord_y,
+                                             center=frame[1],
+                                             width=self.probe_size[0],
+                                             height=self.probe_size[1],
+                                             ori=self.probe_orientation,
+                                             foreground_color=frame[2],
+                                             background_color=self.background)
+                
+                """ Lots of calulations are done in the original routine, what 
+                are they for? Are they necessary, do they speed something up?"""
+                
+                full_seq[i] = disp_mat
+            
+            full_seq[i, indicator_height_min:indicator_height_max,
+                     indicator_width_min:indicator_width_max] = frame[3]
+            
+        mondict=dict(self.monitor.__dict__)
+        indicator_dict=dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        SNdict=dict(self.__dict__)
+        SNdict.pop('monitor')
+        SNdict.pop('indicator')
+        full_dict={'stimulation':SNdict,
+                        'monitor':mondict,
+                        'indicator':indicator_dict}
+            
+        return full_seq, None, num_repeats, full_dict
+                    
+            
 
     def generate_movie(self):
         """
@@ -883,14 +1158,14 @@ class SparseNoise(Stim):
              coord_x=self.monitor.lin_coord_x
              coord_y=self.monitor.lin_coord_y
 
-        indicator_width_min = (self.indicator.center_width_pixel -
-                         (self.indicator.width_pixel / 2))
-        indicator_width_max = (self.indicator.center_width_pixel +
-                          (self.indicator.width_pixel / 2))
-        indicator_height_min = (self.indicator.center_height_pixel -
-                         (self.indicator.height_pixel / 2))
-        indicator_height_max = (self.indicator.center_height_pixel +
-                         (self.indicator.height_pixel / 2))
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
 
         full_seq = np.ones((len(self.frames),
                                 self.monitor.deg_coord_x.shape[0],
@@ -1144,6 +1419,7 @@ class DriftingGratingCircle(Stim):
         frames = []
         off_params = [0, None,None,None,None,None,None,None,-1.]
         midgap_frames = int(self.midgap_dur*self.monitor.refresh_rate)
+        
 
         for i in range(self.iteration):
             if i == 0: # very first block
@@ -1190,6 +1466,170 @@ class DriftingGratingCircle(Stim):
         frames = [tuple(frame) for frame in frames]
 
         return tuple(frames)
+    
+    def generate_frames_by_index(self):
+        """Generate unique frames as a list. 
+        
+            First chunk - 1 frame containing an off condition
+            second chunk - chunk of size depending on temporal frequency
+            third chunk - 1 frame containing an off midgap cond
+            fourth - chunk of size depedning on temporal freq
+            ...
+            
+        """
+        
+        
+        single_run_frames = []
+        off_params = (0, None,None,None,None,None,None,None,-1.)
+        midgap_frame_num = int(self.midgap_dur*self.monitor.refresh_rate)
+        block_gap_num = int(self.block_dur*self.monitor.refresh_rate)
+        
+        # Used to store the length of a given block. 'off' blocks will always
+        # be 1 whereas 'on' blocks are of variable length. we need this information
+        # in order to play the stimulus correctly
+        num_unique_block_frames = [1]
+        
+        # used to store number of repeats for each frame, e.g. pregap_frame_num
+        # postgap_frame_num, block_frame_num, ...
+        num_frame_repeats = [self.pregap_frame_num]
+        
+        
+        for i in range(self.iteration):
+            if i!=0:
+                num_unique_block_frames.append(1)
+                num_frame_repeats.append(midgap_frame_num)
+            single_run_frames += [off_params]
+            
+            # Compute all combinations of defining parameters
+            all_conditions = self._generate_all_conditions()
+            
+            for j, condition in enumerate(all_conditions):
+                if j!=0:
+                    single_run_frames += [off_params]
+                    num_unique_block_frames.append(1)
+                    num_frame_repeats.append(midgap_frame_num)
+                sf, tf, dire, con, size = condition
+                
+                # Compute phase list
+                phases, frame_per_cycle = self._generate_phase_list(tf)
+                
+                phases = phases[:frame_per_cycle]
+                num_unique_block_frames.append(frame_per_cycle)
+                
+                stim_on = []
+                
+                if (dire % (np.pi * 2)) >= np.pi:
+                         phases = [-phase for phase in phases]
+                
+                # Make each unique frame parameters
+                for k, phase in enumerate(phases): 
+    
+                    # mark first frame of each cycle
+                    # if phase == 0 then it is first frame of a cycle
+                    if k == 0:
+                        stim_on += [(1, sf, tf, dire, con, size, phase, 1.)]
+                        
+                    else:
+                        stim_on += [(1, sf, tf, dire, con, size, phase, 0.)]
+                        
+                single_run_frames += stim_on
+                num_frame_repeats.append(block_gap_num)
+                
+        
+        single_run_frames += [off_params]
+        num_unique_block_frames.append(1)
+        num_frame_repeats.append(self.postgap_frame_num)
+        
+        return single_run_frames, num_unique_block_frames, num_frame_repeats
+    
+    def generate_movie_by_index(self):
+        """ THERE IS A BUG THAT SHOULD BE FIXED! RIGHT NOW THE INDICATOR
+        COORDINATES ARE FLIPPED SO THAT NORTH=SOUTH AND VICE VERSA
+        
+        
+        Can still be optimized further. As of now the code is still storing
+        repeated frames when there are multiple iterations in a given 
+        initialization. this could be changed so that multiple iterations are 
+        not stored.
+        
+        """
+        
+        (self.frames, 
+         num_unique_block_frames, num_disp_iters) = self.generate_frames_by_index()
+        
+        mask_dict = self._generate_circle_mask_dict()
+        
+        num_unique_frames = len(self.frames)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+        
+        if self.coordinate=='degree':
+             coord_x=self.monitor.deg_coord_x
+             coord_y=self.monitor.deg_coord_y
+        elif self.coordinate=='linear':
+             coord_x=self.monitor.lin_coord_x
+             coord_y=self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel/2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel/2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel/2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
+        
+        mov = self.background*np.ones((num_unique_frames,
+                                       num_pixels_width,
+                                       num_pixels_height),
+                                       dtype=np.float16)
+
+        background_frame = self.background*np.ones((num_pixels_width,
+                                                    num_pixels_height),
+                                                    dtype=np.float16)
+        
+        for i, frame in enumerate(self.frames):
+        #,curr_frame in zip(range(sum(num_unique_block_frames)),self.frames):
+
+            if frame[0] == 1: # not a gap
+        
+                curr_ori = self._get_ori(frame[3])
+
+                curr_grating = get_grating(coord_x,
+                                           coord_y,
+                                           ori = curr_ori,
+                                           spatial_freq = frame[1],
+                                           center = self.center,
+                                           phase = frame[6],
+                                           contrast = frame[4])
+                curr_grating = curr_grating*2. - 1.
+
+                curr_circle_mask = mask_dict[frame[5]]
+
+                mov[i] = ((curr_grating * curr_circle_mask) +
+                             (background_frame * (curr_circle_mask * -1. + 1.)))
+                    
+                    
+
+            #add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+                indicator_width_min:indicator_width_max] = frame[-1]
+            
+        mondict=dict(self.monitor.__dict__)
+        indicator_dict=dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict=dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log={'stimulation':self_dict,
+             'monitor':mondict,
+             'indicator':indicator_dict}    
+            
+        return mov, num_unique_block_frames, num_disp_iters, log
+            
+
 
     def _generate_circle_mask_dict(self):
         """
@@ -1227,14 +1667,14 @@ class DriftingGratingCircle(Stim):
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
-        indicator_width_min = (self.indicator.center_width_pixel -
-                               (self.indicator.width_pixel / 2))
-        indicator_width_max = (self.indicator.center_width_pixel +
-                               (self.indicator.width_pixel / 2))
-        indicator_height_min = (self.indicator.center_height_pixel -
-                                (self.indicator.height_pixel / 2))
-        indicator_height_max = (self.indicator.center_height_pixel +
-                                (self.indicator.height_pixel / 2))
+        indicator_width_min = (self.indicator.center_width_pixel 
+                               - self.indicator.width_pixel/2)
+        indicator_width_max = (self.indicator.center_width_pixel 
+                               + self.indicator.width_pixel/2)
+        indicator_height_min = (self.indicator.center_height_pixel 
+                                - self.indicator.height_pixel/2)
+        indicator_height_max = (self.indicator.center_height_pixel 
+                                + self.indicator.height_pixel / 2)
 
         mov = np.ones((len(self.frames),
                        coord_x.shape[0],

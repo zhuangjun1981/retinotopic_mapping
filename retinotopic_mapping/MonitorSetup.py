@@ -164,10 +164,10 @@ class Monitor(object):
         
     def remap(self):
         """
-        warp the linear pixel coordinates and populate the `deg_coord_x` and 
-        `deg_coord_y` attributes. 
-         
-        Function is called when the monitor object is initialized.
+        warp the linear pixel coordinates to a spherical corrected representation.
+        
+        Function is called when the monitor object is initialized and populate 
+        the `deg_coord_x` and `deg_coord_y` attributes. 
         """
         
         resolution = [0,0]        
