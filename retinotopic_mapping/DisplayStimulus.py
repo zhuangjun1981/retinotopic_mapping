@@ -251,16 +251,14 @@ class DisplaySequence(object):
             the type of stimulus to be presented in the experiment
         """
         if self.by_index:
-            (self.sequence, 
-             self.num_unique_block_frames, 
-             self.num_disp_iters, 
-             self.seq_log) = stim.generate_movie_by_index()
-            
-            self.stim_name = stim.stim_name
+#            (self.sequence, 
+#             self.num_unique_block_frames, 
+#             self.num_disp_iters, 
+#             self.seq_log) = stim.generate_movie_by_index()
 
+            self.sequence, self.seq_log = stim.generate_movie_by_index()
             self.clear()
-        elif self.by_index and stim.stim_name == 'KSstim':
-            raise ValueError, 'index display not available for KSstim routines'
+    
         else:
             self.sequence, self.seq_log = stim.generate_movie()
             self.clear()
@@ -316,7 +314,8 @@ class DisplaySequence(object):
 
         # calculate expected display time
         if self.by_index:
-            display_time = (float(sum(self.num_disp_iters))
+            num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
+            display_time = (float(sum(num_disp_iters))
                                * self.display_iter/ refresh_rate)
         else:
             display_time = (float(self.sequence.shape[0]) * 
@@ -512,7 +511,8 @@ class DisplaySequence(object):
         # display frames by index
         time_stamps = []
         start_time = time.clock()
-        num_iters = len(self.num_disp_iters)
+        num_unique_block_frames = self.seq_log['stimulation']['num_unique_block_frames']
+        num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
         
         # frames stored in self.sequence
         if self.is_sync_pulse:
@@ -523,7 +523,7 @@ class DisplaySequence(object):
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
         
         # compute list of indices for grabbing different frame blocks
-        cumsum = list(np.cumsum(self.num_unique_block_frames))
+        cumsum = list(np.cumsum(num_unique_block_frames))
         cumsum.insert(0,0)
         
         
@@ -533,11 +533,11 @@ class DisplaySequence(object):
             # blocks of size 1 correspond to gaps in stimulus (pre,mid,post etc)
             # and blocks of size > 1 correspond to one period of a particular 
             # display condition
-            frame_list = self.sequence[cumsum[i]:cumsum[i+1],:,:]
+            frame_list = self.sequence[cumsum[i]:cumsum[i+1],::-1,:]
             
             if frame_list.shape[0] == 1:
                 # then we have a gap which repeats depending on `num_disp_iters`
-                for j in range(self.num_disp_iters[i]):
+                for j in range(num_disp_iters[i]):
                     stim.setImage(frame_list[0])
                     stim.draw()
                     time_stamps.append(time.clock()-start_time)
@@ -559,7 +559,7 @@ class DisplaySequence(object):
                 # to one period of temporal frequency in a cycle that will be 
                 # repeated until reaching `blockgap_frame_num`
                 m = 0
-                while self.keep_display and m <= self.num_disp_iters[i]:
+                while self.keep_display and m <= num_disp_iters[i]:
                     for frames in frame_list:
                         stim.setImage(frames)
                         stim.draw()
@@ -600,7 +600,8 @@ class DisplaySequence(object):
         # display frames by index
         time_stamps = []
         start_time = time.clock()
-        num_iters = len(self.num_disp_iters)
+        num_iters = len(self.seq_log['stimulation']['num_disp_iters'])
+        num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
         
         if self.is_sync_pulse:
             syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
@@ -621,7 +622,7 @@ class DisplaySequence(object):
                 # Then display sequence backwards
                  frame_num = num_iters - (i % num_iters) -1
                  
-            num_disp_frames = self.num_disp_iters[i % num_iters]
+            num_disp_frames = num_disp_iters[i % num_iters]
                  
             for m in range(num_disp_frames):
                 stim.setImage(self.sequence[frame_num][::-1,:])
@@ -659,13 +660,11 @@ class DisplaySequence(object):
     
     def _display_by_index(self, window, stim):
         
-        if self.stim_name == 'DriftingGratingCircle':
+        if self.seq_log['stimulation']['stim_name'] == 'DriftingGratingCircle':
             self._display_DriftingGratingCircle_by_index(window,stim)
             
         else:
             self._display_other_stim_by_index(window,stim)
-        
-        
         
         
     def _display(self, window, stim):
