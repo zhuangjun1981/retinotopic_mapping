@@ -660,9 +660,6 @@ class DisplaySequence(object):
     def _display_by_index(self, window, stim):
         
         if self.stim_name == 'DriftingGratingCircle':
-            # call indexing function that can take care of all the annoying
-            # stuff
-    
             self._display_DriftingGratingCircle_by_index(window,stim)
             
         else:

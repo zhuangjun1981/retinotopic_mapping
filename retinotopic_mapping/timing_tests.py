@@ -79,7 +79,7 @@ def time_DriftingGratingCircle_non_index(sf_list=(.08,.16),
                                          size_list=(10.,),
                                          number=1):
     """Compute amount of time in seconds to generate stimulus movie for 
-    DriftingGratingCircle routine when computed by index
+    DriftingGratingCircle routine when computed frame by frame.
     
     Parameters
     ----------
@@ -186,8 +186,8 @@ sn = stim.SparseNoise(mon,ind,iteration=2,probe_frame_num=%r)
     return avg_time
 
 def time_SparseNoise_non_index(probe_frame_num=12,number=1):
-    """ Compute amount of time, in seconds, to generate frames by index for 
-    SparseNoise stimulus routine.
+    """ Compute amount of time, in seconds, to generate frames for 
+    SparseNoise stimulus routine by generating each frame.
     
     Parameters
     ----------
