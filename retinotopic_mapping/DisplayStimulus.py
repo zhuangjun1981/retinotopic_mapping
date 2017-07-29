@@ -251,11 +251,6 @@ class DisplaySequence(object):
             the type of stimulus to be presented in the experiment
         """
         if self.by_index:
-#            (self.sequence, 
-#             self.num_unique_block_frames, 
-#             self.num_disp_iters, 
-#             self.seq_log) = stim.generate_movie_by_index()
-
             self.sequence, self.seq_log = stim.generate_movie_by_index()
             self.clear()
     
