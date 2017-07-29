@@ -619,10 +619,10 @@ class FlashingCircle(Stim):
         # compute unique frame parameters
         self.frames = self.generate_frames_by_index()
         
-        # sum(num_repeats) == number of total frames in one iteration.
-        # each value of num_repeats corresponds to the number of times
+        # sum(num_disp_iters) == number of total frames in one iteration.
+        # each value of num_disp_iters corresponds to the number of times
         # to display each respective unique frame.
-        num_repeats = (1,
+        num_disp_iters = (1,
                        self.pregap_frame_num-1,
                        self.flash_frame,
                        self.postgap_frame_num)
@@ -679,13 +679,14 @@ class FlashingCircle(Stim):
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         NFdict=dict(self.__dict__)
+        NFdict['num_disp_iters'] = num_disp_iters
         NFdict.pop('monitor')
         NFdict.pop('indicator')
         full_dict={'stimulation':NFdict,
                    'monitor':mondict,
                    'indicator':indicator_dict}
 
-        return full_sequence, None, num_repeats, full_dict
+        return full_sequence, full_dict
 
     def generate_movie(self):
         """
@@ -1034,7 +1035,7 @@ class SparseNoise(Stim):
     
     def generate_frames_by_index(self):
         frames = []
-        num_repeats = []
+        num_disp_iters = []
         
         off_params = [0,None,None,-1]
         
@@ -1059,21 +1060,21 @@ class SparseNoise(Stim):
             if self.pregap_frame_num != 0:
                 # then add off_params to frames
                 frames.append(off_params)
-                num_repeats.append(self.pregap_frame_num)
+                num_disp_iters.append(self.pregap_frame_num)
             
             iter_grid_points = self._generate_grid_points_sequence()
             
             for grid_point in iter_grid_points:
                 frames.append([1,grid_point[0],grid_point[1],1])
-                num_repeats.append(indicator_on_frame)
+                num_disp_iters.append(indicator_on_frame)
             
                 frames.append([1,grid_point[0],grid_point[1],-1])
-                num_repeats.append(indicator_off_frame)
+                num_disp_iters.append(indicator_off_frame)
                 
             if self.postgap_frame_num != 0:
                 # then add off_params to frames
                 frames.append(off_params)
-                num_repeats.append(self.postgap_frame_num)
+                num_disp_iters.append(self.postgap_frame_num)
                 
         """ Might be difficult to add in non synchronized indicator without
         first generating all of the frames. Is this important?"""
@@ -1081,10 +1082,10 @@ class SparseNoise(Stim):
         frames = tuple(frames)
         frames = [tuple(x) for x in frames]
         
-        return tuple(frames), num_repeats
+        return tuple(frames), num_disp_iters
     
     def generate_movie_by_index(self):
-        self.frames, num_repeats = self.generate_frames_by_index()
+        self.frames, num_disp_iters = self.generate_frames_by_index()
         
         num_unique_frames = len(self.frames)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
@@ -1134,13 +1135,14 @@ class SparseNoise(Stim):
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         SNdict=dict(self.__dict__)
+        SNdict['num_disp_iters'] = num_disp_iters
         SNdict.pop('monitor')
         SNdict.pop('indicator')
         full_dict={'stimulation':SNdict,
                         'monitor':mondict,
                         'indicator':indicator_dict}
             
-        return full_seq, None, num_repeats, full_dict
+        return full_seq, full_dict
                     
             
 

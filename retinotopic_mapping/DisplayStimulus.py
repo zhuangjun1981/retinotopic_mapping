@@ -526,58 +526,59 @@ class DisplaySequence(object):
         cumsum = list(np.cumsum(num_unique_block_frames))
         cumsum.insert(0,0)
         
+        for _ in range(self.display_iter):
         
-        for i in range(len(cumsum)-1):
-            # each loop will grab either a single frame or list of frames
-            # corresponding to a particular display block. In this case
-            # blocks of size 1 correspond to gaps in stimulus (pre,mid,post etc)
-            # and blocks of size > 1 correspond to one period of a particular 
-            # display condition
-            frame_list = self.sequence[cumsum[i]:cumsum[i+1],::-1,:]
-            
-            if frame_list.shape[0] == 1:
-                # then we have a gap which repeats depending on `num_disp_iters`
-                for j in range(num_disp_iters[i]):
-                    stim.setImage(frame_list[0])
-                    stim.draw()
-                    time_stamps.append(time.clock()-start_time)
+            for i in range(len(cumsum)-1):
+                # each loop will grab either a single frame or list of frames
+                # corresponding to a particular display block. In this case
+                # blocks of size 1 correspond to gaps in stimulus (pre,mid,post etc)
+                # and blocks of size > 1 correspond to one period of a particular 
+                # display condition
+                frame_list = self.sequence[cumsum[i]:cumsum[i+1],::-1,:]
                 
-                    #set syncPuls signal
-                    if self.is_sync_pulse: 
-                         _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
-        
-                    #show visual stim
-                    window.flip()
-                    
-                    #set syncPuls signal
-                    if self.is_sync_pulse: 
-                        _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                    
-                    self._update_display_status()
-            else:
-                # then we are in a display block and have a list corresponding 
-                # to one period of temporal frequency in a cycle that will be 
-                # repeated until reaching `blockgap_frame_num`
-                m = 0
-                while self.keep_display and m <= num_disp_iters[i]:
-                    for frames in frame_list:
-                        stim.setImage(frames)
+                if frame_list.shape[0] == 1:
+                    # then we have a gap which repeats depending on `num_disp_iters`
+                    for j in range(num_disp_iters[i]):
+                        stim.setImage(frame_list[0])
                         stim.draw()
                         time_stamps.append(time.clock()-start_time)
-                        
+                    
                         #set syncPuls signal
                         if self.is_sync_pulse: 
                              _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
             
-                        #show visual stim 
+                        #show visual stim
                         window.flip()
                         
                         #set syncPuls signal
                         if self.is_sync_pulse: 
                             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                        
                         self._update_display_status()
-                    
-                        m += 1
+                else:
+                    # then we are in a display block and have a list corresponding 
+                    # to one period of temporal frequency in a cycle that will be 
+                    # repeated until reaching `blockgap_frame_num`
+                    m = 0
+                    while self.keep_display and m <= num_disp_iters[i]:
+                        for frames in frame_list:
+                            stim.setImage(frames)
+                            stim.draw()
+                            time_stamps.append(time.clock()-start_time)
+                            
+                            #set syncPuls signal
+                            if self.is_sync_pulse: 
+                                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+                
+                            #show visual stim 
+                            window.flip()
+                            
+                            #set syncPuls signal
+                            if self.is_sync_pulse: 
+                                _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                            self._update_display_status()
+                        
+                            m += 1
                     
         stop_time = time.clock()
         window.close()                
