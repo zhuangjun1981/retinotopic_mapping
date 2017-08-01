@@ -1036,7 +1036,6 @@ class SparseNoise(Stim):
     def generate_frames_by_index(self):
         frames = []
         num_disp_iters = []
-        
         off_params = [0,None,None,-1]
         
         
@@ -1061,7 +1060,7 @@ class SparseNoise(Stim):
                 # then add off_params to frames
                 frames.append(off_params)
                 num_disp_iters.append(self.pregap_frame_num)
-            
+                
             iter_grid_points = self._generate_grid_points_sequence()
             
             for grid_point in iter_grid_points:
@@ -1075,7 +1074,7 @@ class SparseNoise(Stim):
                 # then add off_params to frames
                 frames.append(off_params)
                 num_disp_iters.append(self.postgap_frame_num)
-                
+     
         """ Might be difficult to add in non synchronized indicator without
         first generating all of the frames. Is this important?"""
         
@@ -1625,8 +1624,6 @@ class DriftingGratingCircle(Stim):
         self_dict=dict(self.__dict__)
         self_dict['num_unique_block_frames'] = num_unique_block_frames
         self_dict['num_disp_iters'] = num_disp_iters
-        
-        
         self_dict.pop('monitor')
         self_dict.pop('indicator')
         log={'stimulation':self_dict,
@@ -1634,9 +1631,8 @@ class DriftingGratingCircle(Stim):
              'indicator':indicator_dict}    
             
         return mov, log
-            
 
-
+    
     def _generate_circle_mask_dict(self):
         """
         generate a dictionary of circle masks for each size in size list

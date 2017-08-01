@@ -253,7 +253,6 @@ class DisplaySequence(object):
         if self.by_index:
             self.sequence, self.seq_log = stim.generate_movie_by_index()
             self.clear()
-    
         else:
             self.sequence, self.seq_log = stim.generate_movie()
             self.clear()
@@ -658,11 +657,10 @@ class DisplaySequence(object):
         
         if self.seq_log['stimulation']['stim_name'] == 'DriftingGratingCircle':
             self._display_DriftingGratingCircle_by_index(window,stim)
-            
+          
         else:
             self._display_other_stim_by_index(window,stim)
-        
-        
+       
     def _display(self, window, stim):
         
         # display frames
