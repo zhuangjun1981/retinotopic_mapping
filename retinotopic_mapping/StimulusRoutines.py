@@ -1649,8 +1649,6 @@ class DriftingGratingCircle(Stim):
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         self_dict=dict(self.__dict__)
-#        self_dict['num_unique_block_frames'] = num_unique_block_frames
-#        self_dict['num_disp_iters'] = num_disp_iters
         self_dict['index_to_display'] = index_to_display
         
         
