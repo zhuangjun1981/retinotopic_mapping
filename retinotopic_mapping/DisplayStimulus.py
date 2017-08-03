@@ -530,24 +530,24 @@ class DisplaySequence(object):
                 # Then display sequence backwards
                  frame_num = num_iters - (i % num_iters) -1
                  
-            for m in index_to_display:
-                stim.setImage(self.sequence[m][::-1,:])
-                stim.draw()
-                time_stamps.append(time.clock()-start_time)
-                
-                #set syncPuls signal
-                if self.is_sync_pulse: 
-                     _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
-    
-                #show visual stim
-                window.flip()
-                
-                #set syncPuls signal
-                if self.is_sync_pulse: 
-                    _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                
-                self._update_display_status()
-                i += 1
+            frame_index = index_to_display[i]
+            stim.setImage(self.sequence[frame_index][::-1,:])
+            stim.draw()
+            time_stamps.append(time.clock()-start_time)
+            
+            #set syncPuls signal
+            if self.is_sync_pulse: 
+                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+
+            #show visual stim
+            window.flip()
+            
+            #set syncPuls signal
+            if self.is_sync_pulse: 
+                _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+            
+            self._update_display_status()
+            i += 1
         
         stop_time = time.clock()
         window.close()

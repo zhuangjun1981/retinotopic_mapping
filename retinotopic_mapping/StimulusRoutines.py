@@ -1621,7 +1621,7 @@ class DriftingGratingCircle(Stim):
             mov[i, indicator_height_min:indicator_height_max,
                 indicator_width_min:indicator_width_max] = frame[-1]
             
-            
+        # Compute list of indices of each frame to display
         index_to_display = []
         
         cumsum = np.cumsum(num_unique_block_frames)
@@ -1650,8 +1650,6 @@ class DriftingGratingCircle(Stim):
         indicator_dict.pop('monitor')
         self_dict=dict(self.__dict__)
         self_dict['index_to_display'] = index_to_display
-        
-        
         self_dict.pop('monitor')
         self_dict.pop('indicator')
         log={'stimulation':self_dict,
