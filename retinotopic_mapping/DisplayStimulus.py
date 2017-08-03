@@ -309,8 +309,8 @@ class DisplaySequence(object):
 
         # calculate expected display time
         if self.by_index:
-            num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
-            display_time = (float(sum(num_disp_iters))
+            index_to_display = self.seq_log['stimulation']['index_to_display']
+            display_time = (float(len(index_to_display))
                                * self.display_iter/ refresh_rate)
         else:
             display_time = (float(self.sequence.shape[0]) * 
@@ -501,103 +501,14 @@ class DisplaySequence(object):
 
         return file_number
     
-    def _display_DriftingGratingCircle_by_index(self,window,stim):
-        """display by index routine for DriftingGratingCircle """
-        # display frames by index
-        time_stamps = []
-        start_time = time.clock()
-        num_unique_block_frames = self.seq_log['stimulation']['num_unique_block_frames']
-        num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
-        
-        # frames stored in self.sequence
-        if self.is_sync_pulse:
-            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
-                                                self.sync_pulse_NI_port, 
-                                                self.sync_pulse_NI_line)
-            syncPulseTask.StartTask()
-            _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-        
-        # compute list of indices for grabbing different frame blocks
-        cumsum = list(np.cumsum(num_unique_block_frames))
-        cumsum.insert(0,0)
-        
-        for _ in range(self.display_iter):
-        
-            for i in range(len(cumsum)-1):
-                # each loop will grab either a single frame or list of frames
-                # corresponding to a particular display block. In this case
-                # blocks of size 1 correspond to gaps in stimulus (pre,mid,post etc)
-                # and blocks of size > 1 correspond to one period of a particular 
-                # display condition
-                frame_list = self.sequence[cumsum[i]:cumsum[i+1],::-1,:]
-                
-                if frame_list.shape[0] == 1:
-                    # then we have a gap which repeats depending on `num_disp_iters`
-                    for j in range(num_disp_iters[i]):
-                        stim.setImage(frame_list[0])
-                        stim.draw()
-                        time_stamps.append(time.clock()-start_time)
-                    
-                        #set syncPuls signal
-                        if self.is_sync_pulse: 
-                             _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
-            
-                        #show visual stim
-                        window.flip()
-                        
-                        #set syncPuls signal
-                        if self.is_sync_pulse: 
-                            _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                        
-                        self._update_display_status()
-                else:
-                    # then we are in a display block and have a list corresponding 
-                    # to one period of temporal frequency in a cycle that will be 
-                    # repeated until reaching `blockgap_frame_num`
-                    m = 0
-                    while self.keep_display and m <= num_disp_iters[i]:
-                        for frames in frame_list:
-                            stim.setImage(frames)
-                            stim.draw()
-                            time_stamps.append(time.clock()-start_time)
-                            
-                            #set syncPuls signal
-                            if self.is_sync_pulse: 
-                                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
-                
-                            #show visual stim 
-                            window.flip()
-                            
-                            #set syncPuls signal
-                            if self.is_sync_pulse: 
-                                _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                            self._update_display_status()
-                        
-                            m += 1
-                    
-        stop_time = time.clock()
-        window.close()                
-          
-        if self.is_sync_pulse:
-             syncPulseTask.StopTask()
-        
-        self.time_stamp = np.array(time_stamps)
-        self.display_length = stop_time-start_time
-
-        if self.display_frames is not None:
-            self.display_frames = self.display_frames[:i]
-
-        if self.keep_display == True: 
-             print '\nDisplay successfully completed.'
-    
-    def _display_other_stim_by_index(self,window,stim):
+    def _display_by_index(self,window,stim):
         """ display by index routine for simpler stim routines """
         
         # display frames by index
         time_stamps = []
         start_time = time.clock()
-        num_iters = len(self.seq_log['stimulation']['num_disp_iters'])
-        num_disp_iters = self.seq_log['stimulation']['num_disp_iters']
+        num_iters = len(self.seq_log['stimulation']['index_to_display'])
+        index_to_display = self.seq_log['stimulation']['index_to_display']
         
         if self.is_sync_pulse:
             syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
@@ -610,6 +521,7 @@ class DisplaySequence(object):
         i = 0
         
         while self.keep_display and i < (num_iters*self.display_iter):
+            
             if self.display_order == 1:
                 # Then display sequence in order
                  frame_num = i % num_iters
@@ -618,10 +530,8 @@ class DisplaySequence(object):
                 # Then display sequence backwards
                  frame_num = num_iters - (i % num_iters) -1
                  
-            num_disp_frames = num_disp_iters[i % num_iters]
-                 
-            for m in range(num_disp_frames):
-                stim.setImage(self.sequence[frame_num][::-1,:])
+            for m in index_to_display:
+                stim.setImage(self.sequence[m][::-1,:])
                 stim.draw()
                 time_stamps.append(time.clock()-start_time)
                 
@@ -635,9 +545,9 @@ class DisplaySequence(object):
                 #set syncPuls signal
                 if self.is_sync_pulse: 
                     _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                
                 self._update_display_status()
-            
-            i += 1
+                i += 1
         
         stop_time = time.clock()
         window.close()
@@ -653,14 +563,9 @@ class DisplaySequence(object):
 
         if self.keep_display == True: 
              print '\nDisplay successfully completed.'
-    
-    def _display_by_index(self, window, stim):
+
+
         
-        if self.seq_log['stimulation']['stim_name'] == 'DriftingGratingCircle':
-            self._display_DriftingGratingCircle_by_index(window,stim)
-            
-        else:
-            self._display_other_stim_by_index(window,stim)
         
         
     def _display(self, window, stim):
