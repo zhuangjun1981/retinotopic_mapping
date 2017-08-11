@@ -48,7 +48,7 @@ how a moving dot is represented in the mouse brain.
 Contributors
 +++++++++++++
 * Jun Zhuang @zhuang1981
-* John Yearsley @yearsj
+* John Yearsley @jhyearsley
 * Derric Williams @derricw
 
 
