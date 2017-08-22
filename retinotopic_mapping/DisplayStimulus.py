@@ -682,15 +682,15 @@ class DisplaySequence(object):
         
         #generate full log dictionary
         path = os.path.join(directory, file_name)
-        ft.saveFile_HD5(path,logFile)
-        print ".hdf5 file generated successfully."
+        ft.saveFile(path,logFile)
+        print ".pkl file generated successfully."
         
         backupFileFolder = self._get_backup_folder()
         if backupFileFolder is not None:
             if not (os.path.isdir(backupFileFolder)): 
                  os.makedirs(backupFileFolder)
             backupFilePath = os.path.join(backupFileFolder,file_name)
-            ft.saveFile_HD5(backupFilePath,logFile)
+            ft.saveFile(backupFilePath,logFile)
             print ".pkl backup file generate successfully"
         else:
             print "did not find backup path, no backup has been saved."
