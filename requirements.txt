@@ -4,7 +4,7 @@ opencv-python>2.4.8
 scikit-image>0.12.3
 psychopy < 1.84
 pyglet > 1.1
-tifffile > 0.10
+tifffile <= 0.10
 PyDAQmx > 1.3
 numpydoc
 sphinx > 1.6

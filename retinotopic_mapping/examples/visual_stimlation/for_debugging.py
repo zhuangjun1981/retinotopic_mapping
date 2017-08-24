@@ -11,9 +11,9 @@ running all you need to do is press either one of the 'Esc' or 'q' buttons.
 """
 
 import numpy as np
-import StimulusRoutines as stim
-from MonitorSetup import Monitor, Indicator
-from DisplayStimulus import DisplaySequence
+import retinotopic_mapping.StimulusRoutines as stim
+from retinotopic_mapping.MonitorSetup import Monitor, Indicator
+from retinotopic_mapping.DisplayStimulus import DisplaySequence
 
 """
 To get up and running quickly before performing any experiments it is 
@@ -58,9 +58,9 @@ mon = Monitor(resolution=resolution,
             downsample_rate=downsample_rate)
 ind = Indicator(mon)
 
-dg = stim.DriftingGratingCircle(mon,ind,tf_list=(4.,8.),iteration=2)
-a = dg.generate_frames_by_index()
-b = dg.generate_frames()
+# dg = stim.DriftingGratingCircle(mon,ind,tf_list=(4.,8.),iteration=2)
+# a = dg.generate_frames_by_index()
+# b = dg.generate_frames()
 """ Now for the fun stuff! Each block of code below shows an example of
 the stimulus routines that are currently implemented in the codebase. Uncomment
 each block and run the script to view the stimulus presentations. This is where
@@ -84,19 +84,19 @@ you might need to start debugging!
 
 
 #======================= Flashing Circle Stimulus =============================
-#flashing_circle = stim.FlashingCircle(mon,
-#                                      ind,
-#                                      radius=20.,
-#                                      flash_frame=10)
-#ds = DisplaySequence(log_dir=r'C:\data',
-#                     backupdir=None,
-#                     is_triggered=False,
-#                     is_sync_pulse=False,
-#                     by_index=False,
-#                     display_iter=2,
-#                     display_screen=1)
-#ds.set_stim(flashing_circle)
-#ds.trigger_display()
+flashing_circle = stim.FlashingCircle(mon,
+                                     ind,
+                                     radius=20.,
+                                     flash_frame=10)
+ds = DisplaySequence(log_dir=r'C:\data',
+                    backupdir=None,
+                    is_triggered=False,
+                    is_sync_pulse=False,
+                    by_index=False,
+                    display_iter=2,
+                    display_screen=1)
+ds.set_stim(flashing_circle)
+ds.trigger_display()
 #==============================================================================
 
 
@@ -129,13 +129,13 @@ you might need to start debugging!
 
 
 #======================= Drifting Grating Circle Stimulus =====================
-dg = stim.DriftingGratingCircle(mon,
-                                              ind,
-                                              sf_list=(0.08,0.16),
-                                              tf_list=(4.0,8.0),
-                                              dire_list=(0.,),
-                                              con_list=(0.5,1.),
-                                              size_list=(5.,10.))
+# dg = stim.DriftingGratingCircle(mon,
+#                                 ind,
+#                                 sf_list=(0.08,0.16),
+#                                 tf_list=(4.0,8.0),
+#                                 dire_list=(0.,),
+#                                 con_list=(0.5,1.),
+#                                 size_list=(5.,10.))
 #ds = DisplaySequence(log_dir=r'C:\data',
 #                     backupdir=None,
 #                     display_iter = 2,
