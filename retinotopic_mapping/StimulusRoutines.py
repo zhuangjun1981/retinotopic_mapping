@@ -301,7 +301,7 @@ class UniformContrast(Stim):
 
     def generate_frames(self):
         """
-        generate a tuple of parameters of each frame.
+        generate a tuple of parameters with information for each frame.
 
         Information contained in each frame:
              first element -
@@ -314,37 +314,54 @@ class UniformContrast(Stim):
 
         displayframe_num = int(self.duration * self.monitor.refresh_rate)
 
-        frames = [(0, -1)] * self.pregap_frame_num + \
-                 [(1, 1.)] * displayframe_num + \
-                 [(0, -1)] * self.postgap_frame_num
+        frames = [(0., -1.)] * self.pregap_frame_num + \
+                 [(1., 1.)] * displayframe_num + \
+                 [(0., -1.)] * self.postgap_frame_num
+                  
 
         return tuple(frames)
     
-    def generate_frames_by_index(self):
-        """ generate frames by index """
+    
+    def _generate_frames_for_index_display(self):
+        " parameters are predefined here, nothing to compute. "
+        if self.indicator.is_sync:
+            # Parameters that define the stimulus
+            frames = ((0.,-1.), (1.,1.), (0.,-1.))
         
+            return frames
+        
+        else:
+            raise NotImplementedError, "method not avaialable for non-sync indicator"
+    
+    def _generate_display_index(self):
+        """ compute a list of indices corresponding to each frame to display. """
         display_frame_num = int(self.duration * self.monitor.refresh_rate)
-        
-        # Parameters that define the stimulus
-        frames = ((0,-1), (1,1.), (0,-1))
-        
+    
         #Number of times each respective parameter will be displayed
         num_disp_iters = (self.pregap_frame_num, 
-                     display_frame_num, 
-                     self.postgap_frame_num)
+                          display_frame_num, 
+                          self.postgap_frame_num)
         
-        return frames, num_disp_iters
+        frames = self._generate_frames_for_index_display()
+        
+        index_to_display = []
+        
+        for i, reps in enumerate(num_disp_iters):
+            index_to_display += reps*[i]
+            
+        return frames, index_to_display
+    
     
     def generate_movie_by_index(self):
-        """ by index """
-        self.frames, num_disp_iters = self.generate_frames_by_index()
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames, self.index_to_display = self._generate_display_index()
         
-        num_unique_frames = len(self.frames)
+        num_frames = len(self.frames)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
         # Initialize numpy array of 0's as placeholder for stimulus routine
-        full_sequence = np.zeros((num_unique_frames,
+        full_sequence = np.zeros((num_frames,
                                   num_pixels_width,
                                   num_pixels_height),
                                   dtype=np.float16)
@@ -367,9 +384,7 @@ class UniformContrast(Stim):
                                       num_pixels_height),
                                       dtype=np.float16)
         
-        index_to_display = []
-        
-        for i in range(num_unique_frames):
+        for i in range(num_frames):
             curr_frame = self.frames[i]
             
             if curr_frame[0] == 0:
@@ -383,32 +398,27 @@ class UniformContrast(Stim):
             
             full_sequence[i] = stim_sequence
             
-            for reps in range(num_disp_iters[i]):
-                index_to_display.append(i)
-            
         monitor_dict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
         NF_dict = dict(self.__dict__)
-        NF_dict['index_to_display'] = index_to_display
         NF_dict.pop('monitor')
         NF_dict.pop('indicator')
         full_dict = {'stimulation' : NF_dict,
                      'monitor' : monitor_dict,
                      'indicator' : indicator_dict}
 
-        
         return full_sequence, full_dict
 
     def generate_movie(self):
         """
-        generate movie for uniform contrast display frame by frame
+        generate movie for uniform contrast display frame by frame.
 
         Returns
         -------
-        full_seq : list
-            3-d array of the stimulus to be displayed. elements are of type unit8
+        full_seq : nd array, uint8
+            3-d array of the stimulus to be displayed. 
         full_dict : dict
-            dictionary containing the information of the stimulus
+            dictionary containing the information of the stimulus.
         """
 
         self.frames = self.generate_frames()
@@ -477,27 +487,27 @@ class FlashingCircle(Stim):
     Parameters
     ----------
     monitor : monitor object
-        contains display monitor information
+        contains display monitor information.
     indicator : indicator object
-        contains indicator information
+        contains indicator information.
     coordinate : str from {'degree','linear'}, optional
-        specifies coordinates, defaults to 'degree'
+        specifies coordinates, defaults to 'degree'.
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
-        is white
+        is white.
     stim_name : str
-        Name of the stimulus
+        Name of the stimulus.
     center : 2-tuple, optional
-        center coordinate of the circle in degrees, defaults to `(90.,10.)`
+        center coordinate of the circle in degrees, defaults to `(90.,10.)`.
     radius : float, optional
         radius of the circle, defaults to `10.`
     color : float, optional
         color of the circle, takes values in [-1,1], defaults to `-1.`
     iteration : int, optional
-        total number of flashes, defaults to `1`
+        total number of flashes, defaults to `1`.
     flash_frame : int, optional
         number of frames that circle is displayed during each presentation
-        of the stimulus, defaults to `3`
+        of the stimulus, defaults to `3`.
     """
     def __init__(self,
                  monitor,
@@ -553,7 +563,7 @@ class FlashingCircle(Stim):
     def generate_frames(self):
         """
         function to generate all the frames needed for the stimulation.
-        Returns a list of information of all frames as a list of tuples
+       
 
         Information contained in each frame:
            first element :
@@ -568,9 +578,13 @@ class FlashingCircle(Stim):
                 corresponds to the color of indicator and during stimulus
                 the value is equal to 1, whereas during a gap the value is
                 equal to 0
+        Returns
+        -------
+        frames : list
+            list of information defining each frame.
         """
 
-        #frame number for each iteration
+        # number of frames for one round of stimulus
         iteration_frame_num = (self.pregap_frame_num +
                                self.flash_frame + self.postgap_frame_num)
 
@@ -608,36 +622,52 @@ class FlashingCircle(Stim):
 
         return tuple(frames)
     
-    def generate_frames_by_index(self):
-        """ generate stimulus by unique frames """
-        start = (0,1,-1)
-        circle_on = (1,0,1)
-        circle_off = (0,0,-1)
+    def _generate_frames_for_index_display(self):
+        if self.indicator.is_sync:
+            start = (0.,1.,-1.)
+            circle_on = (1.,0.,1.)
+            circle_off = (0.,0.,-1.)
+            
+            frames = (start, circle_off, circle_on, circle_off)
+            
+            return frames
+            
+        else: 
+            raise NotImplementedError, "method not available for non-sync indicator"
         
-        frames = (start, circle_off, circle_on, circle_off)
-        
-        
-        return frames
-    
-    def generate_movie_by_index(self):
-        """ generate unique frames of stimulus movie """
-        
-        # compute unique frame parameters
-        self.frames = self.generate_frames_by_index()
+    def _generate_display_index(self):
+        """ compute a list of indices corresponding to each frame to display. """
+        frames = self._generate_frames_for_index_display()
         
         # sum(num_disp_iters) == number of total frames in one iteration.
         # each value of num_disp_iters corresponds to the number of times
         # to display each respective unique frame.
         num_disp_iters = (1,
-                       self.pregap_frame_num-1,
-                       self.flash_frame,
-                       self.postgap_frame_num)
+                          self.pregap_frame_num-1,
+                          self.flash_frame,
+                          self.postgap_frame_num)
         
-        num_unique_frames = len(self.frames)
+        index_to_display = []
+        
+        for i, reps in enumerate(num_disp_iters):
+            index_to_display += reps*[i]
+            
+        return frames, index_to_display
+        
+        
+    def generate_movie_by_index(self):
+        """ compute the stimulus movie to be displayed by index. """
+        
+        # compute unique frame parameters
+        self.frames, self.index_to_display = self._generate_display_index()
+        
+      
+        
+        num_frames = len(self.frames)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
         
-        full_sequence = np.zeros((num_unique_frames,
+        full_sequence = np.zeros((num_frames,
                                   num_pixels_width,
                                   num_pixels_height), 
                                   dtype=np.float16)
@@ -668,9 +698,7 @@ class FlashingCircle(Stim):
         circle_mask = get_circle_mask(map_x, map_y, 
                                   self.center, self.radius).astype(np.float16)
         
-        index_to_display = []
-        
-        for i in range(num_unique_frames):
+        for i in range(num_frames):
             curr_frame = self.frames[i]
             
             if curr_frame[0] == 0:
@@ -682,15 +710,11 @@ class FlashingCircle(Stim):
                         indicator_width_min:indicator_width_max] = curr_frame[2]
             
             full_sequence[i] = curr_FC_seq
-            
-            for reps in range(num_disp_iters[i]):
-                index_to_display.append(i)
         
         mondict=dict(self.monitor.__dict__)
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         NFdict=dict(self.__dict__)
-        NFdict['index_to_display'] = index_to_display
         NFdict.pop('monitor')
         NFdict.pop('indicator')
         full_dict={'stimulation':NFdict,
@@ -1044,59 +1068,68 @@ class SparseNoise(Stim):
 
         return tuple(frames)
     
-    def generate_frames_by_index(self):
-        frames = []
-        num_disp_iters = []
+    def _generate_frames_for_index_display(self):
+        """ compute the information that defines the frames used for index display"""
+        if self.indicator.is_sync:
+            frames = []
+            num_disp_iters = []
+            
+            off_params = [0,None,None,-1]
+            
+            if self.probe_frame_num == 1:
+                indicator_on_frame = 1
+            elif self.probe_frame_num > 1:
+                indicator_on_frame = self.probe_frame_num // 2
+            else:
+                raise ValueError('`probe_frame_num` should be an int larger than 0!')
+    
+            indicator_off_frame = self.probe_frame_num - indicator_on_frame
+            
+            
+            for i in xrange(self.iteration):
+                if self.pregap_frame_num != 0:
+                    # then add off_params to frames
+                    frames.append(off_params)
+                    num_disp_iters.append(self.pregap_frame_num)
+                
+                iter_grid_points = self._generate_grid_points_sequence()
+                
+                for grid_point in iter_grid_points:
+                    frames.append([1,grid_point[0],grid_point[1],1])
+                    num_disp_iters.append(indicator_on_frame)
+                
+                    frames.append([1,grid_point[0],grid_point[1],-1])
+                    num_disp_iters.append(indicator_off_frame)
+                    
+                if self.postgap_frame_num != 0:
+                    # then add off_params to frames
+                    frames.append(off_params)
+                    num_disp_iters.append(self.postgap_frame_num)
+            
+            frames = tuple(frames)
+            frames = [tuple(x) for x in frames]
+            
+            return tuple(frames), num_disp_iters
         
-        off_params = [0,None,None,-1]
-        
-        
-        
-        
-        
-        if self.probe_frame_num == 1:
-            indicator_on_frame = 1
-        elif self.probe_frame_num > 1:
-            indicator_on_frame = self.probe_frame_num // 2
         else:
-            raise ValueError('`probe_frame_num` should be an int larger than 0!')
-
-        indicator_off_frame = self.probe_frame_num - indicator_on_frame
+            raise NotImplementedError, "method not available for non-sync indicator"
+    
+    
+    def _generate_display_index(self):
+        """ compute a list of indices corresponding to each frame to display. """
+        frames, num_disp_iters = self._generate_frames_for_index_display()
         
-        """ when generated normally (not by index) there is a conditional asking
-        if the pregap_frame_nums are greater than 0. Is this reasonable? Or should
-        there just always be pregap_frame_nums?"""
+        index_to_display = []
         
-        for i in range(self.iteration):
-            if self.pregap_frame_num != 0:
-                # then add off_params to frames
-                frames.append(off_params)
-                num_disp_iters.append(self.pregap_frame_num)
+        for i, reps in enumerate(num_disp_iters):
+            index_to_display += reps*[i]
             
-            iter_grid_points = self._generate_grid_points_sequence()
-            
-            for grid_point in iter_grid_points:
-                frames.append([1,grid_point[0],grid_point[1],1])
-                num_disp_iters.append(indicator_on_frame)
-            
-                frames.append([1,grid_point[0],grid_point[1],-1])
-                num_disp_iters.append(indicator_off_frame)
-                
-            if self.postgap_frame_num != 0:
-                # then add off_params to frames
-                frames.append(off_params)
-                num_disp_iters.append(self.postgap_frame_num)
-                
-        """ Might be difficult to add in non synchronized indicator without
-        first generating all of the frames. Is this important?"""
+        return frames, index_to_display
         
-        frames = tuple(frames)
-        frames = [tuple(x) for x in frames]
-        
-        return tuple(frames), num_disp_iters
     
     def generate_movie_by_index(self):
-        self.frames, num_disp_iters = self.generate_frames_by_index()
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames, self.index_to_display = self._generate_display_index()
         
         num_unique_frames = len(self.frames)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
@@ -1122,7 +1155,6 @@ class SparseNoise(Stim):
                                              num_pixels_width,
                                              num_pixels_height),
                                              dtype=np.float16)
-        index_to_display = []
         
         for i, frame in enumerate(self.frames):
             if frame[0] == 1:
@@ -1140,14 +1172,10 @@ class SparseNoise(Stim):
             full_seq[i, indicator_height_min:indicator_height_max,
                      indicator_width_min:indicator_width_max] = frame[3]
             
-            for reps in range(num_disp_iters[i]):
-                index_to_display.append(i)
-            
         mondict=dict(self.monitor.__dict__)
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         SNdict=dict(self.__dict__)
-        SNdict['index_to_display'] = index_to_display
         SNdict.pop('monitor')
         SNdict.pop('indicator')
         full_dict={'stimulation':SNdict,
@@ -1155,8 +1183,7 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
             
         return full_seq, full_dict
-                    
-            
+                            
 
     def generate_movie(self):
         """
@@ -1241,6 +1268,9 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
 
         return full_seq, full_dict
+    
+    
+
 
 class DriftingGratingCircle(Stim):
     """
@@ -1481,8 +1511,8 @@ class DriftingGratingCircle(Stim):
 
         return tuple(frames)
     
-    def generate_frames_by_index(self):
-        """Generate unique frames as a list. 
+    def _generate_frames_for_index_display(self):
+        """ compute the information that defines the frames used for index display 
         
             First chunk - 1 frame containing an off condition
             second chunk - chunk of size depending on temporal frequency
@@ -1491,75 +1521,109 @@ class DriftingGratingCircle(Stim):
             ...
             
         """
-        
-        
-        single_run_frames = []
-        off_params = (0, None,None,None,None,None,None,None,-1.)
-        midgap_frame_num = int(self.midgap_dur*self.monitor.refresh_rate)
-        block_gap_num = int(self.block_dur*self.monitor.refresh_rate)
-        
-        # Used to store the length of a given block. 'off' blocks will always
-        # be 1 whereas 'on' blocks are of variable length. we need this information
-        # in order to play the stimulus correctly
-        num_unique_block_frames = [1]
-        
-        # used to store number of repeats for each frame, e.g. pregap_frame_num
-        # postgap_frame_num, block_frame_num, ...
-        num_disp_iters = [self.pregap_frame_num]
-        
-        
-        for i in range(self.iteration):
-            if i!=0:
-                num_unique_block_frames.append(1)
-                num_disp_iters.append(midgap_frame_num)
-            single_run_frames += [off_params]
+        if self.indicator.is_sync:
+            single_run_frames = []
+            off_params = (0, None,None,None,None,None,None,None,-1.)
+            midgap_frame_num = int(self.midgap_dur*self.monitor.refresh_rate)
+            block_gap_num = int(self.block_dur*self.monitor.refresh_rate)
             
-            # Compute all combinations of defining parameters
-            all_conditions = self._generate_all_conditions()
+            # Used to store the length of a given block. 'off' blocks will always
+            # be 1 whereas 'on' blocks are of variable length. we need this information
+            # in order to play the stimulus correctly
+            num_unique_block_frames = [1]
             
-            for j, condition in enumerate(all_conditions):
-                if j!=0:
-                    single_run_frames += [off_params]
+            # used to store number of repeats for each frame, e.g. pregap_frame_num
+            # postgap_frame_num, block_frame_num, ...
+            num_disp_iters = [self.pregap_frame_num]
+            
+            
+            for i in range(self.iteration):
+                if i!=0:
                     num_unique_block_frames.append(1)
                     num_disp_iters.append(midgap_frame_num)
-                sf, tf, dire, con, size = condition
+                single_run_frames += [off_params]
                 
-                # Compute phase list
-                phases, frame_per_cycle = self._generate_phase_list(tf)
+                # Compute all combinations of defining parameters
+                all_conditions = self._generate_all_conditions()
                 
-                phases = phases[:frame_per_cycle]
-                num_unique_block_frames.append(frame_per_cycle)
-                
-                stim_on = []
-                
-                if (dire % (np.pi * 2)) >= np.pi:
-                         phases = [-phase for phase in phases]
-                
-                # Make each unique frame parameters
-                for k, phase in enumerate(phases): 
+                for j, condition in enumerate(all_conditions):
+                    if j!=0:
+                        single_run_frames += [off_params]
+                        num_unique_block_frames.append(1)
+                        num_disp_iters.append(midgap_frame_num)
+                    sf, tf, dire, con, size = condition
+                    
+                    # Compute phase list
+                    phases, frame_per_cycle = self._generate_phase_list(tf)
+                    
+                    phases = phases[:frame_per_cycle]
+                    num_unique_block_frames.append(frame_per_cycle)
+                    
+                    stim_on = []
+                    
+                    if (dire % (np.pi * 2)) >= np.pi:
+                             phases = [-phase for phase in phases]
+                    
+                    # Make each unique frame parameters
+                    for k, phase in enumerate(phases): 
+        
+                        # mark first frame of each cycle
+                        # if phase == 0 then it is first frame of a cycle
+                        if k == 0:
+                            stim_on += [(1, sf, tf, dire, con, size, phase, 1.)]
+                            
+                        else:
+                            stim_on += [(1, sf, tf, dire, con, size, phase, 0.)]
+                            
+                    single_run_frames += stim_on
+                    num_disp_iters.append(block_gap_num)
+                    
+            
+            single_run_frames += [off_params]
+            num_unique_block_frames.append(1)
+            num_disp_iters.append(self.postgap_frame_num)
+                   
+            return single_run_frames, num_unique_block_frames, num_disp_iters
+        
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator"
     
-                    # mark first frame of each cycle
-                    # if phase == 0 then it is first frame of a cycle
-                    if k == 0:
-                        stim_on += [(1, sf, tf, dire, con, size, phase, 1.)]
-                        
-                    else:
-                        stim_on += [(1, sf, tf, dire, con, size, phase, 0.)]
-                        
-                single_run_frames += stim_on
-                num_disp_iters.append(block_gap_num)
+    def _generate_display_index(self):
+        """ compute a list of indices corresponding to each frame to display. """
+        (frames, 
+         num_unique_block_frames, 
+         num_disp_iters) = self._generate_frames_for_index_display()
+        
+        # Compute list of indices of each frame to display
+        index_to_display = []
+        
+        cumsum = np.cumsum(num_unique_block_frames)
+        cumsum = list(np.insert(cumsum,0,0))
+        
+        frame_blocks = []
+        
+        for i in range(len(cumsum)-1):
+            frame_blocks.append(range(cumsum[i],cumsum[i+1]))
+            
+        for n,frame_block in enumerate(frame_blocks):
+            if len(frame_block)==1:
+                index_to_display += frame_block*num_disp_iters[n]
+            else:
+                repeats = (num_disp_iters[n] / num_unique_block_frames[n]) + 1
+                
+                repeated_block = frame_block*repeats
+                
+                repeated_block = repeated_block[:num_disp_iters[n]]
+                
+                index_to_display += repeated_block
                 
         
-        single_run_frames += [off_params]
-        num_unique_block_frames.append(1)
-        num_disp_iters.append(self.postgap_frame_num)
-               
-        return single_run_frames, num_unique_block_frames, num_disp_iters
+        return frames, index_to_display
+        
     
     def generate_movie_by_index(self):
-        
-        (self.frames, 
-         num_unique_block_frames, num_disp_iters) = self.generate_frames_by_index()
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames, self.index_to_display = self._generate_display_index()
         
         mask_dict = self._generate_circle_mask_dict()
         
@@ -1595,7 +1659,6 @@ class DriftingGratingCircle(Stim):
                                                     dtype=np.float16)
         
         for i, frame in enumerate(self.frames):
-        #,curr_frame in zip(range(sum(num_unique_block_frames)),self.frames):
 
             if frame[0] == 1: # not a gap
         
@@ -1620,36 +1683,11 @@ class DriftingGratingCircle(Stim):
             #add sync square for photodiode
             mov[i, indicator_height_min:indicator_height_max,
                 indicator_width_min:indicator_width_max] = frame[-1]
-            
-        # Compute list of indices of each frame to display
-        index_to_display = []
-        
-        cumsum = np.cumsum(num_unique_block_frames)
-        cumsum = list(np.insert(cumsum,0,0))
-        
-        frame_blocks = []
-        
-        for i in range(len(cumsum)-1):
-            frame_blocks.append(range(cumsum[i],cumsum[i+1]))
-            
-        for n,frame_block in enumerate(frame_blocks):
-            if len(frame_block)==1:
-                index_to_display += frame_block*num_disp_iters[n]
-            else:
-                repeats = (num_disp_iters[n] / num_unique_block_frames[n]) + 1
-                
-                repeated_block = frame_block*repeats
-                
-                repeated_block = repeated_block[:num_disp_iters[n]]
-                
-                index_to_display += repeated_block
-        
-            
+                                
         mondict=dict(self.monitor.__dict__)
         indicator_dict=dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
         self_dict=dict(self.__dict__)
-        self_dict['index_to_display'] = index_to_display
         self_dict.pop('monitor')
         self_dict.pop('indicator')
         log={'stimulation':self_dict,
@@ -1658,8 +1696,6 @@ class DriftingGratingCircle(Stim):
             
         return mov, log
             
-
-
     def _generate_circle_mask_dict(self):
         """
         generate a dictionary of circle masks for each size in size list

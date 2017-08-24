@@ -15,6 +15,7 @@ Welcome to Retinotopic Mapping's  documentation!
    intro
    examples
    api
+   Brain_Observatory_SDK
 
 
 Indices and tables
