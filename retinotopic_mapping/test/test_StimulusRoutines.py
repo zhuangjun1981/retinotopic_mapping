@@ -1,7 +1,6 @@
 import os
 import unittest
 import retinotopic_mapping.StimulusRoutines as sr
-import retinotopic_mapping.MonitorSetup as ms
 
 curr_folder = os.path.dirname(os.path.realpath(__file__))
 os.chdir(curr_folder)
@@ -9,56 +8,30 @@ os.chdir(curr_folder)
 class TestSimulation(unittest.TestCase):
 
     def setUp(self):
+        import retinotopic_mapping.MonitorSetup as ms
         
         # Setup monitor/indicator objects
         self.monitor = ms.Monitor(resolution=(1200,1600), dis=15., 
                                    mon_width_cm=40., mon_height_cm=30., 
                                    C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
-        self.indicator = ms.Indicator(self.monitor)
-        
-        # Setup Uniform Contrast Objects
-        self.UC = sr.UniformContrast(monitor=self.monitor, 
-                                     indicator=self.indicator, 
-                                     duration=0.1, color=1.,
-                                     pregap_dur=1., postgap_dur=1.5, 
-                                     background=0., coordinate='degree')
-        
-        self.UC_full_seq, self.UC_full_dict = self.UC.generate_movie_by_index()
-        
-        # Setup Flashing Circle Objects
-        self.FC = sr.FlashingCircle(monitor=self.monitor, 
-                                    indicator=self.indicator, 
-                                    center=(90., 0.), flash_frame=30,
-                                    color=-1., pregap_dur=0.5, postgap_dur=1.2, 
-                                    background=1., coordinate='degree')
-        
-        self.FC_full_seq, self.FC_full_dict = self.FC.generate_movie_by_index()
-        
-        # Setup Sparse Noise Objects
-        self.SN = sr.SparseNoise(monitor=self.monitor,
-                                 indicator=self.indicator,
-                                 probe_frame_num=10)
-        self.SN_full_seq, self.SN_full_dict = self.SN.generate_movie_by_index()
-        
-        # Setup Drifting Grating Circle objects
-        self.DGC = sr.DriftingGratingCircle(monitor=self.monitor,
-                                            indicator=self.indicator,
-                                            sf_list=(0.08,),
-                                            tf_list=(4.0,),
-                                            dire_list=(0.,),
-                                            con_list=(1.,),
-                                            size_list=(10.,))
-        self.DGC_full_seq, self.DGC_full_dict = self.DGC.generate_movie_by_index()
+        self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
+                                      is_sync = True, freq = 1.)
 
     # UNIFORM CONTRAST TESTS
     # ======================
-    def test_UC_by_index_correct_sequence_shape(self):
+    def test_UC_generate_movie_by_index(self):
+        # Setup Uniform Contrast Objects
+        self.UC = sr.UniformContrast(monitor=self.monitor,
+                                     indicator=self.indicator,
+                                     duration=0.1, color=1.,
+                                     pregap_dur=1., postgap_dur=1.5,
+                                     background=0., coordinate='degree')
+
+        self.UC_full_seq, self.UC_full_dict = self.UC.generate_movie_by_index()
+
         assert (self.UC_full_seq.shape == (3, 120, 160))
-        
-    def test_UC_by_index_correct_number_of_unique_frames(self):
         assert (len(self.UC_full_dict['stimulation']['index_to_display']) == 156)
 
-    def test_UC_index_frames_are_correct(self):
         frames = self.UC_full_dict['stimulation']['frames']
         all_frames = []
         for ind in self.UC_full_dict['stimulation']['index_to_display']:
@@ -81,13 +54,20 @@ class TestSimulation(unittest.TestCase):
 
     # FLASHING CIRCLE TESTS #
     # ===================== #
-    def test_FC_by_index_correct_sequence_shape(self):
+    def test_FC_generate_movie_by_index(self):
+        # Setup Flashing Circle Objects
+        self.FC = sr.FlashingCircle(monitor=self.monitor,
+                                    indicator=self.indicator,
+                                    center=(90., 0.), flash_frame=30,
+                                    color=-1., pregap_dur=0.5, postgap_dur=1.2,
+                                    background=1., coordinate='degree')
+
+        self.FC_full_seq, self.FC_full_dict = self.FC.generate_movie_by_index()
+
         assert (self.FC_full_seq.shape == (4, 120, 160))
-        
-    def test_FC_by_index_correct_number_of_unique_frames(self):
+
         assert (len(self.FC_full_dict['stimulation']['index_to_display']) == 132)
 
-    def test_FC_index_frames_are_correct(self):
         frames = self.FC_full_dict['stimulation']['frames']
         all_frames = []
         for ind in self.FC_full_dict['stimulation']['index_to_display']:
@@ -114,7 +94,14 @@ class TestSimulation(unittest.TestCase):
     
     # SPARSE NOISE TESTS #
     # ================== #
-    def test_SN_by_index_correct_sequence_shape(self):
+    def test_SN_generate_movie_by_index(self):
+
+        # Setup Sparse Noise Objects
+        self.SN = sr.SparseNoise(monitor=self.monitor,
+                                 indicator=self.indicator,
+                                 probe_frame_num=10)
+        self.SN_full_seq, self.SN_full_dict = self.SN.generate_movie_by_index()
+
         stim_on_frames = len(self.SN._generate_grid_points_sequence())*self.SN.probe_frame_num
         index_frames = self.SN.pregap_frame_num + stim_on_frames + self.SN.postgap_frame_num
         
@@ -122,7 +109,18 @@ class TestSimulation(unittest.TestCase):
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
-    def test_DriftingGratingCircle_generate_movie_by_index(self):
+    def test_DGC_generate_movie_by_index(self):
+
+        # Setup Drifting Grating Circle objects
+        self.DGC = sr.DriftingGratingCircle(monitor=self.monitor,
+                                            indicator=self.indicator,
+                                            sf_list=(0.08,),
+                                            tf_list=(4.0,),
+                                            dire_list=(0.,),
+                                            con_list=(1.,),
+                                            size_list=(10.,))
+        self.DGC_full_seq, self.DGC_full_dict = self.DGC.generate_movie_by_index()
+
         ref_rate = self.monitor.refresh_rate
         num_conditions = len(self.DGC._generate_all_conditions())
         block_frames = num_conditions*self.DGC.block_dur*ref_rate
