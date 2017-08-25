@@ -141,6 +141,19 @@ class TestSimulation(unittest.TestCase):
             assert (len(set(index_to_display[9 + probe_ind * 6: 12 + probe_ind * 6])) == 1)
             assert (index_to_display[9 + probe_ind * 6] - index_to_display[8 + probe_ind * 6] == 1)
 
+    def test_SN__get_probe_index_for_one_iter_on_off(self):
+        import numpy as np
+        sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
+                            background=0., coordinate='degree', grid_space=(5., 5.),
+                            probe_size=(5., 5.), probe_orientation=0., probe_frame_num=6,
+                            subregion=[-30, 30, -10., 90.], sign='ON-OFF')
+        frames_unique = sn._generate_frames_for_index_display()
+        probe_ind = sn._get_probe_index_for_one_iter_on_off(frames_unique)
+        for j in range(len(probe_ind) - 1):
+            probe_loc_0 = frames_unique[probe_ind[j]]
+            probe_loc_1 = frames_unique[probe_ind[j + 1]]
+            assert(not np.array_equal(probe_loc_0, probe_loc_1))
+
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
     def test_DGC_generate_movie_by_index(self):
