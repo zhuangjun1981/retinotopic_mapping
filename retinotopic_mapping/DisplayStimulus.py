@@ -49,7 +49,7 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     plt.hist(frame_duration, bins=np.linspace(0.0, 0.05, num=51))
     refresh_rate = float(refresh_rate)
     
-    num_frames = len(ts)-1
+    num_frames = len(ts)
     disp_true = ts[-1]-ts[0]
     disp_expect = (len(ts)-1)/refresh_rate
     avg_frame_time = np.mean(frame_duration)*1000

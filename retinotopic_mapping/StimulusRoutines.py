@@ -1142,8 +1142,21 @@ class SparseNoise(Stim):
                 index_to_display += [0] * self.postgap_frame_num
 
         elif self.sign == 'ON-OFF':
-            #todo: finish this
-            pass
+            if len(frames_unique) % 4 != 1:
+                raise ValueError('number of frames_unique should be 4x + 1')
+
+            index_to_display = []
+            for iter in range(self.iteration):
+                probe_inds = self._get_probe_index_for_one_iter_on_off(frames_unique)
+
+                index_to_display += [0] * self.pregap_frame_num
+
+                for probe_ind in probe_inds:
+                    index_to_display += [probe_ind * 2 + 1] * probe_on_frame_num
+                    index_to_display += [probe_ind * 2 + 2] * probe_off_frame_num
+
+                index_to_display += [0] * self.postgap_frame_num
+
         else:
             raise ValueError('SparseNoise: Do not understand "sign", should '
                              'be one of "ON", "OFF" and "ON-OFF".')
