@@ -264,7 +264,7 @@ class Stim(object):
         print 'Nothing executed! This is a place holder function'
         print 'See documentation in the respective stimulus'
 
-    def _generate_movie_by_index(self):
+    def generate_movie_by_index(self):
         """
         place holder of function _generate_movie_by_index()
         for each specific stimulus
@@ -800,7 +800,7 @@ class SparseNoise(Stim):
         number of frames for each square presentation
     subregion :
         the region on the monitor that will display the sparse noise,
-        list or tuple
+        list or tuple, [min_alt, max_alt, min_azi, max_azi]
     sign : {'ON-OFF', 'ON', 'OFF'}, optional
         determines which pixels appear in the `subregion`, defaults to
         `'ON-Off'` so that both on and off pixels appear. If `'ON` selected
@@ -834,7 +834,12 @@ class SparseNoise(Stim):
         self.grid_space = grid_space
         self.probe_size = probe_size
         self.probe_orientation = probe_orientation
-        self.probe_frame_num = probe_frame_num
+
+        if probe_frame_num >= 2.:
+            self.probe_frame_num = int(probe_frame_num)
+        else:
+            raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
+
         self.is_include_edge = is_include_edge
         self.frame_config = ('is_display', '(azimuth, altitude)',
                              'polarity', 'indicator_color')
@@ -854,7 +859,10 @@ class SparseNoise(Stim):
             self.subregion = subregion
 
         self.sign = sign
-        self.iteration = iteration
+        if iteration >= 1:
+            self.iteration = int(iteration)
+        else:
+            raise ValueError('iteration should be no less than 1.')
 
         self.clear()
 
@@ -1061,14 +1069,39 @@ class SparseNoise(Stim):
     
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
-        frames, num_disp_iters = self._generate_frames_for_index_display()
-        
-        index_to_display = []
-        
-        for i, reps in enumerate(num_disp_iters):
-            index_to_display += reps*[i]
+
+        frames_unique = self._generate_frames_for_index_display()
+        probe_on_frame_num = self.probe_frame_num // 2
+        probe_off_frame_num = self.probe_frame_num - probe_on_frame_num
+
+        if self.sign == 'ON' or self.sign == 'OFF':
+
+            if len(frames_unique) % 2 == 1:
+                probe_num = (len(frames_unique) - 1) / 2
+            else:
+                raise ValueError('SparseNoise: number of unique frames is not correct. Should be odd.')
+
+            index_to_display = []
+
+            for iter in range(self.iteration):
+
+                probe_sequence = np.arange(probe_num) + 1
+                np.random.shuffle(probe_sequence)
+                index_to_display += [0] * self.pregap_frame_num
+
+                for probe_ind in probe_sequence:
+                    index_to_display += [probe_ind * 2 + 1] * probe_on_frame_num
+                    index_to_display += [probe_ind * 2 + 2] * probe_off_frame_num
+
+                index_to_display += [0] * self.postgap_frame_num
+
+        elif self.sign == 'ON-OFF':
+            pass
+        else:
+            raise ValueError('SparseNoise: Do not understand "sign", should '
+                             'be one of "ON", "OFF" and "ON-OFF".')
             
-        return frames, index_to_display
+        return frames_unique, index_to_display
     
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
