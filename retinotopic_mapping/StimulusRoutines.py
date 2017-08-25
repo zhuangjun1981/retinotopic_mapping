@@ -1047,7 +1047,7 @@ class SparseNoise(Stim):
             
             gap = [0., None, None, -1.]
             frames_unique.append(gap)
-            grid_points = self._generate_grid_points_sequence()
+            grid_points = self._get_grid_points()
             for grid_point in grid_points:
                 if self.sign == 'ON':
                     frames_unique.append([1., grid_point, 1., 1.])
@@ -1063,6 +1063,7 @@ class SparseNoise(Stim):
                 else:
                     raise ValueError('SparseNoise: Do not understand "sign", should '
                                      'be one of "ON", "OFF" and "ON-OFF".')
+
             return frames_unique
         else:
             raise NotImplementedError, "method not available for non-sync indicator"
@@ -1085,7 +1086,7 @@ class SparseNoise(Stim):
 
             for iter in range(self.iteration):
 
-                probe_sequence = np.arange(probe_num) + 1
+                probe_sequence = np.arange(probe_num)
                 np.random.shuffle(probe_sequence)
                 index_to_display += [0] * self.pregap_frame_num
 
@@ -1096,6 +1097,7 @@ class SparseNoise(Stim):
                 index_to_display += [0] * self.postgap_frame_num
 
         elif self.sign == 'ON-OFF':
+            #todo: finish this
             pass
         else:
             raise ValueError('SparseNoise: Do not understand "sign", should '
@@ -1105,9 +1107,9 @@ class SparseNoise(Stim):
     
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
-        self.frames, self.index_to_display = self._generate_display_index()
+        self.frames_unique, self.index_to_display = self._generate_display_index()
         
-        num_unique_frames = len(self.frames)
+        num_unique_frames = len(self.frames_unique)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
         
@@ -1127,13 +1129,11 @@ class SparseNoise(Stim):
         indicator_height_max = (self.indicator.center_height_pixel 
                                 + self.indicator.height_pixel / 2)
         
-        full_seq = self.background* np.ones((num_unique_frames,
-                                             num_pixels_width,
-                                             num_pixels_height),
-                                             dtype=np.float16)
+        full_seq = self.background * \
+                   np.ones((num_unique_frames, num_pixels_width, num_pixels_height), dtype=np.float16)
         
-        for i, frame in enumerate(self.frames):
-            if frame[0] == 1:
+        for i, frame in enumerate(self.frames_unique):
+            if frame[0] == 1.:
                 disp_mat = get_warped_square(coord_x,
                                              coord_y,
                                              center=frame[1],

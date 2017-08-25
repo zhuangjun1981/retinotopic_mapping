@@ -507,8 +507,10 @@ class DisplaySequence(object):
         # display frames by index
         time_stamps = []
         start_time = time.clock()
-        num_iters = len(self.seq_log['stimulation']['index_to_display'])
         index_to_display = self.seq_log['stimulation']['index_to_display']
+        num_iters = len(index_to_display)
+
+        # print 'frame per iter:', num_iters
         
         if self.is_sync_pulse:
             syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
@@ -516,10 +518,8 @@ class DisplaySequence(object):
                                                 self.sync_pulse_NI_line)
             syncPulseTask.StartTask()
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-                
-            
+
         i = 0
-        
         while self.keep_display and i < (num_iters*self.display_iter):
             
             if self.display_order == 1:
@@ -531,6 +531,9 @@ class DisplaySequence(object):
                  frame_num = num_iters - (i % num_iters) -1
 
             frame_index = index_to_display[frame_num]
+
+            # print 'i:', i, '; index_display_ind:', frame_num, '; frame_ind:', frame_index
+
             stim.setImage(self.sequence[frame_index][::-1,:])
             stim.draw()
             time_stamps.append(time.clock()-start_time)
@@ -563,7 +566,6 @@ class DisplaySequence(object):
 
         if self.keep_display == True: 
              print '\nDisplay successfully completed.'
-
 
     def _display(self, window, stim):
         

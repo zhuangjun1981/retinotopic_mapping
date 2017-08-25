@@ -128,21 +128,18 @@ class TestSimulation(unittest.TestCase):
                             postgap_dur=0.2, is_include_edge=True)
 
         frames_unique, index_to_display = sn._generate_display_index()
-        print '\n'.join([str(f) for f in frames_unique])
-        print index_to_display
+        # print '\n'.join([str(f) for f in frames_unique])
+        # print index_to_display
         assert (index_to_display[:6] == [0, 0, 0, 0, 0, 0])
         assert (index_to_display[-12:] == [0] * 12)
+        # print max(index_to_display)
+        # print len(frames_unique)
+        assert (max(index_to_display) == len(frames_unique) -1)
         probe_num = (len(index_to_display) - 18) / 6
         for probe_ind in range(probe_num):
             assert (len(set(index_to_display[6 + probe_ind * 6: 9 + probe_ind * 6])) == 1)
             assert (len(set(index_to_display[9 + probe_ind * 6: 12 + probe_ind * 6])) == 1)
             assert (index_to_display[9 + probe_ind * 6] - index_to_display[8 + probe_ind * 6] == 1)
-
-        # sn_full_seq, sn_full_dict = sn.generate_movie_by_index()
-        #
-        # stim_on_frames = len(sn._generate_grid_points_sequence())*sn.probe_frame_num
-        # index_frames = sn.pregap_frame_num + stim_on_frames + sn.postgap_frame_num
-        # assert (len(sn_full_dict['stimulation']['index_to_display']) == index_frames)
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
