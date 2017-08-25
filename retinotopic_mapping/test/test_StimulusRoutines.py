@@ -29,13 +29,13 @@ class TestSimulation(unittest.TestCase):
 
         self.UC_full_seq, self.UC_full_dict = self.UC.generate_movie_by_index()
 
-        assert (self.UC_full_seq.shape == (3, 120, 160))
+        assert (self.UC_full_seq.shape == (2, 120, 160))
         assert (len(self.UC_full_dict['stimulation']['index_to_display']) == 156)
 
-        frames = self.UC_full_dict['stimulation']['frames']
+        frames_unique = self.UC_full_dict['stimulation']['frames_unique']
         all_frames = []
         for ind in self.UC_full_dict['stimulation']['index_to_display']:
-            all_frames.append(frames[ind])
+            all_frames.append(frames_unique[ind])
 
         # Parameters defining where the frame blocks should start and end
         ref_rate = self.monitor.refresh_rate

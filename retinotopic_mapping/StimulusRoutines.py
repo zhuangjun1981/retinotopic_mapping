@@ -311,6 +311,7 @@ class UniformContrast(Stim):
         self.stim_name = 'UniformContrast'
         self.duration = duration
         self.color = color
+        self.frame_config = ('is_display', 'indicator_color')
 
     def generate_frames(self):
         """
@@ -330,7 +331,6 @@ class UniformContrast(Stim):
         frames = [(0., -1.)] * self.pregap_frame_num + \
                  [(1., 1.)] * displayframe_num + \
                  [(0., -1.)] * self.postgap_frame_num
-                  
 
         return tuple(frames)
     
@@ -338,36 +338,24 @@ class UniformContrast(Stim):
         " parameters are predefined here, nothing to compute. "
         if self.indicator.is_sync:
             # Parameters that define the stimulus
-            frames = ((0.,-1.), (1.,1.), (0.,-1.))
-        
+            frames = ((0.,-1.), (1.,1.))
             return frames
-        
         else:
             raise NotImplementedError, "method not avaialable for non-sync indicator"
     
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
-        display_frame_num = int(self.duration * self.monitor.refresh_rate)
-    
-        #Number of times each respective parameter will be displayed
-        num_disp_iters = (self.pregap_frame_num, 
-                          display_frame_num, 
-                          self.postgap_frame_num)
-        
-        frames = self._generate_frames_for_index_display()
-        
-        index_to_display = []
-        
-        for i, reps in enumerate(num_disp_iters):
-            index_to_display += reps*[i]
-            
-        return frames, index_to_display
+        displayframe_num = int(self.duration * self.monitor.refresh_rate)
+        index_to_display = [0] * self.pregap_frame_num + [1] * displayframe_num + \
+                           [0] * self.postgap_frame_num
+        return index_to_display
 
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
-        self.frames, self.index_to_display = self._generate_display_index()
+        self.frames_unique = self._generate_frames_for_index_display()
+        self.index_to_display = self._generate_display_index()
         
-        num_frames = len(self.frames)
+        num_frames = len(self.frames_unique)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
@@ -395,19 +383,15 @@ class UniformContrast(Stim):
                                       num_pixels_height),
                                       dtype=np.float16)
         
-        for i in range(num_frames):
-            curr_frame = self.frames[i]
-            
-            if curr_frame[0] == 0:
-                stim_sequence = background
+        for i, frame in enumerate(self.frames_unique):
+            if frame[0] == 0:
+                full_sequence[i] = background
             else:
-                stim_sequence = display
+                full_sequence[i] = display
             
             # Insert indicator pixels 
-            stim_sequence[indicator_height_min:indicator_height_max,
-                          indicator_width_min:indicator_width_max] = curr_frame[1]
-            
-            full_sequence[i] = stim_sequence
+            full_sequence[i, indicator_height_min:indicator_height_max,
+                          indicator_width_min:indicator_width_max] = frame[1]
             
         monitor_dict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
@@ -628,11 +612,8 @@ class FlashingCircle(Stim):
         if self.indicator.is_sync:
             gap = (0., -1.)
             flash = (1., 1.)
-            
             frames = (gap, flash)
-            
             return frames
-            
         else: 
             raise NotImplementedError, "method not available for non-sync indicator"
         
