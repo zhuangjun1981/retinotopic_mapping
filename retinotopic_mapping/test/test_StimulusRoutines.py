@@ -118,9 +118,7 @@ class TestSimulation(unittest.TestCase):
     
     # SPARSE NOISE TESTS #
     # ================== #
-    def test_SN_generate_movie_by_index(self):
-
-        # Setup Sparse Noise Objects
+    def test_SN_generate_display_index(self):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(10.,10.),
                             probe_size=(10.,10.), probe_orientation=0., probe_frame_num=6,
@@ -146,13 +144,35 @@ class TestSimulation(unittest.TestCase):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(5., 5.),
                             probe_size=(5., 5.), probe_orientation=0., probe_frame_num=6,
-                            subregion=[-30, 30, -10., 90.], sign='ON-OFF')
+                            subregion=[-30, 30, -10., 90.], sign='ON-OFF', iteration=2)
         frames_unique = sn._generate_frames_for_index_display()
         probe_ind = sn._get_probe_index_for_one_iter_on_off(frames_unique)
         for j in range(len(probe_ind) - 1):
             probe_loc_0 = frames_unique[probe_ind[j]]
             probe_loc_1 = frames_unique[probe_ind[j + 1]]
             assert(not np.array_equal(probe_loc_0, probe_loc_1))
+
+    def test_SN_generate_display_index2(self):
+        import numpy as np
+        sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
+                            background=0., coordinate='degree', grid_space=(10., 10.),
+                            probe_size=(10., 10.), probe_orientation=0., probe_frame_num=8,
+                            subregion=[-10, 10, 45., 55.], sign='ON-OFF', iteration=2,
+                            pregap_dur=0.5, postgap_dur=0.3, is_include_edge=True)
+
+        frames_unique, index_to_display = sn._generate_display_index()
+        assert (index_to_display[:30] == [0] * 30)
+        assert (index_to_display[-18:] == [0] * 18)
+        assert (max(index_to_display) == len(frames_unique) - 1)
+
+        frame_num_iter = len(index_to_display) / 2
+        assert (index_to_display[frame_num_iter - 18: frame_num_iter + 30] == [0] * 48)
+        probe_num = (len(index_to_display[:frame_num_iter]) - 30) / 6
+        for probe_ind in range(probe_num):
+            assert (len(set(index_to_display[30 + probe_ind * 8: 34 + probe_ind * 8])) == 1)
+            assert (len(set(index_to_display[34 + probe_ind * 8: 38 + probe_ind * 8])) == 1)
+            assert (np.array_equal(frames_unique[index_to_display[33 + probe_ind * 8]][1],
+                                   frames_unique[index_to_display[34 + probe_ind * 8]][1]))
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #

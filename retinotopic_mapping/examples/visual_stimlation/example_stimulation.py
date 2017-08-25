@@ -93,7 +93,7 @@ sparse_noise = stim.SparseNoise(mon, ind, subregion=(-20.,20.,10.,150.), grid_sp
                                 background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.,
                                 coordinate='degree', probe_size=(4., 4.), probe_orientation=0.,
                                 probe_frame_num=6, iteration=2, is_include_edge = True)
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=True,
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
                      is_sync_pulse=False, display_iter=2, display_screen=1,
                      by_index=True)
 ds.set_stim(sparse_noise)
