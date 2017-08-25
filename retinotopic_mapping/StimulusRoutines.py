@@ -216,8 +216,16 @@ class Stim(object):
         self.indicator = indicator
         self.background = background
         self.coordinate = coordinate
-        self.pregap_dur = pregap_dur
-        self.postgap_dur = postgap_dur
+
+        if pregap_dur >= 0.:
+            self.pregap_dur = pregap_dur
+        else:
+            raise ValueError('pregap_dur should be no less than 0.')
+
+        if postgap_dur >= 0.:
+            self.postgap_dur = postgap_dur
+        else:
+            raise ValueError('postgap_dur should be no less than 0.')
 
         self.clear()
 
@@ -244,7 +252,12 @@ class Stim(object):
         print 'See documentation in the respective stimulus'
 
     def clear(self):
-        self.frames = None
+        if hasattr(self, 'frames'):
+            del self.frames
+        if hasattr(self, 'frames_unique'):
+            del self.frames_unique
+        if hasattr(self, 'index_to_display'):
+            del self.index_to_display
 
     def set_pre_gap_dur(self,pregap_dur):
         self.pregap_frame_num = int(self.pregap_dur*self.monitor.refresh_rate)
@@ -514,8 +527,7 @@ class FlashingCircle(Stim):
                  center=(90., 10.),
                  radius=10.,
                  color=-1.,
-                 iteration=1,
-                 flash_frame=3,
+                 flash_frame_num=3,
                  pregap_dur=2.,
                  postgap_dur=3.,
                  background=0.):
@@ -525,25 +537,26 @@ class FlashingCircle(Stim):
         """
 
         super(FlashingCircle,self).__init__(monitor=monitor,
-                                           indicator=indicator,
-                                           background=background,
-                                           coordinate=coordinate,
-                                           pregap_dur=pregap_dur,
-                                           postgap_dur=postgap_dur)
+                                            indicator=indicator,
+                                            background=background,
+                                            coordinate=coordinate,
+                                            pregap_dur=pregap_dur,
+                                            postgap_dur=postgap_dur)
 
         self.stim_name = 'FlashingCircle'
         self.center = center
         self.radius = radius
         self.color = color
-        self.iteration = iteration
-        self.flash_frame = flash_frame
-        self.frame_config = ('is_display', 'is_iteration_start',
-                             'current_iteration', 'indicator_color')
+        self.flash_frame_num = flash_frame_num
+        self.frame_config = ('is_display', 'indicator_color')
+
+        if self.pregap_frame_num + self.postgap_frame_num == 0:
+            raise ValueError('pregap_frame_num + postgap_frame_num should be larger than 0.')
 
         self.clear()
 
     def set_flash_frame_num(self, flash_frame_num):
-        self.flash_frame = flash_frame_num
+        self.flash_frame_num = flash_frame_num
         self.clear()
 
     def set_color(self, color):
@@ -568,14 +581,11 @@ class FlashingCircle(Stim):
                 during a gap, the value is equal to 0 and during display the
                 value is equal to 1
            second element :
-                the value is equal to 1 on the frame that the stimulus begins,
-                and is equal to 0 otherwise.
-           third element :
-                value corresponds to the current iteration
-           fourth element :
-                corresponds to the color of indicator and during stimulus
-                the value is equal to 1, whereas during a gap the value is
-                equal to 0
+                corresponds to the color of indicator
+                if indicator.is_sync is True, during stimulus the value is
+                equal to 1., whereas during a gap the value isequal to -1.;
+                if indicator.is_sync is False, indicator color will alternate
+                between 1. and -1. at the frequency as indicator.freq
         Returns
         -------
         frames : list
@@ -584,49 +594,42 @@ class FlashingCircle(Stim):
 
         # number of frames for one round of stimulus
         iteration_frame_num = (self.pregap_frame_num +
-                               self.flash_frame + self.postgap_frame_num)
+                               self.flash_frame_num + self.postgap_frame_num)
 
-        frames = np.zeros((self.iteration*(iteration_frame_num),4)).astype(np.int)
+        frames = np.zeros((iteration_frame_num,2)).astype(np.int16)
 
         #initilize indicator color
-        frames[:,3] = -1
+        frames[:,1] = -1
 
         for i in xrange(frames.shape[0]):
 
-            # current iteration number
-            frames[i, 2] = i // iteration_frame_num
-
-            # mark start frame of every iteration
-            if i % iteration_frame_num == 0:
-                frames[i, 1] = 1
-
             # mark display frame and synchronized indicator
-            if ((i % iteration_frame_num >= self.pregap_frame_num) and \
-               (i % iteration_frame_num < (self.pregap_frame_num + self.flash_frame))):
+            frames[self.pregap_frame_num: self.pregap_frame_num + self.flash_frame_num, 0] = 1
 
-                frames[i, 0] = 1
-
-                if self.indicator.is_sync:
-                    frames[i, 3] = 1
+            if self.indicator.is_sync:
+                frames[self.pregap_frame_num: self.pregap_frame_num + self.flash_frame_num, 1] = 1
 
             # mark unsynchronized indicator
             if not(self.indicator.is_sync):
                 if np.floor(i // self.indicator.frame_num) % 2 == 0:
-                    frames[i, 3] = 1
+                    frames[i, 1] = 1
                 else:
-                    frames[i, 3] = -1
+                    frames[i, 1] = -1
 
         frames = [tuple(x) for x in frames]
 
         return tuple(frames)
     
     def _generate_frames_for_index_display(self):
+        """
+        frame structure: first element: is_gap (0:False; 1:True).
+                         second element: indicator color [-1., 1.]
+        """
         if self.indicator.is_sync:
-            start = (0.,1.,-1.)
-            circle_on = (1.,0.,1.)
-            circle_off = (0.,0.,-1.)
+            gap = (0., -1.)
+            flash = (1., 1.)
             
-            frames = (start, circle_off, circle_on, circle_off)
+            frames = (gap, flash)
             
             return frames
             
@@ -635,35 +638,18 @@ class FlashingCircle(Stim):
         
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
-        frames = self._generate_frames_for_index_display()
-        
-        # sum(num_disp_iters) == number of total frames in one iteration.
-        # each value of num_disp_iters corresponds to the number of times
-        # to display each respective unique frame.
-        num_disp_iters = (1,
-                          self.pregap_frame_num-1,
-                          self.flash_frame,
-                          self.postgap_frame_num)
-        
-        index_to_display = []
-        
-        for i, reps in enumerate(num_disp_iters):
-            index_to_display += reps*[i]
-
-        print frames
-        print index_to_display
-
-        return frames, index_to_display
+        index_to_display = [0] * self.pregap_frame_num + [1] * self.flash_frame_num + \
+                           [0] * self.postgap_frame_num
+        return index_to_display
         
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
         
         # compute unique frame parameters
-        self.frames, self.index_to_display = self._generate_display_index()
-        
-      
-        
-        num_frames = len(self.frames)
+        self.frames_unique = self._generate_frames_for_index_display()
+        self.index_to_display = self._generate_display_index()
+
+        num_frames = len(self.frames_unique)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
         
@@ -698,18 +684,12 @@ class FlashingCircle(Stim):
         circle_mask = get_circle_mask(map_x, map_y, 
                                   self.center, self.radius).astype(np.float16)
         
-        for i in range(num_frames):
-            curr_frame = self.frames[i]
-            
-            if curr_frame[0] == 0:
-                curr_FC_seq = background
-            else:
-                curr_FC_seq = self.color*circle_mask - background*(circle_mask-1)
+        for i, frame in enumerate(self.frames_unique):
+            if frame[0] == 1:
+                full_sequence[i] = self.color*circle_mask - background*(circle_mask-1)
                                 
-            curr_FC_seq[indicator_height_min:indicator_height_max,
-                        indicator_width_min:indicator_width_max] = curr_frame[2]
-            
-            full_sequence[i] = curr_FC_seq
+            full_sequence[i, indicator_height_min:indicator_height_max,
+                          indicator_width_min:indicator_width_max] = frame[1]
         
         mondict=dict(self.monitor.__dict__)
         indicator_dict=dict(self.indicator.__dict__)
@@ -770,7 +750,7 @@ class FlashingCircle(Stim):
                                   ((-1 * (circle_mask - 1)) * background))
 
             curr_FC_seq[indicator_height_min:indicator_height_max,
-                           indicator_width_min:indicator_width_max] = curr_frame[3]
+                           indicator_width_min:indicator_width_max] = curr_frame[1]
 
             full_seq[i] = curr_FC_seq
 

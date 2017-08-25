@@ -58,39 +58,65 @@ class TestSimulation(unittest.TestCase):
         # Setup Flashing Circle Objects
         self.FC = sr.FlashingCircle(monitor=self.monitor,
                                     indicator=self.indicator,
-                                    center=(90., 0.), flash_frame=30,
+                                    center=(90., 0.), flash_frame_num=30,
                                     color=-1., pregap_dur=0.5, postgap_dur=1.2,
                                     background=1., coordinate='degree')
 
         self.FC_full_seq, self.FC_full_dict = self.FC.generate_movie_by_index()
 
-        assert (self.FC_full_seq.shape == (4, 120, 160))
+        assert (self.FC_full_seq.shape == (2, 120, 160))
 
         assert (len(self.FC_full_dict['stimulation']['index_to_display']) == 132)
 
-        frames = self.FC_full_dict['stimulation']['frames']
-        all_frames = []
+        frames_unique = self.FC_full_dict['stimulation']['frames_unique']
+        frames = []
         for ind in self.FC_full_dict['stimulation']['index_to_display']:
-            all_frames.append(frames[ind])
+            frames.append(frames_unique[ind])
         
         # Parameters defining where the frame blocks should start and end
         pregap_end = self.FC.pregap_frame_num
-        flash_frames= self.FC.flash_frame
+        flash_frames= self.FC.flash_frame_num
         flashing_end = pregap_end + flash_frames
         postgap_end = flashing_end + self.FC.postgap_frame_num
-        
-        for i in range(1):
-            assert (all_frames[i] == (0., 1., -1.))
 
-        for i in range(1,pregap_end):
-            assert (all_frames[i] == (0., 0., -1.))
-        
-        # Flashing frames
-        for i in range(pregap_end,flashing_end):
-            assert (all_frames[i] == (1.,0.,1.))
+        for i in range(pregap_end):
+            assert (frames[i] == (0., -1.))
+
+        for i in range(pregap_end, flashing_end):
+            assert (frames[i] == (1., 1.))
 
         for i in range(flashing_end, postgap_end):
-            assert (all_frames[i] == (0., 0., -1.))
+            assert (frames[i] == (0., -1.))
+
+    def test_FC_generate_movie(self):
+        self.FC = sr.FlashingCircle(monitor=self.monitor,
+                                    indicator=self.indicator,
+                                    center=(90., 0.), flash_frame_num=30,
+                                    color=-1., pregap_dur=0.1, postgap_dur=1.0,
+                                    background=1., coordinate='degree')
+
+        self.FC_full_seq, self.FC_full_dict = self.FC.generate_movie()
+
+        assert (self.FC_full_seq.shape == (96, 120, 160))
+        assert (len(self.FC_full_dict['stimulation']['frames']) == 96)
+
+        frames = self.FC_full_dict['stimulation']['frames']
+        # print frames
+
+        # Parameters defining where the frame blocks should start and end
+        pregap_end = self.FC.pregap_frame_num
+        flash_frames = self.FC.flash_frame_num
+        flashing_end = pregap_end + flash_frames
+        postgap_end = flashing_end + self.FC.postgap_frame_num
+
+        for i in range(pregap_end):
+            assert (frames[i] == (0., -1.))
+
+        for i in range(pregap_end, flashing_end):
+            assert (frames[i] == (1., 1.))
+
+        for i in range(flashing_end, postgap_end):
+            assert (frames[i] == (0., -1.))
     
     # SPARSE NOISE TESTS #
     # ================== #
