@@ -76,32 +76,26 @@ you might need to start debugging!
 
 
 #======================= Flashing Circle Stimulus =============================
-flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
-                                      center=(60., 10.), radius=20., color=-1.,
-                                      flash_frame_num=10, pregap_dur=2.,
-                                      postgap_dur=3., background=0.)
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-                     is_sync_pulse=False, by_index=True, display_iter=2,
-                     display_screen=1)
-ds.set_stim(flashing_circle)
-ds.trigger_display()
+# flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
+#                                       center=(60., 10.), radius=20., color=-1.,
+#                                       flash_frame_num=10, pregap_dur=2.,
+#                                       postgap_dur=3., background=0.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, by_index=True, display_iter=2,
+#                      display_screen=1)
+# ds.set_stim(flashing_circle)
+# ds.trigger_display()
 #==============================================================================
 
 
 #======================== Sparse Noise Stimulus ===============================
-#sparse_noise = stim.SparseNoise(mon,
-#                                ind,
-#                                subregion=(-20.,20.,40.,60.),
-#                                grid_space=(10, 10),
-#                                background=0.,
-#                                sign='ON')
-#ds = DisplaySequence(log_dir=r'C:\data',
-#                     backupdir=r'C:\data',
-#                     is_triggered=False,
-#                     display_iter=2,
-#                     display_screen=1)
-#ds.set_stim(sparse_noise)
-#ds.trigger_display()
+sparse_noise = stim.SparseNoise(mon, ind, subregion=(-20.,20.,10.,150.), grid_space=(10, 10),
+                                background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.)
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+                     is_sync_pulse=False, display_iter=2, display_screen=1,
+                     by_index=False)
+ds.set_stim(sparse_noise)
+ds.trigger_display()
 #==============================================================================
 
 #======================= Sparse Noise pt 2 ====================================

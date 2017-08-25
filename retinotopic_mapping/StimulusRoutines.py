@@ -40,6 +40,7 @@ def in_hull(p, hull):
 
     return hull.find_simplex(p)>=0
 
+
 def get_warped_square(deg_coord_x,deg_coord_y,center,width,
                       height,ori,foreground_color=1.,background_color=0.):
     """
@@ -177,6 +178,7 @@ def get_grating(map_x, map_y, ori=0., spatial_freq=0.1,
 
     return grating.astype(map_x.dtype)
 
+
 class Stim(object):
     """
     generic class for visual stimulation. parent class for individual
@@ -285,6 +287,7 @@ class Stim(object):
     def set_post_gap_dur(self,postgap_dur):
         self.postgap_frame_num = int(self.postgap_dur*self.monitor.refresh_rate)
         self.clear()
+
 
 class UniformContrast(Stim):
     """
@@ -490,6 +493,7 @@ class UniformContrast(Stim):
                      'indicator': indicator_dict}
 
         return full_seq, full_dict
+
 
 class FlashingCircle(Stim):
     """
@@ -762,6 +766,7 @@ class FlashingCircle(Stim):
 
         return full_seq, full_dict
 
+
 class SparseNoise(Stim):
     """
     generate sparse noise stimulus integrates flashing indicator for photodiode
@@ -853,7 +858,7 @@ class SparseNoise(Stim):
 
         self.clear()
 
-    def _getgrid_points(self, is_plot=False):
+    def _get_grid_points(self, is_plot=False):
         """
         generate all the grid points in display area (covered by both subregion and
         monitor span)
@@ -938,7 +943,7 @@ class SparseNoise(Stim):
             list of the form [grid_point, sign]
         """
 
-        grid_points = self._getgrid_points()
+        grid_points = self._get_grid_points()
 
         if self.sign == 'ON':
             grid_points = [[x,1] for x in grid_points]
@@ -1004,26 +1009,24 @@ class SparseNoise(Stim):
         for i in range(self.iteration):
 
             if self.pregap_frame_num>0:
-                 frames += [[0,None,None,-1]]*self.pregap_frame_num
+                 frames += [[0., None, None, -1.]] * self.pregap_frame_num
 
             iter_grid_points = self._generate_grid_points_sequence()
 
             for grid_point in iter_grid_points:
-                frames += [[1,grid_point[0],grid_point[1],1]] * indicator_on_frame
-                frames += [[1,grid_point[0],grid_point[1],-1]] * indicator_off_frame
+                frames += [[1., grid_point[0], grid_point[1], 1.]] * indicator_on_frame
+                frames += [[1., grid_point[0], grid_point[1], -1.]] * indicator_off_frame
 
             if self.postgap_frame_num>0:
-                 frames += [[0,None,None,-1]]*self.postgap_frame_num
+                 frames += [[0., None, None, -1.]] * self.postgap_frame_num
 
         if self.indicator.is_sync == False:
             indicator_frame = self.indicator.frame_num
             for m in range(len(frames)):
                 if np.floor(m // indicator_frame) % 2 == 0:
-                    frames[m][3] = 1
+                    frames[m][3] = 1.
                 else:
-                    frames[m][3] = -1
-
-        frames = tuple(frames)
+                    frames[m][3] = -1.
 
         frames = [tuple(x) for x in frames]
 
@@ -1085,7 +1088,6 @@ class SparseNoise(Stim):
             index_to_display += reps*[i]
             
         return frames, index_to_display
-        
     
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
@@ -1143,7 +1145,6 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
             
         return full_seq, full_dict
-                            
 
     def generate_movie(self):
         """
@@ -1169,9 +1170,9 @@ class SparseNoise(Stim):
                                 + self.indicator.height_pixel / 2)
 
         full_seq = np.ones((len(self.frames),
-                                self.monitor.deg_coord_x.shape[0],
-                                self.monitor.deg_coord_x.shape[1]),
-                                 dtype=np.float16) * self.background
+                            self.monitor.deg_coord_x.shape[0],
+                            self.monitor.deg_coord_x.shape[1]),
+                           dtype=np.float16) * self.background
 
         for i, curr_frame in enumerate(self.frames):
             if curr_frame[0] == 1: # not a gap
@@ -1228,6 +1229,7 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
 
         return full_seq, full_dict
+
 
 class DriftingGratingCircle(Stim):
     """
@@ -1732,6 +1734,7 @@ class DriftingGratingCircle(Stim):
 
         return mov, log
 
+
 class KSstim(Stim):
     """
     generate Kalatsky & Stryker stimulus
@@ -2113,6 +2116,7 @@ class KSstim(Stim):
     def set_sweep_width(self,sweep_width):
         self.sweep_width = sweep_width
         self.clear()
+
 
 class KSstimAllDir(object):
     """
