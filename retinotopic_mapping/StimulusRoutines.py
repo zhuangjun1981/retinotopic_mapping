@@ -1035,46 +1035,27 @@ class SparseNoise(Stim):
     def _generate_frames_for_index_display(self):
         """ compute the information that defines the frames used for index display"""
         if self.indicator.is_sync:
-            frames = []
-            num_disp_iters = []
+            frames_unique = []
             
-            off_params = [0,None,None,-1]
-            
-            if self.probe_frame_num == 1:
-                indicator_on_frame = 1
-            elif self.probe_frame_num > 1:
-                indicator_on_frame = self.probe_frame_num // 2
-            else:
-                raise ValueError('`probe_frame_num` should be an int larger than 0!')
-    
-            indicator_off_frame = self.probe_frame_num - indicator_on_frame
-            
-            
-            for i in xrange(self.iteration):
-                if self.pregap_frame_num != 0:
-                    # then add off_params to frames
-                    frames.append(off_params)
-                    num_disp_iters.append(self.pregap_frame_num)
-                
-                iter_grid_points = self._generate_grid_points_sequence()
-                
-                for grid_point in iter_grid_points:
-                    frames.append([1,grid_point[0],grid_point[1],1])
-                    num_disp_iters.append(indicator_on_frame)
-                
-                    frames.append([1,grid_point[0],grid_point[1],-1])
-                    num_disp_iters.append(indicator_off_frame)
-                    
-                if self.postgap_frame_num != 0:
-                    # then add off_params to frames
-                    frames.append(off_params)
-                    num_disp_iters.append(self.postgap_frame_num)
-            
-            frames = tuple(frames)
-            frames = [tuple(x) for x in frames]
-            
-            return tuple(frames), num_disp_iters
-        
+            gap = [0., None, None, -1.]
+            frames_unique.append(gap)
+            grid_points = self._generate_grid_points_sequence()
+            for grid_point in grid_points:
+                if self.sign == 'ON':
+                    frames_unique.append([1., grid_point, 1., 1.])
+                    frames_unique.append([1., grid_point, 1., -1.])
+                elif self.sign == 'OFF':
+                    frames_unique.append([1., grid_point, -1., 1.])
+                    frames_unique.append([1., grid_point, -1., -1])
+                elif self.sign == 'ON-OFF':
+                    frames_unique.append([1., grid_point, 1., 1.])
+                    frames_unique.append([1., grid_point, 1., -1.])
+                    frames_unique.append([1., grid_point, -1., 1.])
+                    frames_unique.append([1., grid_point, -1., -1])
+                else:
+                    raise ValueError('SparseNoise: Do not understand "sign", should '
+                                     'be one of "ON", "OFF" and "ON-OFF".')
+            return frames_unique
         else:
             raise NotImplementedError, "method not available for non-sync indicator"
     
@@ -1229,6 +1210,11 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
 
         return full_seq, full_dict
+
+
+class LocallySparseNoise(Stim):
+    #todo: finish this class
+    pass
 
 
 class DriftingGratingCircle(Stim):
@@ -1733,6 +1719,11 @@ class DriftingGratingCircle(Stim):
              'indicator':indicator_dict}
 
         return mov, log
+
+
+class StaticGratingCircle(Stim):
+    #todo: finish this class
+    pass
 
 
 class KSstim(Stim):
