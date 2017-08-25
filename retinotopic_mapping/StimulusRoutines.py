@@ -321,7 +321,6 @@ class UniformContrast(Stim):
 
         return tuple(frames)
     
-    
     def _generate_frames_for_index_display(self):
         " parameters are predefined here, nothing to compute. "
         if self.indicator.is_sync:
@@ -350,8 +349,7 @@ class UniformContrast(Stim):
             index_to_display += reps*[i]
             
         return frames, index_to_display
-    
-    
+
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
         self.frames, self.index_to_display = self._generate_display_index()
@@ -443,7 +441,7 @@ class UniformContrast(Stim):
 
         display = np.ones((np.size(self.monitor.deg_coord_x, 0),
                            np.size(self.monitor.deg_coord_x, 1)),
-                           dtype=np.float16)*self.background
+                           dtype=np.float16)*self.color
 
         if not (self.coordinate == 'degree' or self.coordinate == 'linear'):
             raise LookupError, "`coordinate` value not in {'degree','linear'}"
@@ -651,9 +649,11 @@ class FlashingCircle(Stim):
         
         for i, reps in enumerate(num_disp_iters):
             index_to_display += reps*[i]
-            
+
+        print frames
+        print index_to_display
+
         return frames, index_to_display
-        
         
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
@@ -1268,9 +1268,6 @@ class SparseNoise(Stim):
                         'indicator':indicator_dict}
 
         return full_seq, full_dict
-    
-    
-
 
 class DriftingGratingCircle(Stim):
     """
