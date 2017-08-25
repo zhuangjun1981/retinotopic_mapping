@@ -78,7 +78,7 @@ you might need to start debugging!
 #======================= Flashing Circle Stimulus =============================
 flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
                                       center=(60., 10.), radius=20., color=-1.,
-                                      iteration=1, flash_frame_num=10, pregap_dur=2.,
+                                      flash_frame_num=10, pregap_dur=2.,
                                       postgap_dur=3., background=0.)
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
                      is_sync_pulse=False, by_index=True, display_iter=2,

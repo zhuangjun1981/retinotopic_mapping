@@ -529,8 +529,8 @@ class DisplaySequence(object):
             if self.display_order == -1:
                 # Then display sequence backwards
                  frame_num = num_iters - (i % num_iters) -1
-                 
-            frame_index = index_to_display[i]
+
+            frame_index = index_to_display[frame_num]
             stim.setImage(self.sequence[frame_index][::-1,:])
             stim.draw()
             time_stamps.append(time.clock()-start_time)
@@ -565,9 +565,6 @@ class DisplaySequence(object):
              print '\nDisplay successfully completed.'
 
 
-        
-        
-        
     def _display(self, window, stim):
         
         # display frames
