@@ -201,13 +201,8 @@ class Stim(object):
         duration of gap period after stimulus, measured in seconds, defaults
         to `3.`
     """
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 background = 0.,
-                 coordinate = 'degree',
-                 pregap_dur = 2.,
-                 postgap_dur = 3.):
+    def __init__(self, monitor, indicator, background = 0., coordinate = 'degree',
+                 pregap_dur = 2., postgap_dur = 3.):
         """
         Initialize visual stimulus object
         """
@@ -246,7 +241,31 @@ class Stim(object):
 
     def generate_movie(self):
         """
-        place holder of function "generate_movie" for each specific stimulus
+        place holder of function 'generate_movie' for each specific stimulus
+        """
+        print 'Nothing executed! This is a place holder function'
+        print 'See documentation in the respective stimulus'
+
+    def _generate_frames_for_index_display(self):
+        """
+        place holder of function _generate_frames_for_index_display()
+        for each specific stimulus
+        """
+        print 'Nothing executed! This is a place holder function'
+        print 'See documentation in the respective stimulus'
+
+    def _generate_display_index(self):
+        """
+        place holder of function _generate_display_index()
+        for each specific stimulus
+        """
+        print 'Nothing executed! This is a place holder function'
+        print 'See documentation in the respective stimulus'
+
+    def _generate_movie_by_index(self):
+        """
+        place holder of function _generate_movie_by_index()
+        for each specific stimulus
         """
         print 'Nothing executed! This is a place holder function'
         print 'See documentation in the respective stimulus'
@@ -504,17 +523,9 @@ class FlashingCircle(Stim):
         number of frames that circle is displayed during each presentation
         of the stimulus, defaults to `3`.
     """
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 coordinate='degree',
-                 center=(90., 10.),
-                 radius=10.,
-                 color=-1.,
-                 flash_frame_num=3,
-                 pregap_dur=2.,
-                 postgap_dur=3.,
-                 background=0.):
+    def __init__(self, monitor, indicator, coordinate='degree', center=(90., 10.),
+                 radius=10., color=-1., flash_frame_num=3, pregap_dur=2.,
+                 postgap_dur=3., background=0.):
 
         """
         Initialize `FlashingCircle` stimulus object.
@@ -799,21 +810,10 @@ class SparseNoise(Stim):
         the centers of displayed probes are within the subregion.
     """
 
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 background=0.,
-                 coordinate='degree',
-                 grid_space=(10.,10.),
-                 probe_size=(10.,10.),
-                 probe_orientation=0.,
-                 probe_frame_num=6,
-                 subregion=None,
-                 sign='ON-OFF',
-                 iteration=1,
-                 pregap_dur=2.,
-                 postgap_dur=3.,
-                 is_include_edge=True):
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 grid_space=(10.,10.), probe_size=(10.,10.), probe_orientation=0.,
+                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
+                 pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
         super(SparseNoise,self).__init__(monitor=monitor,
                                          indicator=indicator,
@@ -1075,7 +1075,6 @@ class SparseNoise(Stim):
         else:
             raise NotImplementedError, "method not available for non-sync indicator"
     
-    
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
         frames, num_disp_iters = self._generate_frames_for_index_display()
@@ -1273,22 +1272,10 @@ class DriftingGratingCircle(Stim):
         number of times the stimulus is displayed, defaults to `1`
     """
 
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 background=0.,
-                 coordinate='degree',
-                 center=(60.,0.),
-                 sf_list=(0.08,),
-                 tf_list=(4.,),
-                 dire_list=(0.,),
-                 con_list=(0.5,),
-                 size_list=(5.,),
-                 block_dur=2.,
-                 midgap_dur=0.5,
-                 iteration=1,
-                 pregap_dur=2.,
-                 postgap_dur=3.):
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 center=(60.,0.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
+                 con_list=(0.5,), size_list=(5.,), block_dur=2., midgap_dur=0.5,
+                 iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(DriftingGratingCircle,self).__init__(monitor=monitor,
                                                    indicator=indicator,
@@ -1791,21 +1778,10 @@ class KSstim(Stim):
         number of seconds after stimulus is presented, defaults to `2`
     """
 
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 background=0.,
-                 coordinate='degree',
-                 square_size=25.,
-                 square_center=(0,0),
-                 flicker_frame=10,
-                 sweep_width=20.,
-                 step_width=0.15,
-                 direction='B2U',
-                 sweep_frame=1,
-                 iteration=1,
-                 pregap_dur=2.,
-                 postgap_dur=3.):
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 square_size=25., square_center=(0,0), flicker_frame=10,
+                 sweep_width=20., step_width=0.15, direction='B2U', sweep_frame=1,
+                 iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(KSstim,self).__init__(monitor=monitor,
                                     indicator=indicator,
@@ -1837,7 +1813,6 @@ class KSstim(Stim):
         self.flicker_hz = self.monitor.refresh_rate / self.flicker_frame
 
         self.clear()
-
 
     def generate_squares(self):
         """
@@ -2177,19 +2152,9 @@ class KSstimAllDir(object):
     postgap_dur : float, optional
         number of seconds after stimulus is presented, defaults to `3.`
     """
-    def __init__(self,
-                 monitor,
-                 indicator,
-                 coordinate='degree',
-                 background=0.,
-                 square_size=25,
-                 square_center=(0,0),
-                 flicker_frame=6,
-                 sweep_width=20.,
-                 step_width=0.15,
-                 sweep_frame=1,
-                 iteration=1,
-                 pregap_dur=2.,
+    def __init__(self, monitor, indicator, coordinate='degree', background=0.,
+                 square_size=25, square_center=(0,0), flicker_frame=6, sweep_width=20.,
+                 step_width=0.15, sweep_frame=1, iteration=1, pregap_dur=2.,
                  postgap_dur=3.):
         """
         Initialize stimulus object
@@ -2208,7 +2173,6 @@ class KSstimAllDir(object):
         self.iteration = iteration
         self.pregap_dur = pregap_dur
         self.postgap_dur = postgap_dur
-
 
     def generate_movie(self):
         """
