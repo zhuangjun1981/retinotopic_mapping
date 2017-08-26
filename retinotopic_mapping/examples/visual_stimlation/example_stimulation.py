@@ -121,7 +121,7 @@ dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
 
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
                      is_sync_pulse=False, is_interpolate=False, display_screen=1,
-                     by_index=False)
+                     by_index=True)
 
 ds.set_stim(dg)
 ds.trigger_display()

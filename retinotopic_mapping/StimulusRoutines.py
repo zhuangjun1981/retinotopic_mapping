@@ -1643,7 +1643,6 @@ class DriftingGratingCircle(Stim):
                 repeated_block = repeated_block[:num_disp_iters[n]]
                 
                 index_to_display += repeated_block
-                
         
         return frames, index_to_display
     
