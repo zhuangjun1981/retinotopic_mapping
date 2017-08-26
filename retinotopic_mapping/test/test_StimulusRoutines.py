@@ -195,27 +195,15 @@ class TestSimulation(unittest.TestCase):
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
     def test_DGC_generate_movie_by_index(self):
+        dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
+                                       block_dur=2., sf_list=(0.04,), tf_list=(2.0,),
+                                       dire_list=(45.,), con_list=(0.8,), size_list=(10.,),
+                                       midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
+                                       iteration=2)
 
-        # Setup Drifting Grating Circle objects
-        dgc = sr.DriftingGratingCircle(monitor=self.monitor,
-                                            indicator=self.indicator,
-                                            sf_list=(0.08,),
-                                            tf_list=(4.0,),
-                                            dire_list=(0.,),
-                                            con_list=(1.,),
-                                            size_list=(10.,))
-        dgc_full_seq, dgc_full_dict = dgc.generate_movie_by_index()
-
-        ref_rate = self.monitor.refresh_rate
-        num_conditions = len(dgc._generate_all_conditions())
-        block_frames = num_conditions*dgc.block_dur*ref_rate
-        pregap_end = dgc.pregap_frame_num
-        blocks_end = pregap_end + block_frames
-        postgap_end = dgc.postgap_frame_num
-        
-        index_frames = pregap_end + block_frames + postgap_end
-        
-        assert (len(dgc_full_dict['stimulation']['index_to_display'])== index_frames)
+        frames_unique, index_to_display = dgc._generate_display_index()
+        print len(index_to_display)
+        assert (len(index_to_display) == 2 * (30 + 120 + 12))
 
     
 if __name__ == '__main__':
