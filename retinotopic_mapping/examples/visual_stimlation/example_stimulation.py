@@ -114,9 +114,9 @@ you might need to start debugging!
 
 #======================= Drifting Grating Circle Stimulus =====================
 dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
-                                center=(30., 0.), sf_list=(0.02, 0.04), tf_list=(1.0, 2.0),
-                                dire_list=(360.,), con_list=(0.8,), size_list=(20.,),
-                                block_dur=2., midgap_dur=1., iteration=1, pregap_dur=0.,
+                                center=(0., 60.), sf_list=(0.02, ), tf_list=(1.0,),
+                                dire_list=(45.,), con_list=(0.8,), size_list=(20.,),
+                                block_dur=8., midgap_dur=1., iteration=1, pregap_dur=0.,
                                 postgap_dur=3.)
 
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,

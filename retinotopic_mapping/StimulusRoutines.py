@@ -92,7 +92,7 @@ def get_warped_square(deg_coord_x,deg_coord_y,center,width,
     return frame
 
 
-def get_circle_mask(map_x, map_y, center, radius):
+def get_circle_mask(map_alt, map_azi, center, radius):
     """
     Generate a binary mask of a circle with given `center` and `radius`
 
@@ -101,10 +101,10 @@ def get_circle_mask(map_x, map_y, center, radius):
 
     Parameters
     ----------
-    map_x  : ndarray
-        x coordinates for each pixel on a map
-    map_y  : ndarray
-        y coordinates for each pixel on a map
+    map_alt  : ndarray
+        altitude coordinates for each pixel on a map
+    map_azi  : ndarray
+        azimuth coordinates for each pixel on a map
     center : tuple
         coordinates of the center of the binary circle mask
     radius : float
@@ -116,18 +116,18 @@ def get_circle_mask(map_x, map_y, center, radius):
         binary circle mask, takes values in [0.,1.]
     """
 
-    if map_x.shape != map_y.shape:
-         raise ValueError, 'map_x and map_y should have same shape!'
+    if map_alt.shape != map_azi.shape:
+         raise ValueError, 'map_alt and map_azi should have same shape!'
 
-    if len(map_x.shape) != 2:
-         raise ValueError, 'map_x and map_y should be 2-d!!'
+    if len(map_alt.shape) != 2:
+         raise ValueError, 'map_alt and map_azi should be 2-d!!'
 
-    circle_mask = np.zeros(map_x.shape, dtype = np.uint8)
+    circle_mask = np.zeros(map_alt.shape, dtype = np.uint8)
     for (i, j), value in  np.ndenumerate(circle_mask):
-        x=map_x[i,j]; y=map_y[i,j]
-        if ia.distance((x,y),center) <= radius:
+        alt = map_alt[i, j]
+        azi = map_azi[i, j]
+        if ia.distance((alt, azi), center) <= radius:
             circle_mask[i,j] = 1
-
     return circle_mask
 
 
@@ -1356,7 +1356,7 @@ class DriftingGratingCircle(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 center=(60.,0.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
+                 center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
                  con_list=(0.5,), size_list=(5.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
@@ -1729,14 +1729,14 @@ class DriftingGratingCircle(Stim):
 
         masks = {}
         if self.coordinate=='degree':
-             coord_x=self.monitor.deg_coord_x
-             coord_y=self.monitor.deg_coord_y
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
         elif self.coordinate=='linear':
-             coord_x=self.monitor.lin_coord_x
-             coord_y=self.monitor.lin_coord_y
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
 
         for size in self.size_list:
-            curr_mask = get_circle_mask(coord_x, coord_y, self.center, size)
+            curr_mask = get_circle_mask(coord_alt, coord_azi, self.center, size)
             masks.update({size:curr_mask})
 
         return masks
