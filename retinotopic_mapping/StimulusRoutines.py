@@ -131,7 +131,7 @@ def get_circle_mask(map_x, map_y, center, radius):
     return circle_mask
 
 
-def get_grating(map_x, map_y, ori=0., spatial_freq=0.1,
+def get_grating(alt_map, azi_map, ori=0., spatial_freq=0.1,
                 center=(0.,60.), phase=0., contrast=1.):
     """
     Generate a grating frame with defined spatial frequency, center location,
@@ -139,16 +139,16 @@ def get_grating(map_x, map_y, ori=0., spatial_freq=0.1,
 
     Parameters
     ----------
-    map_x : ndarray
+    azi_map : ndarray
         x coordinates for each pixel on a map
-    map_y : ndarray
+    alt_map : ndarray
         y coordinates for each pixel on a map
     ori : float, optional
-        orientation angle in degrees, defaults to 0.
+        orientation angle of the grating in degrees, defaults to 0.
     spatial_freq : float, optional
         spatial frequency (cycle per unit), defaults to 0.1
     center : tuple, optional
-        center coordinates of circle {x, y}
+        center coordinates of circle {alt, azi}
     phase : float, optional
         defaults to 0.
     contrast : float, optional
@@ -160,23 +160,27 @@ def get_grating(map_x, map_y, ori=0., spatial_freq=0.1,
         a frame as floating point 2-d array with grating, value range [0., 1.]
     """
 
-    if map_x.shape != map_y.shape:
-        raise ValueError, 'map_x and map_y should have same shape!'
+    if azi_map.shape != alt_map.shape:
+        raise ValueError, 'map_alt and map_azi should have same shape!'
 
-    if len(map_x.shape) != 2:
-        raise ValueError, 'map_x and map_y should be 2-d!!'
+    if len(azi_map.shape) != 2:
+        raise ValueError, 'map_alt and map_azi should be 2-d!!'
 
-    map_x_h = np.array(map_x, dtype = np.float32)
-    map_y_h = np.array(map_y, dtype = np.float32)
+    ori_arc = (ori * np.pi / 180.) % np.pi
 
-    distance = (np.sin(ori) * (map_x_h - center[0]) -
-                          np.cos(ori) * (map_y_h - center[1]))
+    map_azi_h = np.array(azi_map, dtype = np.float32)
+    map_alt_h = np.array(alt_map, dtype = np.float32)
 
-    grating = np.sin(distance * 2 * np.pi * spatial_freq + phase)
+    distance = (np.sin(ori_arc) * (map_azi_h - center[1]) -
+                np.cos(ori_arc) * (map_alt_h - center[0]))
+
+    grating = np.sin(distance * 2 * np.pi * spatial_freq - phase)
+
+    grating = grating * contrast  # adjust contrast
+
     grating = (grating + 1.) / 2. # change the scale of grating to be [0., 1.]
-    grating = (grating * contrast) + (1 - contrast) / 2 # adjust contrast
 
-    return grating.astype(map_x.dtype)
+    return grating.astype(azi_map.dtype)
 
 
 class Stim(object):
@@ -1331,7 +1335,7 @@ class DriftingGratingCircle(Stim):
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
     center : 2-tuple of floats, optional
-        coordintes for center of the stimulus (azimuth, argument)
+        coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
         list of spatial frequencies in cycles/unit, defaults to `(0.08)`
     tf_list : n-tuple, optional
@@ -1435,7 +1439,7 @@ class DriftingGratingCircle(Stim):
 
         frame_per_cycle = int(self.monitor.refresh_rate / tf)
 
-        phases_per_cycle = list(np.arange(0,np.pi*2,np.pi*2/frame_per_cycle))
+        phases_per_cycle = list(np.arange(0, np.pi*2, np.pi*2/frame_per_cycle))
 
         phases = []
 
@@ -1443,7 +1447,6 @@ class DriftingGratingCircle(Stim):
             phases += phases_per_cycle
 
         phases = phases[0:block_frame_num]
-
         return phases, frame_per_cycle
 
     @staticmethod
@@ -1451,7 +1454,7 @@ class DriftingGratingCircle(Stim):
         """
         get orientation from direction, [0, pi)
         """
-        return (dire + np.pi / 2) % np.pi
+        return (dire + 90.) % 360.
 
     def generate_frames(self):
         """
@@ -1505,7 +1508,7 @@ class DriftingGratingCircle(Stim):
 
                 # get phase list for each condition
                 phases, frame_per_cycle = self._generate_phase_list(tf)
-                if (dire % (np.pi * 2)) >= np.pi:
+                if (dire % 360.) >= 90. and (dire % 360. < 270.):
                      phases = [-phase for phase in phases]
 
                 for k, phase in enumerate(phases): # each frame in the block
@@ -1643,7 +1646,6 @@ class DriftingGratingCircle(Stim):
                 
         
         return frames, index_to_display
-        
     
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
@@ -1775,15 +1777,17 @@ class DriftingGratingCircle(Stim):
             if curr_frame[0] == 1: # not a gap
 
                 curr_ori = self._get_ori(curr_frame[4])
-
-                curr_grating = get_grating(coord_x,
-                                           coord_y,
+                curr_grating = get_grating(coord_y,
+                                           coord_x,
                                            ori = curr_ori,
                                            spatial_freq = curr_frame[2],
                                            center = self.center,
                                            phase = curr_frame[7],
                                            contrast = curr_frame[5])
-                curr_grating = curr_grating*2. - 1.
+                # plt.imshow(curr_grating)
+                # plt.show()
+
+                curr_grating = curr_grating * 2. - 1.  # change scale from [0., 1.] to [-1., 1.]
 
                 curr_circle_mask = mask_dict[curr_frame[6]]
 

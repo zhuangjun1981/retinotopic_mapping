@@ -17,6 +17,24 @@ class TestSimulation(unittest.TestCase):
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
 
+    def test_get_grating(self):
+        import numpy as np
+        import matplotlib.pyplot as plt
+        alt = np.arange(-30., 30., 1.)
+        azi = np.arange(-30., 30., 1.)
+        azi_map, alt_map = np.meshgrid(azi, alt)
+
+        grating = sr.get_grating(alt_map, azi_map, ori=45., spatial_freq=0.04,
+                                 center=(0., 0.), phase=np.pi/2, contrast=1.)
+        # f = plt.figure()
+        # ax = f.add_subplot(111)
+        # ax.imshow(grating, cmap='gray')
+        # ax.set_xticks(range(len(azi))[::10])
+        # ax.set_yticks(range(len(alt))[::10])
+        # ax.set_xticklabels(azi[::10])
+        # ax.set_yticklabels(alt[::10])
+        # plt.show()
+
     # UNIFORM CONTRAST TESTS
     # ======================
     def test_UC_generate_movie_by_index(self):
@@ -198,7 +216,7 @@ class TestSimulation(unittest.TestCase):
         index_frames = pregap_end + block_frames + postgap_end
         
         assert (len(dgc_full_dict['stimulation']['index_to_display'])== index_frames)
-    
+
     
 if __name__ == '__main__':
     unittest.main(verbosity=2.)
