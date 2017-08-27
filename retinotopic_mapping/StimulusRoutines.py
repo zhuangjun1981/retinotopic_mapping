@@ -1569,14 +1569,16 @@ class DriftingGratingCircle(Stim):
         phases, frame_per_cycle = self._generate_phase_list(condi_params[1])
         phases_unique = phases[0:frame_per_cycle]
 
+        # print condi_params
+
         frames_unique_condi = []
         for i, ph in enumerate(phases_unique):
             if i == 0:
                 frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], ph, condi_params[4], 1.])
+                                            condi_params[3], condi_params[4], ph, 1.])
             else:
                 frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], ph, condi_params[4], 0.])
+                                            condi_params[3], condi_params[4], ph, 0.])
 
         index_to_display_condi = []
         while len(index_to_display_condi) < len(phases):
@@ -1669,7 +1671,7 @@ class DriftingGratingCircle(Stim):
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
         self.frames_unique, self.index_to_display = self._generate_display_index()
-        print '\n'.join([str(f) for f in self.frames_unique])
+        # print '\n'.join([str(f) for f in self.frames_unique])
         
         mask_dict = self._generate_circle_mask_dict()
         
