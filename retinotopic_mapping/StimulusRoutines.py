@@ -1528,8 +1528,8 @@ class DriftingGratingCircle(Stim):
 
                 # get phase list for each condition
                 phases, frame_per_cycle = self._generate_phase_list(tf)
-                if (dire % 360.) >= 90. and (dire % 360. < 270.):
-                     phases = [-phase for phase in phases]
+                # if (dire % 360.) >= 90. and (dire % 360. < 270.):
+                #      phases = [-phase for phase in phases]
 
                 for k, phase in enumerate(phases): # each frame in the block
 
