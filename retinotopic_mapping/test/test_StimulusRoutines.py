@@ -255,8 +255,8 @@ class TestSimulation(unittest.TestCase):
     # ============================= #
     def test_DGC_generate_frames(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
-                                       coordinate='degree',center=(10., 90.), sf_list=(0.02, 0.04),
-                                       tf_list=(1.0,), dire_list=(45.,), con_list=(0.8,), size_list=(20.,),
+                                       coordinate='degree', center=(10., 90.), sf_list=(0.02, 0.04),
+                                       tf_list=(1.0,), dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
                                        block_dur=2., midgap_dur=1., iteration=2, pregap_dur=1.5,
                                        postgap_dur=3.)
 
@@ -294,17 +294,58 @@ class TestSimulation(unittest.TestCase):
         assert (frames[690][8] == 1.)
         assert ([f[8] for f in frames[691:750]] == [0.] * 59)
 
-
-    def test_DGC_generate_movie_by_index(self):
+    def test_DGC__generate_frames_for_index_display_condition(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
                                        block_dur=2., sf_list=(0.04,), tf_list=(2.0,),
-                                       dire_list=(45.,), con_list=(0.8,), size_list=(10.,),
+                                       dire_list=(45.,), con_list=(0.8,), radius_list=(10.,),
                                        midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
                                        iteration=2)
 
+        conditions = dgc._generate_all_conditions()
+        # print len(conditions)
+        assert (len(conditions) == 1)
+        frames_unique_condi, index_to_display_condi = dgc._generate_frames_for_index_display_condition(conditions[0])
+        assert (index_to_display_condi == range(30) * 4)
+        assert (max(index_to_display_condi) == len(frames_unique_condi) - 1)
+        # print '\n'.join([str(f) for f in frames_unique_condi])
+        assert ([f[0] for f in frames_unique_condi] == [1] * 30)
+        assert (frames_unique_condi[0][1] == 1)
+        assert (frames_unique_condi[0][8] == 1.)
+        assert ([f[1] for f in frames_unique_condi[1:]] == [0] * 29)
+        assert ([f[8] for f in frames_unique_condi[1:]] == [0.] * 29)
+
+    def test_DGC_generate_frames_unique_and_condi_ind_dict(self):
+        dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
+                                       block_dur=2., sf_list=(0.04,), tf_list=(1., 3.0,),
+                                       dire_list=(45., 90.), con_list=(0.8,), radius_list=(10.,),
+                                       midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
+                                       iteration=2)
+        frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
+        assert (len(condi_ind_in_frames_unique) == 4)
+        assert (set(condi_ind_in_frames_unique.keys()) == set(['condi_0000', 'condi_0001', 'condi_0002', 'condi_0003']))
+        print len(frames_unique)
+        assert (len(frames_unique) == 161)
+
+        import numpy as np
+        for cond, ind in condi_ind_in_frames_unique.items():
+            assert (len(ind) == 120)
+            assert (ind[0] % 20 == 1)
+            assert (len(np.unique(ind)) == 60 or len(np.unique(ind)) == 20)
+            # print '\ncond'
+            # print ind
+
+    def test_DGC_generate_display_index(self):
+        dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
+                                       block_dur=2., sf_list=(0.04,), tf_list=(1., 3.0,),
+                                       dire_list=(45., 90.), con_list=(0.8,), radius_list=(10.,),
+                                       midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
+                                       iteration=2)
         frames_unique, index_to_display = dgc._generate_display_index()
+        # print '\n'.join([str(f) for f in frames_unique])
+        assert (len(frames_unique) == 161)
+        assert (max(index_to_display) == len(frames_unique) - 1)
         print len(index_to_display)
-        assert (len(index_to_display) == 2 * (30 + 120 + 12))
+        assert (len(index_to_display) == 1044)
 
     
 if __name__ == '__main__':

@@ -1361,7 +1361,7 @@ class DriftingGratingCircle(Stim):
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
-                 con_list=(0.5,), size_list=(5.,), block_dur=2., midgap_dur=0.5,
+                 con_list=(0.5,), radius_list=(5.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(DriftingGratingCircle,self).__init__(monitor=monitor,
@@ -1381,9 +1381,18 @@ class DriftingGratingCircle(Stim):
         self.tf_list = tf_list
         self.dire_list = dire_list
         self.con_list = con_list
-        self.size_list = size_list
-        self.block_dur = float(block_dur)
-        self.midgap_dur = float(midgap_dur)
+        self.radius_list = radius_list
+
+        if block_dur > 0.:
+            self.block_dur = float(block_dur)
+        else:
+            raise ValueError('block_dur should be larger than 0 second.')
+
+        if midgap_dur >= 0.:
+            self.midgap_dur = float(midgap_dur)
+        else:
+            raise ValueError('midgap_dur should be no less than 0 second')
+
         self.iteration = iteration
         self.frame_config = ('is_display', 'isCycleStart', 'spatialFrequency',
                             'temporalFrequency', 'direction',
@@ -1399,6 +1408,14 @@ class DriftingGratingCircle(Stim):
                              + ' should be close to a whole number!')
                 raise ValueError, error_msg
 
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
+
+    @property
+    def block_frame_num(self):
+        return int(self.block_dur * self.monitor.refresh_rate)
+
     def _generate_all_conditions(self):
         """
         generate all possible conditions for one iteration given the lists of
@@ -1413,10 +1430,10 @@ class DriftingGratingCircle(Stim):
 
         """
         all_conditions = [(sf, tf, dire, con, size) for sf in self.sf_list
-                                                    for tf in self.tf_list
-                                                    for dire in self.dire_list
-                                                    for con in self.con_list
-                                                    for size in self.size_list]
+                          for tf in self.tf_list
+                          for dire in self.dire_list
+                          for con in self.con_list
+                          for size in self.radius_list]
         random.shuffle(all_conditions)
 
         return all_conditions
@@ -1439,7 +1456,7 @@ class DriftingGratingCircle(Stim):
             number of frames for each circle
         """
 
-        block_frame_num = int(self.block_dur * self.monitor.refresh_rate)
+        # block_frame_num = int(self.block_dur * self.monitor.refresh_rate)
 
         frame_per_cycle = int(self.monitor.refresh_rate / tf)
 
@@ -1447,10 +1464,10 @@ class DriftingGratingCircle(Stim):
 
         phases = []
 
-        while len(phases) < block_frame_num:
+        while len(phases) < self.block_frame_num:
             phases += phases_per_cycle
 
-        phases = phases[0:block_frame_num]
+        phases = phases[0: self.block_frame_num]
         return phases, frame_per_cycle
 
     @staticmethod
@@ -1493,20 +1510,19 @@ class DriftingGratingCircle(Stim):
 
         frames = []
         off_params = [0, None,None,None,None,None,None,None,-1.]
-        midgap_frames = int(self.midgap_dur*self.monitor.refresh_rate)
-        
+        # midgap_frames = int(self.midgap_dur*self.monitor.refresh_rate)
 
         for i in range(self.iteration):
             if i == 0: # very first block
                 frames += [off_params for ind in range(self.pregap_frame_num)]
             else: # first block for the later iteration
-                frames += [off_params for ind in range(midgap_frames)]
+                frames += [off_params for ind in range(self.midgap_frame_num)]
 
             all_conditions = self._generate_all_conditions()
 
             for j, condition in enumerate(all_conditions):
                 if j != 0: # later conditions
-                    frames += [off_params for ind in range(midgap_frames)]
+                    frames += [off_params for ind in range(self.midgap_frame_num)]
 
                 sf, tf, dire, con, size = condition
 
@@ -1541,122 +1557,123 @@ class DriftingGratingCircle(Stim):
         frames = [tuple(frame) for frame in frames]
 
         return tuple(frames)
+
+    def _generate_frames_for_index_display_condition(self, condi_params):
+        """
+        :param condi_params: list of input condition parameters, [sf, tf, dire, con, size]
+                             designed for the output of self._generate_all_conditions()
+        :return: frames_unique_condi: list of unique frame parameters for this particular condition
+                 index_to_display_condi: list of indices of display order of the unique frames for
+                                         this particular condition
+        """
+        phases, frame_per_cycle = self._generate_phase_list(condi_params[1])
+        phases_unique = phases[0:frame_per_cycle]
+
+        frames_unique_condi = []
+        for i, ph in enumerate(phases_unique):
+            if i == 0:
+                frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
+                                            condi_params[3], ph, condi_params[4], 1.])
+            else:
+                frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
+                                            condi_params[3], ph, condi_params[4], 0.])
+
+        index_to_display_condi = []
+        while len(index_to_display_condi) < len(phases):
+            index_to_display_condi += range(frame_per_cycle)
+        index_to_display_condi = index_to_display_condi[0:len(phases)]
+
+        frames_unique_condi = tuple([tuple(f) for f in frames_unique_condi])
+
+        return frames_unique_condi, index_to_display_condi
     
-    def _generate_frames_for_index_display(self):
-        """ compute the information that defines the frames used for index display 
-        
-            First chunk - 1 frame containing an off condition
-            second chunk - chunk of size depending on temporal frequency
-            third chunk - 1 frame containing an off midgap cond
-            fourth - chunk of size depedning on temporal freq
-            ...
-            
+    def _generate_frames_unique_and_condi_ind_dict(self):
+        """
+        compute the information that defines the frames used for index display
+
+        :return frames_unique
+                the condi_ind_in_frames_unique:
+                    {
+                     condi_key (same condi_key as condi_dict):
+                           list of non-negative integers representing the indices of this
+                           particular condition in frames_unique
+                    }
         """
         if self.indicator.is_sync:
-            single_run_frames = []
-            off_params = (0, None,None,None,None,None,None,None,-1.)
-            midgap_frame_num = int(self.midgap_dur*self.monitor.refresh_rate)
-            block_gap_num = int(self.block_dur*self.monitor.refresh_rate)
-            
-            # Used to store the length of a given block. 'off' blocks will always
-            # be 1 whereas 'on' blocks are of variable length. we need this information
-            # in order to play the stimulus correctly
-            num_unique_block_frames = [1]
-            
-            # used to store number of repeats for each frame, e.g. pregap_frame_num
-            # postgap_frame_num, block_frame_num, ...
-            num_disp_iters = [self.pregap_frame_num]
-            
-            
-            for i in range(self.iteration):
-                if i!=0:
-                    num_unique_block_frames.append(1)
-                    num_disp_iters.append(midgap_frame_num)
-                single_run_frames += [off_params]
-                
-                # Compute all combinations of defining parameters
-                all_conditions = self._generate_all_conditions()
-                
-                for j, condition in enumerate(all_conditions):
-                    if j!=0:
-                        single_run_frames += [off_params]
-                        num_unique_block_frames.append(1)
-                        num_disp_iters.append(midgap_frame_num)
-                    sf, tf, dire, con, size = condition
-                    
-                    # Compute phase list
-                    phases, frame_per_cycle = self._generate_phase_list(tf)
-                    
-                    phases = phases[:frame_per_cycle]
-                    num_unique_block_frames.append(frame_per_cycle)
-                    
-                    stim_on = []
-                    
-                    if (dire % (np.pi * 2)) >= np.pi:
-                             phases = [-phase for phase in phases]
-                    
-                    # Make each unique frame parameters
-                    for k, phase in enumerate(phases): 
-        
-                        # mark first frame of each cycle
-                        # if phase == 0 then it is first frame of a cycle
-                        if k == 0:
-                            stim_on += [(1, sf, tf, dire, con, size, phase, 1.)]
-                            
-                        else:
-                            stim_on += [(1, sf, tf, dire, con, size, phase, 0.)]
-                            
-                    single_run_frames += stim_on
-                    num_disp_iters.append(block_gap_num)
-                    
-            
-            single_run_frames += [off_params]
-            num_unique_block_frames.append(1)
-            num_disp_iters.append(self.postgap_frame_num)
-                   
-            return single_run_frames, num_unique_block_frames, num_disp_iters
-        
+            all_conditions = self._generate_all_conditions()
+
+            '''
+            cond_dict is a dictionary constructed as following
+                {
+                condi_key (i.e. condi_0000):
+                     {
+                      'frames_unique': list of unique frame parameters for this particual condition
+                                       [is_display, is_first_in_cycle, sf, tf, dire,
+                                       con, size, phase, indicator_color],
+                      'index_to_display': list of non-negative integers,
+                     }
+                }
+            '''
+            condi_dict = {}
+            for i, condi in enumerate(all_conditions):
+                frames_unique_condi, index_to_display_condi = self._generate_frames_for_index_display_condition(condi)
+                condi_dict.update({'condi_{:04d}'.format(i):
+                                       {'frames_unique': frames_unique_condi,
+                                        'index_to_display': index_to_display_condi}
+                                   })
+
+            condi_keys = condi_dict.keys()
+            condi_keys.sort()
+
+            # handle frames_unique
+            frames_unique = []
+            gap_frame = (0., None, None, None, None, None, None, None, -1.)
+            frames_unique.append(gap_frame)
+            condi_keys.sort()
+            condi_ind_in_frames_unique = {}
+
+            for condi_key in condi_keys:
+                curr_frames_unique_total = len(frames_unique)
+                curr_index_to_display_condi = np.array(condi_dict[condi_key]['index_to_display'], dtype=np.uint64)
+                frames_unique += list(condi_dict[condi_key]['frames_unique'])
+                condi_ind_in_frames_unique.update(
+                    {condi_key: list(curr_index_to_display_condi + curr_frames_unique_total)})
+
+            return frames_unique, condi_ind_in_frames_unique
         else:
             raise NotImplementedError, "method not available for non-sync indicator"
     
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
-        (frames, 
-         num_unique_block_frames, 
-         num_disp_iters) = self._generate_frames_for_index_display()
-        
-        # Compute list of indices of each frame to display
+
+        frames_unique, condi_ind_in_frames_unique = self._generate_frames_unique_and_condi_ind_dict()
+
+        condi_keys = list(condi_ind_in_frames_unique.keys())
+
         index_to_display = []
-        
-        cumsum = np.cumsum(num_unique_block_frames)
-        cumsum = list(np.insert(cumsum,0,0))
-        
-        frame_blocks = []
-        
-        for i in range(len(cumsum)-1):
-            frame_blocks.append(range(cumsum[i],cumsum[i+1]))
-            
-        for n,frame_block in enumerate(frame_blocks):
-            if len(frame_block)==1:
-                index_to_display += frame_block*num_disp_iters[n]
-            else:
-                repeats = (num_disp_iters[n] / num_unique_block_frames[n]) + 1
-                
-                repeated_block = frame_block*repeats
-                
-                repeated_block = repeated_block[:num_disp_iters[n]]
-                
-                index_to_display += repeated_block
-        
-        return frames, index_to_display
+        index_to_display += [0] * self.pregap_frame_num
+
+        for iter in range(self.iteration):
+            np.random.shuffle(condi_keys)
+            for condi_ind, condi in enumerate(condi_keys):
+                if iter == 0 and condi_ind == 0:
+                    pass
+                else:
+                    index_to_display += [0] * self.midgap_frame_num
+                index_to_display += condi_ind_in_frames_unique[condi]
+
+        index_to_display += [0] * self.postgap_frame_num
+
+        return frames_unique, index_to_display
     
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
-        self.frames, self.index_to_display = self._generate_display_index()
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+        print '\n'.join([str(f) for f in self.frames_unique])
         
         mask_dict = self._generate_circle_mask_dict()
         
-        num_unique_frames = len(self.frames)
+        num_unique_frames = len(self.frames_unique)
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
         
@@ -1687,7 +1704,7 @@ class DriftingGratingCircle(Stim):
                                                     num_pixels_height),
                                                     dtype=np.float32)
         
-        for i, frame in enumerate(self.frames):
+        for i, frame in enumerate(self.frames_unique):
 
             if frame[0] == 1: # not a gap
         
@@ -1695,20 +1712,18 @@ class DriftingGratingCircle(Stim):
 
                 curr_grating = get_grating(alt_map=coord_alt,
                                            azi_map=coord_azi,
-                                           dire=frame[3],
-                                           spatial_freq=frame[1],
+                                           dire=frame[4],
+                                           spatial_freq=frame[2],
                                            center=self.center,
-                                           phase=frame[6],
-                                           contrast=frame[4])
+                                           phase=frame[7],
+                                           contrast=frame[5])
 
                 curr_grating = curr_grating * 2. - 1.
 
-                curr_circle_mask = mask_dict[frame[5]]
+                curr_circle_mask = mask_dict[frame[6]]
 
                 mov[i] = ((curr_grating * curr_circle_mask) +
                              (background_frame * (curr_circle_mask * -1. + 1.)))
-                    
-                    
 
             #add sync square for photodiode
             mov[i, indicator_height_min:indicator_height_max,
@@ -1739,9 +1754,9 @@ class DriftingGratingCircle(Stim):
              coord_azi=self.monitor.lin_coord_x
              coord_alt=self.monitor.lin_coord_y
 
-        for size in self.size_list:
-            curr_mask = get_circle_mask(coord_alt, coord_azi, self.center, size)
-            masks.update({size:curr_mask})
+        for radius in self.radius_list:
+            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi, center=self.center, radius=radius)
+            masks.update({radius: curr_mask})
 
         return masks
 
