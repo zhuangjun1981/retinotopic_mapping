@@ -106,7 +106,7 @@ def get_circle_mask(map_alt, map_azi, center, radius):
     map_azi  : ndarray
         azimuth coordinates for each pixel on a map
     center : tuple
-        coordinates of the center of the binary circle mask
+        coordinates (altitude, azimuth) of the center of the binary circle mask
     radius : float
         radius of the binary circle mask
 
@@ -128,10 +128,12 @@ def get_circle_mask(map_alt, map_azi, center, radius):
         azi = map_azi[i, j]
         if ia.distance((alt, azi), center) <= radius:
             circle_mask[i,j] = 1
+    # plt.imshow(circle_mask)
+    # plt.show()
     return circle_mask
 
 
-def get_grating(alt_map, azi_map, ori=0., spatial_freq=0.1,
+def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
                 center=(0.,60.), phase=0., contrast=1.):
     """
     Generate a grating frame with defined spatial frequency, center location,
@@ -143,7 +145,7 @@ def get_grating(alt_map, azi_map, ori=0., spatial_freq=0.1,
         x coordinates for each pixel on a map
     alt_map : ndarray
         y coordinates for each pixel on a map
-    ori : float, optional
+    dire : float, optional
         orientation angle of the grating in degrees, defaults to 0.
     spatial_freq : float, optional
         spatial frequency (cycle per unit), defaults to 0.1
@@ -166,13 +168,13 @@ def get_grating(alt_map, azi_map, ori=0., spatial_freq=0.1,
     if len(azi_map.shape) != 2:
         raise ValueError, 'map_alt and map_azi should be 2-d!!'
 
-    ori_arc = (ori * np.pi / 180.) % np.pi
+    axis_arc = ((dire + 90.) * np.pi / 180.) % (2 * np.pi)
 
     map_azi_h = np.array(azi_map, dtype = np.float32)
     map_alt_h = np.array(alt_map, dtype = np.float32)
 
-    distance = (np.sin(ori_arc) * (map_azi_h - center[1]) -
-                np.cos(ori_arc) * (map_alt_h - center[0]))
+    distance = (np.sin(axis_arc) * (map_azi_h - center[1]) -
+                np.cos(axis_arc) * (map_alt_h - center[0]))
 
     grating = np.sin(distance * 2 * np.pi * spatial_freq - phase)
 
@@ -180,7 +182,7 @@ def get_grating(alt_map, azi_map, ori=0., spatial_freq=0.1,
 
     grating = (grating + 1.) / 2. # change the scale of grating to be [0., 1.]
 
-    return grating.astype(azi_map.dtype)
+    return grating[::-1, :]
 
 
 class Stim(object):
@@ -389,7 +391,7 @@ class UniformContrast(Stim):
         full_sequence = np.zeros((num_frames,
                                   num_pixels_width,
                                   num_pixels_height),
-                                  dtype=np.float16)
+                                  dtype=np.float32)
         
         # Compute pixel coordinates for indicator
         indicator_width_min = (self.indicator.center_width_pixel
@@ -403,11 +405,11 @@ class UniformContrast(Stim):
         
         background = self.background*np.ones((num_pixels_width,
                                               num_pixels_height),
-                                              dtype=np.float16)
+                                              dtype=np.float32)
         
         display = self.color*np.ones((num_pixels_width,
                                       num_pixels_height),
-                                      dtype=np.float16)
+                                      dtype=np.float32)
         
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 0:
@@ -447,7 +449,7 @@ class UniformContrast(Stim):
         full_seq = np.zeros((len(self.frames),
                              self.monitor.deg_coord_x.shape[0],
                              self.monitor.deg_coord_x.shape[1]),
-                             dtype=np.float16)
+                             dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel 
                                - self.indicator.width_pixel/2)
@@ -460,11 +462,11 @@ class UniformContrast(Stim):
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
                               np.size(self.monitor.deg_coord_x, 1)),
-                              dtype=np.float16)*self.background
+                              dtype=np.float32)*self.background
 
         display = np.ones((np.size(self.monitor.deg_coord_x, 0),
                            np.size(self.monitor.deg_coord_x, 1)),
-                           dtype=np.float16)*self.color
+                           dtype=np.float32)*self.color
 
         if not (self.coordinate == 'degree' or self.coordinate == 'linear'):
             raise LookupError, "`coordinate` value not in {'degree','linear'}"
@@ -520,7 +522,7 @@ class FlashingCircle(Stim):
     stim_name : str
         Name of the stimulus.
     center : 2-tuple, optional
-        center coordinate of the circle in degrees, defaults to `(90.,10.)`.
+        center coordinate (altitude, azimuth) of the circle in degrees, defaults to (0.,60.).
     radius : float, optional
         radius of the circle, defaults to `10.`
     color : float, optional
@@ -531,7 +533,7 @@ class FlashingCircle(Stim):
         number of frames that circle is displayed during each presentation
         of the stimulus, defaults to `3`.
     """
-    def __init__(self, monitor, indicator, coordinate='degree', center=(90., 10.),
+    def __init__(self, monitor, indicator, coordinate='degree', center=(0., 60.),
                  radius=10., color=-1., flash_frame_num=3, pregap_dur=2.,
                  postgap_dur=3., background=0.):
 
@@ -656,7 +658,7 @@ class FlashingCircle(Stim):
         full_sequence = np.zeros((num_frames,
                                   num_pixels_width,
                                   num_pixels_height), 
-                                  dtype=np.float16)
+                                  dtype=np.float32)
         
         indicator_width_min = (self.indicator.center_width_pixel 
                                - self.indicator.width_pixel/2)
@@ -669,20 +671,21 @@ class FlashingCircle(Stim):
         
         background = self.background*np.ones((num_pixels_width,
                                               num_pixels_height), 
-                                              dtype=np.float16)
+                                              dtype=np.float32)
         
         if self.coordinate == 'degree':
-            map_x = self.monitor.deg_coord_x
-            map_y = self.monitor.deg_coord_y
+            map_azi = self.monitor.deg_coord_x
+            map_alt = self.monitor.deg_coord_y
 
         elif self.coordinate == 'linear':
-            map_x = self.monitor.lin_coord_x
-            map_y = self.monitor.lin_coord_y
+            map_azi = self.monitor.lin_coord_x
+            map_alt = self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
             
-        circle_mask = get_circle_mask(map_x, map_y, 
-                                  self.center, self.radius).astype(np.float16)
+        circle_mask = get_circle_mask(map_alt, map_azi, self.center, self.radius).astype(np.float32)
+        # plt.imshow(circle_mask)
+        # plt.show()
         
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1:
@@ -712,7 +715,7 @@ class FlashingCircle(Stim):
 
         full_seq = np.zeros((len(self.frames),self.monitor.deg_coord_x.shape[0],
                              self.monitor.deg_coord_x.shape[1]),
-                             dtype=np.float16)
+                             dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel -
                                (self.indicator.width_pixel / 2))
@@ -725,7 +728,7 @@ class FlashingCircle(Stim):
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
                               np.size(self.monitor.deg_coord_x,1)),
-                              dtype = np.float16)*self.background
+                              dtype = np.float32)*self.background
 
         if self.coordinate == 'degree':
             map_x = self.monitor.deg_coord_x
@@ -738,7 +741,7 @@ class FlashingCircle(Stim):
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
         circle_mask = get_circle_mask(map_x, map_y,
-                                 self.center, self.radius).astype(np.float16)
+                                 self.center, self.radius).astype(np.float32)
 
         for i in range(len(self.frames)):
             curr_frame = self.frames[i]
@@ -1192,7 +1195,7 @@ class SparseNoise(Stim):
                                 + self.indicator.height_pixel / 2)
         
         full_seq = self.background * \
-                   np.ones((num_unique_frames, num_pixels_width, num_pixels_height), dtype=np.float16)
+                   np.ones((num_unique_frames, num_pixels_width, num_pixels_height), dtype=np.float32)
         
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1.:
@@ -1248,7 +1251,7 @@ class SparseNoise(Stim):
         full_seq = np.ones((len(self.frames),
                             self.monitor.deg_coord_x.shape[0],
                             self.monitor.deg_coord_x.shape[1]),
-                           dtype=np.float16) * self.background
+                           dtype=np.float32) * self.background
 
         for i, curr_frame in enumerate(self.frames):
             if curr_frame[0] == 1: # not a gap
@@ -1677,11 +1680,11 @@ class DriftingGratingCircle(Stim):
         mov = self.background*np.ones((num_unique_frames,
                                        num_pixels_width,
                                        num_pixels_height),
-                                       dtype=np.float16)
+                                       dtype=np.float32)
 
         background_frame = self.background*np.ones((num_pixels_width,
                                                     num_pixels_height),
-                                                    dtype=np.float16)
+                                                    dtype=np.float32)
         
         for i, frame in enumerate(self.frames):
 
@@ -1691,7 +1694,7 @@ class DriftingGratingCircle(Stim):
 
                 curr_grating = get_grating(coord_x,
                                            coord_y,
-                                           ori = curr_ori,
+                                           dire= curr_ori,
                                            spatial_freq = frame[1],
                                            center = self.center,
                                            phase = frame[6],
@@ -1768,17 +1771,17 @@ class DriftingGratingCircle(Stim):
 
         mov = np.ones((len(self.frames),
                        coord_x.shape[0],
-                       coord_x.shape[1]),dtype=np.float16) * self.background
-        background_frame = np.ones(coord_x.shape,dtype=np.float16)*self.background
+                       coord_x.shape[1]),dtype=np.float32) * self.background
+        background_frame = np.ones(coord_x.shape,dtype=np.float32)*self.background
 
         for i, curr_frame in enumerate(self.frames):
 
             if curr_frame[0] == 1: # not a gap
 
-                curr_ori = self._get_ori(curr_frame[4])
+                # curr_ori = self._get_ori(curr_frame[4])
                 curr_grating = get_grating(coord_y,
                                            coord_x,
-                                           ori = curr_ori,
+                                           dire= curr_frame[4],
                                            spatial_freq = curr_frame[2],
                                            center = self.center,
                                            phase = curr_frame[7],
@@ -1936,7 +1939,7 @@ class KSstim(Stim):
 
         squareV = np.ones((np.size(map_x, 0),
                            np.size(map_x, 1)),
-                           dtype = np.float16)
+                           dtype = np.float32)
         squareV = -1 * squareV
 
         stepV = np.arange(self.square_center[0] - (2*neg_x + 0.5)*self.square_size,
@@ -1949,7 +1952,7 @@ class KSstim(Stim):
                                                      self.square_size)))] = 1.0
 
         squareH = np.ones((np.size(map_y, 0),
-                           np.size(map_y, 1)), dtype = np.float16)
+                           np.size(map_y, 1)), dtype = np.float32)
         squareH = -1 * squareH
 
         stepH = np.arange(self.square_center[1] - (2*neg_y + 0.5)*self.square_size,
@@ -2016,7 +2019,7 @@ class KSstim(Stim):
         if 'step_x' in locals():
             sweeps = np.zeros((len(step_x),
                                np.size(map_x, 0),
-                               np.size(map_x, 1)), dtype = np.float16)
+                               np.size(map_x, 1)), dtype = np.float32)
             for i in range(len(step_x)):
                 temp = sweeps[i,:,:]
                 temp[np.where(np.logical_and(map_x >= step_x[i],
@@ -2028,7 +2031,7 @@ class KSstim(Stim):
         if 'step_y' in locals():
             sweeps = np.zeros((len(step_y),
                                np.size(map_y, 0),
-                               np.size(map_y, 1)), dtype = np.float16)
+                               np.size(map_y, 1)), dtype = np.float32)
             for j in range(len(step_y)):
                 temp=sweeps[j,:,:]
                 temp[np.where(np.logical_and(map_y >= step_y[j],
@@ -2132,7 +2135,7 @@ class KSstim(Stim):
         full_seq = np.zeros((len(self.frames),
                                  self.monitor.deg_coord_x.shape[0],
                                  self.monitor.deg_coord_x.shape[1]),
-                                                         dtype=np.float16)
+                                                         dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel -
                                (self.indicator.width_pixel / 2))
@@ -2145,7 +2148,7 @@ class KSstim(Stim):
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
                               np.size(self.monitor.deg_coord_x,1)),
-                                 dtype = np.float16) * self.background
+                                 dtype = np.float32) * self.background
 
         for i in range(len(self.frames)):
             curr_frame = self.frames[i]

@@ -17,6 +17,21 @@ class TestSimulation(unittest.TestCase):
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
 
+    def test_get_circle_mask(self):
+        import numpy as np
+        import matplotlib.pyplot as plt
+        alt = np.arange(-30., 30., 1.)[::-1]
+        azi = np.arange(-30., 30., 1.)
+        azi_map, alt_map = np.meshgrid(azi, alt)
+        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(0., 10.), radius=10.)
+        # plt.imshow(cm)
+        # plt.show()
+        assert (cm[27, 54] == 1)
+        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(10., 0.), radius=10.)
+        # plt.imshow(cm)
+        # plt.show()
+        assert (cm[5, 28] == 1)
+
     def test_get_grating(self):
         import numpy as np
         import matplotlib.pyplot as plt
@@ -24,8 +39,8 @@ class TestSimulation(unittest.TestCase):
         azi = np.arange(-30., 30., 1.)
         azi_map, alt_map = np.meshgrid(azi, alt)
 
-        grating = sr.get_grating(alt_map, azi_map, ori=45., spatial_freq=0.04,
-                                 center=(0., 0.), phase=np.pi/2, contrast=1.)
+        grating = sr.get_grating(alt_map, azi_map, dire=45., spatial_freq=0.04,
+                                 center=(0., 0.), phase=0., contrast=1.)
         # f = plt.figure()
         # ax = f.add_subplot(111)
         # ax.imshow(grating, cmap='gray')
@@ -71,10 +86,10 @@ class TestSimulation(unittest.TestCase):
     # FLASHING CIRCLE TESTS #
     # ===================== #
     def test_FC_generate_movie_by_index(self):
-        # Setup Flashing Circle Objects
+        import matplotlib.pyplot as plt
         fc = sr.FlashingCircle(monitor=self.monitor,
                                     indicator=self.indicator,
-                                    center=(90., 0.), flash_frame_num=30,
+                                    center=(10., 90.), flash_frame_num=30,
                                     color=-1., pregap_dur=0.5, postgap_dur=1.2,
                                     background=1., coordinate='degree')
 
@@ -103,6 +118,11 @@ class TestSimulation(unittest.TestCase):
 
         for i in range(flashing_end, postgap_end):
             assert (frames[i] == (0., -1.))
+
+        assert (fc_full_seq[1, 29, 124] == -1)
+        f, (ax) = plt.subplots(1)
+        ax.imshow(fc_full_seq[1])
+        plt.show()
 
     def test_FC_generate_movie(self):
         fc = sr.FlashingCircle(monitor=self.monitor,
