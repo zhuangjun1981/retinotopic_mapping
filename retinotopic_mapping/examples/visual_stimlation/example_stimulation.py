@@ -77,7 +77,7 @@ you might need to start debugging!
 
 #======================= Flashing Circle Stimulus =============================
 # flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
-#                                       center=(60., 10.), radius=20., color=-1.,
+#                                       center=(10., 60.), radius=20., color=-1.,
 #                                       flash_frame_num=10, pregap_dur=2.,
 #                                       postgap_dur=3., background=0.)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
@@ -101,30 +101,31 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Sparse Noise pt 2 ====================================
-#sparse_noise = stim.SparseNoise(mon,ind)
-#ds = DisplaySequence(log_dir=r'C:\data',
-#                     backupdir=None,
-#                     is_triggered=False,
-#                     is_sync_pulse=False,
-#                     display_screen=1)
-#ds.set_stim(sparse_noise)
-#ds.trigger_display()
+sparse_noise = stim.SparseNoise(mon, ind, subregion=(-50.,0.,-10.,60.), grid_space=(8., 8.),
+                                background=0., sign='ON', pregap_dur=0., postgap_dur=0.,
+                                coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
+                                probe_frame_num=6, iteration=2, is_include_edge=False)
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+                     is_sync_pulse=False, display_iter=2, display_screen=1,
+                     by_index=False)
+ds.set_stim(sparse_noise)
+ds.trigger_display()
 #==============================================================================
 
 
 #======================= Drifting Grating Circle Stimulus =====================
-dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
-                                center=(0., 60.), sf_list=(0.02, ), tf_list=(1.0,),
-                                dire_list=(45.,), con_list=(0.8,), size_list=(20.,),
-                                block_dur=8., midgap_dur=1., iteration=1, pregap_dur=0.,
-                                postgap_dur=3.)
-
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
-                     is_sync_pulse=False, is_interpolate=False, display_screen=1,
-                     by_index=True)
-
-ds.set_stim(dg)
-ds.trigger_display()
+# dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
+#                                 center=(0., 60.), sf_list=(0.02, ), tf_list=(1.0,),
+#                                 dire_list=(45.,), con_list=(0.8,), size_list=(20.,),
+#                                 block_dur=8., midgap_dur=1., iteration=1, pregap_dur=0.,
+#                                 postgap_dur=3.)
+#
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
+#                      is_sync_pulse=False, is_interpolate=False, display_screen=1,
+#                      by_index=True)
+#
+# ds.set_stim(dg)
+# ds.trigger_display()
 
 #======================== Drifting Grating pt 2 ===============================
 #drifting_grating2 = stim.DriftingGratingCircle(mon,
