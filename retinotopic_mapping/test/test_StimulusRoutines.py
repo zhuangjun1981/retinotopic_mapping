@@ -323,7 +323,6 @@ class TestSimulation(unittest.TestCase):
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
         assert (len(condi_ind_in_frames_unique) == 4)
         assert (set(condi_ind_in_frames_unique.keys()) == set(['condi_0000', 'condi_0001', 'condi_0002', 'condi_0003']))
-        print len(frames_unique)
         assert (len(frames_unique) == 161)
 
         import numpy as np
@@ -344,7 +343,7 @@ class TestSimulation(unittest.TestCase):
         # print '\n'.join([str(f) for f in frames_unique])
         assert (len(frames_unique) == 161)
         assert (max(index_to_display) == len(frames_unique) - 1)
-        print len(index_to_display)
+        # print len(index_to_display)
         assert (len(index_to_display) == 1044)
 
     
