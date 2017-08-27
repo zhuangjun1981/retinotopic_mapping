@@ -37,21 +37,19 @@ class TestSimulation(unittest.TestCase):
     def test_get_grating(self):
         import numpy as np
 
-        alt = np.arange(-30., 30., 1.)
+        alt = np.arange(-30., 30., 1.)[::-1]
         azi = np.arange(-30., 30., 1.)
         azi_map, alt_map = np.meshgrid(azi, alt)
 
-        grating = sr.get_grating(alt_map, azi_map, dire=45., spatial_freq=0.04,
-                                 center=(0., 0.), phase=0., contrast=1.)
+        grating = sr.get_grating(alt_map=alt_map, azi_map=azi_map, dire=315.,
+                                 spatial_freq=0.04, center=(0., 0.), phase=0.,
+                                 contrast=1.)
+        assert (grating[34, 29] < 0.827)
+        assert (grating[34, 29] > 0.825)
 
         # import matplotlib.pyplot as plt
-        # f = plt.figure()
-        # ax = f.add_subplot(111)
+        # f, (ax) = plt.subplots(1)
         # ax.imshow(grating, cmap='gray')
-        # ax.set_xticks(range(len(azi))[::10])
-        # ax.set_yticks(range(len(alt))[::10])
-        # ax.set_xticklabels(azi[::10])
-        # ax.set_yticklabels(alt[::10])
         # plt.show()
 
     # UNIFORM CONTRAST TESTS
@@ -249,9 +247,9 @@ class TestSimulation(unittest.TestCase):
         import numpy as np
         assert (np.min(mov_unique, axis=0)[92, 38] == -1)
 
-        import matplotlib.pyplot as plt
-        plt.imshow(np.min(mov_unique, axis=0))
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.imshow(np.min(mov_unique, axis=0))
+        # plt.show()
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #

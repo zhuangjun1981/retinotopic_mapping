@@ -101,14 +101,14 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Sparse Noise pt 2 ====================================
-sparse_noise = stim.SparseNoise(mon, ind, subregion=(-50.,0.,-10.,60.), grid_space=(8., 8.),
-                                background=0., sign='ON', pregap_dur=0., postgap_dur=0.,
-                                coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
-                                probe_frame_num=6, iteration=2, is_include_edge=False)
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-                     is_sync_pulse=False, display_iter=2, display_screen=1,
-                     by_index=False)
-ds.set_stim(sparse_noise)
+# sparse_noise = stim.SparseNoise(mon, ind, subregion=(-50.,0.,-10.,60.), grid_space=(8., 8.),
+#                                 background=0., sign='ON', pregap_dur=0., postgap_dur=0.,
+#                                 coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
+#                                 probe_frame_num=6, iteration=2, is_include_edge=False)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=2, display_screen=1,
+#                      by_index=False)
+# ds.set_stim(sparse_noise)
 ds.trigger_display()
 #==============================================================================
 

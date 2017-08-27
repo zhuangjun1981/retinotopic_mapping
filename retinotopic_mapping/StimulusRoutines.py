@@ -182,7 +182,7 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
 
     grating = (grating + 1.) / 2. # change the scale of grating to be [0., 1.]
 
-    return grating[::-1, :]
+    return grating
 
 
 class Stim(object):
