@@ -173,7 +173,7 @@ class TestSimulation(unittest.TestCase):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(10.,10.),
                             probe_size=(10.,10.), probe_orientation=0., probe_frame_num=6,
-                            subregion=[-10, 10, 45., 55.], sign='ON', iteration=1, pregap_dur=0.1,
+                            subregion=[10, 20, 0., 60.], sign='ON', iteration=1, pregap_dur=0.1,
                             postgap_dur=0.2, is_include_edge=True)
 
         frames_unique, index_to_display = sn._generate_display_index()
@@ -224,6 +224,34 @@ class TestSimulation(unittest.TestCase):
             assert (len(set(index_to_display[34 + probe_ind * 8: 38 + probe_ind * 8])) == 1)
             assert (np.array_equal(frames_unique[index_to_display[33 + probe_ind * 8]][1],
                                    frames_unique[index_to_display[34 + probe_ind * 8]][1]))
+
+    def test_SN_generate_movie_by_index(self):
+        sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
+                            background=0., coordinate='degree', grid_space=(10., 10.),
+                            probe_size=(10., 10.), probe_orientation=0., probe_frame_num=6,
+                            subregion=[-20., -10., 30., 90.], sign='ON', iteration=1, pregap_dur=0.1,
+                            postgap_dur=0.2, is_include_edge=True)
+        mov_unique, _ = sn.generate_movie_by_index()
+        import numpy as np
+        assert (np.max(mov_unique, axis=0)[66, 121] == 1)
+
+        # import matplotlib.pyplot as plt
+        # plt.imshow(np.max(mov_unique, axis=0))
+        # plt.show()
+
+    def test_SN_generate_movie(self):
+        sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
+                            background=0., coordinate='degree', grid_space=(10., 10.),
+                            probe_size=(10., 10.), probe_orientation=0., probe_frame_num=6,
+                            subregion=[-20., -10., 30., 90.], sign='OFF', iteration=1, pregap_dur=0.1,
+                            postgap_dur=0.2, is_include_edge=True)
+        mov_unique, _ = sn.generate_movie_by_index()
+        import numpy as np
+        assert (np.min(mov_unique, axis=0)[92, 38] == -1)
+
+        import matplotlib.pyplot as plt
+        plt.imshow(np.min(mov_unique, axis=0))
+        plt.show()
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #

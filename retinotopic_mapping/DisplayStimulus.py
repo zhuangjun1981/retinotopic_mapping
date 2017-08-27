@@ -480,7 +480,6 @@ class DisplaySequence(object):
         else: 
              self.file_name += '-' + str(file_number) + '-notTriggered'
 
-
     def _get_file_number(self):
         """
         get synced file number for log file name
@@ -534,7 +533,7 @@ class DisplaySequence(object):
 
             # print 'i:', i, '; index_display_ind:', frame_num, '; frame_ind:', frame_index
 
-            stim.setImage(self.sequence[frame_index][::-1,:])
+            stim.setImage(self.sequence[frame_index])
             stim.draw()
             time_stamps.append(time.clock()-start_time)
             
@@ -593,7 +592,7 @@ class DisplaySequence(object):
                 # then display sequence backwards
                  frame_num = singleRunFrames - (i % singleRunFrames) -1
 
-            stim.setImage(self.sequence[frame_num][::-1,:])
+            stim.setImage(self.sequence[frame_num])
             stim.draw()
             time_stamp.append(time.clock()-start_time)
 
