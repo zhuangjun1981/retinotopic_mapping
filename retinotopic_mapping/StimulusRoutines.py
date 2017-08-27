@@ -683,7 +683,8 @@ class FlashingCircle(Stim):
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
             
-        circle_mask = get_circle_mask(map_alt, map_azi, self.center, self.radius).astype(np.float32)
+        circle_mask = get_circle_mask(map_alt=map_alt, map_azi=map_azi,
+                                      center=self.center, radius=self.radius).astype(np.float32)
         # plt.imshow(circle_mask)
         # plt.show()
         
@@ -731,17 +732,17 @@ class FlashingCircle(Stim):
                               dtype = np.float32)*self.background
 
         if self.coordinate == 'degree':
-            map_x = self.monitor.deg_coord_x
-            map_y = self.monitor.deg_coord_y
+            map_azi = self.monitor.deg_coord_x
+            map_alt = self.monitor.deg_coord_y
 
         elif self.coordinate == 'linear':
-            map_x = self.monitor.lin_coord_x
-            map_y = self.monitor.lin_coord_y
+            map_azi = self.monitor.lin_coord_x
+            map_alt = self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
-        circle_mask = get_circle_mask(map_x, map_y,
-                                 self.center, self.radius).astype(np.float32)
+        circle_mask = get_circle_mask(map_alt=map_alt, map_azi=map_azi,
+                                      center=self.center, radius=self.radius).astype(np.float32)
 
         for i in range(len(self.frames)):
             curr_frame = self.frames[i]
