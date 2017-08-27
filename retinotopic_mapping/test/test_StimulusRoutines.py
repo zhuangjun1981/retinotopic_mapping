@@ -253,6 +253,48 @@ class TestSimulation(unittest.TestCase):
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
+    def test_DGC_generate_frames(self):
+        dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                       coordinate='degree',center=(10., 90.), sf_list=(0.02, 0.04),
+                                       tf_list=(1.0,), dire_list=(45.,), con_list=(0.8,), size_list=(20.,),
+                                       block_dur=2., midgap_dur=1., iteration=2, pregap_dur=1.5,
+                                       postgap_dur=3.)
+
+        frames = dgc.generate_frames()
+        assert (len(frames) == 930)
+        assert ([f[0] for f in frames[0:90]] == [0] * 90)
+        assert ([f[0] for f in frames[210:270]] == [0] * 60)
+        assert ([f[0] for f in frames[390:450]] == [0] * 60)
+        assert ([f[0] for f in frames[570:630]] == [0] * 60)
+        assert ([f[0] for f in frames[750:930]] == [0] * 180)
+        assert ([f[8] for f in frames[0:90]] == [-1.] * 90)
+        assert ([f[8] for f in frames[210:270]] == [-1.] * 60)
+        assert ([f[8] for f in frames[390:450]] == [-1.] * 60)
+        assert ([f[8] for f in frames[570:630]] == [-1.] * 60)
+        assert ([f[8] for f in frames[750:930]] == [-1.] * 180)
+
+        assert ([f[0] for f in frames[90:210]] == [1] * 120)
+        assert ([f[0] for f in frames[270:390]] == [1] * 120)
+        assert ([f[0] for f in frames[450:570]] == [1] * 120)
+        assert ([f[0] for f in frames[630:750]] == [1] * 120)
+        assert (frames[90][8] == 1.)
+        assert ([f[8] for f in frames[91:150]] == [0.] * 59)
+        assert (frames[150][8] == 1.)
+        assert ([f[8] for f in frames[151:210]] == [0.] * 59)
+        assert (frames[270][8] == 1.)
+        assert ([f[8] for f in frames[271:330]] == [0.] * 59)
+        assert (frames[330][8] == 1.)
+        assert ([f[8] for f in frames[331:390]] == [0.] * 59)
+        assert (frames[450][8] == 1.)
+        assert ([f[8] for f in frames[451:510]] == [0.] * 59)
+        assert (frames[510][8] == 1.)
+        assert ([f[8] for f in frames[511:570]] == [0.] * 59)
+        assert (frames[630][8] == 1.)
+        assert ([f[8] for f in frames[631:690]] == [0.] * 59)
+        assert (frames[690][8] == 1.)
+        assert ([f[8] for f in frames[691:750]] == [0.] * 59)
+
+
     def test_DGC_generate_movie_by_index(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
                                        block_dur=2., sf_list=(0.04,), tf_list=(2.0,),

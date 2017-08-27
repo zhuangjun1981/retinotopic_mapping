@@ -1478,9 +1478,9 @@ class DriftingGratingCircle(Stim):
              fifth element -
                   direction, [0, 2*pi)
              sixth element -
-                  contrast
+                  contrast, [-1., 1.]
              seventh element -
-                  size (radius of the circle)
+                  size, float (radius of the circle in visual degree)
              eighth element -
                   phase, [0, 2*pi)
              ninth element -
@@ -1661,11 +1661,11 @@ class DriftingGratingCircle(Stim):
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
         
         if self.coordinate=='degree':
-             coord_x=self.monitor.deg_coord_x
-             coord_y=self.monitor.deg_coord_y
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
         elif self.coordinate=='linear':
-             coord_x=self.monitor.lin_coord_x
-             coord_y=self.monitor.lin_coord_y
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
@@ -1691,16 +1691,17 @@ class DriftingGratingCircle(Stim):
 
             if frame[0] == 1: # not a gap
         
-                curr_ori = self._get_ori(frame[3])
+                # curr_ori = self._get_ori(frame[3])
 
-                curr_grating = get_grating(coord_x,
-                                           coord_y,
-                                           dire= curr_ori,
-                                           spatial_freq = frame[1],
-                                           center = self.center,
-                                           phase = frame[6],
-                                           contrast = frame[4])
-                curr_grating = curr_grating*2. - 1.
+                curr_grating = get_grating(alt_map=coord_alt,
+                                           azi_map=coord_azi,
+                                           dire=frame[3],
+                                           spatial_freq=frame[1],
+                                           center=self.center,
+                                           phase=frame[6],
+                                           contrast=frame[4])
+
+                curr_grating = curr_grating * 2. - 1.
 
                 curr_circle_mask = mask_dict[frame[5]]
 
@@ -1753,11 +1754,11 @@ class DriftingGratingCircle(Stim):
         mask_dict = self._generate_circle_mask_dict()
 
         if self.coordinate=='degree':
-             coord_x=self.monitor.deg_coord_x
-             coord_y=self.monitor.deg_coord_y
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
         elif self.coordinate=='linear':
-             coord_x=self.monitor.lin_coord_x
-             coord_y=self.monitor.lin_coord_y
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
@@ -1771,17 +1772,17 @@ class DriftingGratingCircle(Stim):
                                 + self.indicator.height_pixel / 2)
 
         mov = np.ones((len(self.frames),
-                       coord_x.shape[0],
-                       coord_x.shape[1]),dtype=np.float32) * self.background
-        background_frame = np.ones(coord_x.shape,dtype=np.float32)*self.background
+                       coord_azi.shape[0],
+                       coord_azi.shape[1]),dtype=np.float32) * self.background
+        background_frame = np.ones(coord_azi.shape,dtype=np.float32)*self.background
 
         for i, curr_frame in enumerate(self.frames):
 
             if curr_frame[0] == 1: # not a gap
 
                 # curr_ori = self._get_ori(curr_frame[4])
-                curr_grating = get_grating(coord_y,
-                                           coord_x,
+                curr_grating = get_grating(alt_map=coord_alt,
+                                           azi_map=coord_azi,
                                            dire= curr_frame[4],
                                            spatial_freq = curr_frame[2],
                                            center = self.center,
