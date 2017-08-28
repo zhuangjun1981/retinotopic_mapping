@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Visual Stimulus codebase implements several classes to display stimulus routines.
-Can display frame by frame or compress data for certain stimulus routines and 
-display by index. Used to manage information between experimental devices and 
-interact with `StimulusRoutines` to produce visual display and log data. May also 
-be used to save and export movies of experimental stimulus routines for 
+Can display frame by frame or compress data for certain stimulus routines and
+display by index. Used to manage information between experimental devices and
+interact with `StimulusRoutines` to produce visual display and log data. May also
+be used to save and export movies of experimental stimulus routines for
 presentation.
 """
 from psychopy import visual, event
@@ -20,35 +20,35 @@ from tools.IO import nidaq as iodaq
 
 def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """
-    Analyze frame durations of time stamp data. 
-    
+    Analyze frame durations of time stamp data.
+
     Computes relevant statistics with respect to the presentation
     of a given stimulus. The statistics are computed in order
     to understand the timing of the frames since the monitor refresh
     rate isn't always an accurate tool for timing.
-    
+
     Parameters
     ----------
     ts : ndarray
         list of time stamps of each frame measured (in seconds).
     refresh_rate : float
-        the refresh rate of imaging monitor measured (in Hz).    
+        the refresh rate of imaging monitor measured (in Hz).
     check_point : tuple, optional
-        
+
     Returns
     -------
     frame_duration : ndarray
-        list containing the length of each time stamp.  
+        list containing the length of each time stamp.
     frame_stats : str
         string containing a statistical analysis of the image frames.
-        
+
     """
-    
+
     frame_duration = ts[1::] - ts[0:-1]
     plt.figure()
     plt.hist(frame_duration, bins=np.linspace(0.0, 0.05, num=51))
     refresh_rate = float(refresh_rate)
-    
+
     num_frames = len(ts)
     disp_true = ts[-1]-ts[0]
     disp_expect = (len(ts)-1)/refresh_rate
@@ -58,49 +58,49 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     short_frame_ind = np.nonzero(frame_duration==np.min(frame_duration))[0][0]
     long_frame = max(frame_duration)*1000
     long_frame_ind = np.nonzero(frame_duration==np.max(frame_duration))[0][0]
-    
+
     frame_stats = '\n'
     frame_stats += 'Total number of frames    : %d. \n' % num_frames
     frame_stats += 'Total length of display   : %.5f second. \n' % disp_true
     frame_stats += 'Expected length of display: %.5f second. \n' % disp_expect
     frame_stats += 'Mean of frame durations   : %.2f ms. \n' % avg_frame_time
     frame_stats += 'Standard deviation of frame : %.2f ms.\n' % sdev_frame_time
-    frame_stats += 'Shortest frame: %.2f ms, index: %d. \n' % (short_frame, 
+    frame_stats += 'Shortest frame: %.2f ms, index: %d. \n' % (short_frame,
                                                                short_frame_ind)
-    frame_stats += 'Longest frame : %.2f ms, index: %d. \n' % (long_frame, 
+    frame_stats += 'Longest frame : %.2f ms, index: %d. \n' % (long_frame,
                                                                long_frame_ind)
-    
+
     for i in range(len(check_point)):
         check_number = check_point[i]
         frame_number = len(frame_duration[frame_duration>check_number])
         frame_stats += 'Number of frames longer than %d ms: %d; %.2f%% \n' \
-                       % (round(check_number*1000), 
-                          frame_number, 
+                       % (round(check_number*1000),
+                          frame_number,
                           round(frame_number*10000/(len(ts)-1))/100)
-    
+
     print frame_stats
-    
+
     return frame_duration, frame_stats
 
 
 class DisplaySequence(object):
     """
     Display the stimulus routine from memory.
-    
-    Takes care of high level management of your computer 
+
+    Takes care of high level management of your computer
     hardware with respect to its interactions within a given experiment.
     Stimulus presentation routines are specified and external connection
     to National Instuments hardware devices is provided. Also takes care
     of the logging of relevant experimental data collected and where it
-    will be stored on the computer used for the experiment. 
+    will be stored on the computer used for the experiment.
 
 
-    """        
+    """
     def __init__(self,
                  log_dir,
                  backupdir=None,
                  display_iter=1,
-                 display_order=1,  
+                 display_order=1,
                  mouse_id='Test',
                  user_id='Name',
                  psychopy_mon='testMonitor',
@@ -114,7 +114,7 @@ class DisplaySequence(object):
                  sync_pulse_NI_dev='Dev1',
                  sync_pulse_NI_port=1,
                  sync_pulse_NI_line=1,
-                 display_trigger_event="negative_edge", 
+                 display_trigger_event="negative_edge",
                  display_screen=0,
                  initial_background_color=0,
                  file_num_NI_dev='Dev1',
@@ -122,7 +122,7 @@ class DisplaySequence(object):
                  file_num_NI_lines='0:7'):
         """
         initialize `DisplaySequence` object
-        
+
         Parameters
         ----------
         log_dir : str
@@ -133,23 +133,23 @@ class DisplaySequence(object):
             defaults to `1`
         display_order : int, optional
             determines whether the stimulus is presented forward or backwards.
-            If `1`, stimulus is presented forward, whereas if `-1`, stimulus is 
+            If `1`, stimulus is presented forward, whereas if `-1`, stimulus is
             presented backwards. Defaults to `1`.
         mouse_id : str, optional
             label for mouse, defaults to 'Test'.
         user_id : str, optional
             label for person performing experiment, defaults to 'Name'.
         psychopy_mon : str, optional
-            label for monitor used for displaying the stimulus, defaults to 
+            label for monitor used for displaying the stimulus, defaults to
             'testMonitor'.
         is_interpolate : bool, optional
             defaults to `False`.
         is_triggered : bool, optional
-            if `True`, stimulus will not display until triggered. if `False`, 
+            if `True`, stimulus will not display until triggered. if `False`,
             stimulus will display automatically. defaults to `False`.
         by_index : bool, optional
             determines if stimulus is displayed by index which saves memory
-            and should speed up routines. Note that not every stimulus can be 
+            and should speed up routines. Note that not every stimulus can be
             displayed by index and hence the default value is `False`.
         trigger_NI_dev : str, optional
             defaults to 'Dev1'.
@@ -161,25 +161,25 @@ class DisplaySequence(object):
             defaults to `True`.
         sync_pulse_NI_dev : str, optional
             defaults to 'Dev1'.
-        sync_pulse_NI_port : int, optional 
+        sync_pulse_NI_port : int, optional
             defaults to 1.
         sync_pulse_NI_line : int, optional
             defaults to 1.
-        display_trigger_event : 
-            should be one of "negative_edge", "positive_edge", "high_level", 
+        display_trigger_event :
+            should be one of "negative_edge", "positive_edge", "high_level",
             or "low_level". defaults to "negative_edge".
-        display_screen : 
+        display_screen :
             determines which monitor to display stimulus on. defaults to `0`.
-        initial_background_color : 
+        initial_background_color :
             defaults to `0`.
-        file_num_NI_dev : 
+        file_num_NI_dev :
             defaults to 'Dev1',
-        file_num_NI_port : 
+        file_num_NI_port :
             defaults to `0`,
-        file_num_NI_lines : 
+        file_num_NI_lines :
             defaults to '0:7'.
         """
-        
+
         self.sequence = None
         self.seq_log = {}
         self.psychopy_mon = psychopy_mon
@@ -205,16 +205,16 @@ class DisplaySequence(object):
             self.display_iter = display_iter
         else:
             raise ArithmeticError, "`display_iter` should be a whole number."
-            
+
         self.display_order = display_order
         self.log_dir = log_dir
         self.backupdir = backupdir
         self.mouse_id = mouse_id
         self.user_id = user_id
         self.seq_log = None
-                
+
         self.clear()
-        
+
 
 
     def set_any_array(self, any_array, log_dict = None):
@@ -223,7 +223,7 @@ class DisplaySequence(object):
         """
         if len(any_array.shape) != 3:
             raise LookupError, "Input numpy array should have dimension of 3!"
-        
+
         vmax = np.amax(any_array).astype(np.float32)
         vmin = np.amin(any_array).astype(np.float32)
         v_range = (vmax-vmin)
@@ -238,13 +238,13 @@ class DisplaySequence(object):
         else:
             self.seq_log = {}
         self.clear()
-    
+
 
     def set_stim(self, stim):
-        """        
-        Calls the `generate_movie` method of the respective stim object and 
+        """
+        Calls the `generate_movie` method of the respective stim object and
         populates the attributes `self.sequence` and `self.seq_log`
-        
+
         Parameters
         ----------
         stim : Stim object
@@ -253,7 +253,7 @@ class DisplaySequence(object):
         if self.by_index:
             self.sequence, self.seq_log = stim.generate_movie_by_index()
             self.clear()
-    
+
         else:
             self.sequence, self.seq_log = stim.generate_movie()
             self.clear()
@@ -261,12 +261,12 @@ class DisplaySequence(object):
     def trigger_display(self):
         """
         Display stimulus, initialize and perform global experimental routines.
-        
+
         Prepares all of the necessary parameters to display stimulus and store
-        the data collected in the experiment. Interacts with PyschoPy to create 
-        and display each frame of the selected stimulus routine. Handles 
+        the data collected in the experiment. Interacts with PyschoPy to create
+        and display each frame of the selected stimulus routine. Handles
         global calls to trigger and timing devices within the experimental setup.
-        
+
         Examples
         --------
         >>> # Assume monitor, indicator, and stimulus objects are defined
@@ -274,13 +274,13 @@ class DisplaySequence(object):
         >>> ds = DisplaySequence(log_dir=r'C:\)
         >>> ds.set_stim(uniform_contrast)
         >>> ds.trigger_display()
-        
+
         """
         # --------------- early preparation for display--------------------
         # test monitor resolution
-        try: 
+        try:
              resolution = self.seq_log['monitor']['resolution'][::-1]
-        except KeyError: 
+        except KeyError:
              resolution = (800,600)
 
         # test monitor refresh rate
@@ -295,14 +295,14 @@ class DisplaySequence(object):
             raise LookupError, "Please set the sequence to be displayed!!\n"
         try:
             seq_frames = self.seq_log['stimulation']['frames']
-            if self.display_order == -1: 
+            if self.display_order == -1:
                  seq_frames = seq_frames[::-1]
             # generate display Frames
             self.display_frames=[]
             for i in range(self.display_iter):
                 self.display_frames += seq_frames
         except Exception as e:
-            print e
+            print '{}: {}'.format(type(e), str(e))
             print "No frame information in seq_log dictionary."
             print "Setting display_frames to 'None'.\n"
             self.display_frames = None
@@ -313,14 +313,14 @@ class DisplaySequence(object):
             display_time = (float(len(index_to_display))
                                * self.display_iter/ refresh_rate)
         else:
-            display_time = (float(self.sequence.shape[0]) * 
+            display_time = (float(self.sequence.shape[0]) *
                             self.display_iter / refresh_rate)
         print '\n Expected display time: ', display_time, ' seconds\n'
 
         # generate file name
         self._get_file_name()
         print 'File name:', self.file_name + '\n'
-        
+
 
         # -----------------setup psychopy window and stimulus--------------
         # start psychopy window
@@ -329,9 +329,9 @@ class DisplaySequence(object):
                                fullscr=True,
                                screen=self.display_screen,
                                color=self.initial_background_color)
-        stim = visual.ImageStim(window, size=(2,2), 
+        stim = visual.ImageStim(window, size=(2,2),
                                 interpolate=self.is_interpolate)
-       
+
         # initialize keep_display
         self.keep_display = True
 
@@ -348,7 +348,7 @@ class DisplaySequence(object):
         # display sequence either frame by frame or by index
         if self.by_index:
             # display by index
-            self._display_by_index(window, stim) 
+            self._display_by_index(window, stim)
         else:
             # display frame by frame
             self._display(window, stim)
@@ -356,9 +356,9 @@ class DisplaySequence(object):
         self.save_log()
 
         #analyze frames
-        try: 
+        try:
              self.frame_duration, self.frame_stats = \
-             analyze_frames(ts=self.time_stamp, 
+             analyze_frames(ts=self.time_stamp,
                             refresh_rate = self.seq_log['monitor']['refresh_rate'])
         except KeyError:
             print "No monitor refresh rate information, assuming 60Hz."
@@ -378,14 +378,14 @@ class DisplaySequence(object):
             an event triggered via a National Instuments experimental device.
         Returns
         -------
-        Bool :             
-            returns `True` if trigger is detected and `False` if manual stop 
+        Bool :
+            returns `True` if trigger is detected and `False` if manual stop
             signal is detected.
         """
 
         #check NI signal
-        trigger_task = iodaq.DigitalInput(self.trigger_NI_dev, 
-                                         self.trigger_NI_port, 
+        trigger_task = iodaq.DigitalInput(self.trigger_NI_dev,
+                                         self.trigger_NI_port,
                                          self.trigger_NI_line)
         trigger_task.StartTask()
 
@@ -397,7 +397,7 @@ class DisplaySequence(object):
                 last_TTL = trigger_task.read()[0]
                 self._update_display_status()
             else:
-                if self.keep_display: 
+                if self.keep_display:
                      trigger_task.StopTask()
                      print 'Trigger detected. Start displaying...\n\n'
                      return True
@@ -411,11 +411,11 @@ class DisplaySequence(object):
                 last_TTL = trigger_task.read()[0]
                 self._update_display_status()
             else:
-                if self.keep_display: 
+                if self.keep_display:
                      trigger_task.StopTask()
                      print 'Trigger detected. Start displaying...\n\n'
                      return True
-                else: 
+                else:
                      trigger_task.StopTask()
                      print 'Manual stop signal detected. Stopping the program.'
                      return False
@@ -428,7 +428,7 @@ class DisplaySequence(object):
                 else:
                      last_TTL = int(current_TTL)
                      self._update_display_status()
-            else: 
+            else:
                  trigger_task.StopTask()
                  print 'Manual stop signal detected. Stopping the program.'
                  return False
@@ -444,8 +444,8 @@ class DisplaySequence(object):
                 else:
                      last_TTL = int(current_TTL)
                      self._update_display_status()
-            else: 
-                 trigger_task.StopTask(); 
+            else:
+                 trigger_task.StopTask();
                  print 'Manual stop signal detected. Stopping the program.'
                  return False
             trigger_task.StopTask()
@@ -472,19 +472,19 @@ class DisplaySequence(object):
             self.file_name = datetime.datetime.now().strftime('%y%m%d%H%M%S') + \
                             '-' + 'customStim' + '-M' + self.mouse_id + '-' + \
                             self.user_id
-        
+
         file_number = self._get_file_number()
-        
-        if self.is_triggered: 
+
+        if self.is_triggered:
              self.file_name += '-' + str(file_number)+'-Triggered'
-        else: 
+        else:
              self.file_name += '-' + str(file_number) + '-notTriggered'
 
     def _get_file_number(self):
         """
         get synced file number for log file name
         """
-        
+
         try:
             file_num_task = iodaq.DigitalInput(self.file_num_NI_dev,
                                              self.file_num_NI_port,
@@ -499,10 +499,10 @@ class DisplaySequence(object):
             file_number = None
 
         return file_number
-    
+
     def _display_by_index(self,window,stim):
         """ display by index routine for simpler stim routines """
-        
+
         # display frames by index
         time_stamps = []
         start_time = time.clock()
@@ -510,17 +510,17 @@ class DisplaySequence(object):
         num_iters = len(index_to_display)
 
         # print 'frame per iter:', num_iters
-        
+
         if self.is_sync_pulse:
-            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
-                                                self.sync_pulse_NI_port, 
+            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev,
+                                                self.sync_pulse_NI_port,
                                                 self.sync_pulse_NI_line)
             syncPulseTask.StartTask()
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
 
         i = 0
         while self.keep_display and i < (num_iters*self.display_iter):
-            
+
             if self.display_order == 1:
                 # Then display sequence in order
                  frame_num = i % num_iters
@@ -536,46 +536,46 @@ class DisplaySequence(object):
             stim.setImage(self.sequence[frame_index][::-1])
             stim.draw()
             time_stamps.append(time.clock()-start_time)
-            
+
             #set syncPuls signal
-            if self.is_sync_pulse: 
+            if self.is_sync_pulse:
                  _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
 
             #show visual stim
             window.flip()
-            
+
             #set syncPuls signal
-            if self.is_sync_pulse: 
+            if self.is_sync_pulse:
                 _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
-            
+
             self._update_display_status()
             i += 1
-        
+
         stop_time = time.clock()
         window.close()
 
         if self.is_sync_pulse:
              syncPulseTask.StopTask()
-        
+
         self.time_stamp = np.array(time_stamps)
         self.display_length = stop_time-start_time
 
         if self.display_frames is not None:
             self.display_frames = self.display_frames[:i]
 
-        if self.keep_display == True: 
+        if self.keep_display == True:
              print '\nDisplay successfully completed.'
 
     def _display(self, window, stim):
-        
+
         # display frames
         time_stamp=[]
         start_time = time.clock()
         singleRunFrames = self.sequence.shape[0]
-        
+
         if self.is_sync_pulse:
-            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev, 
-                                                self.sync_pulse_NI_port, 
+            syncPulseTask = iodaq.DigitalOutput(self.sync_pulse_NI_dev,
+                                                self.sync_pulse_NI_port,
                                                 self.sync_pulse_NI_line)
             syncPulseTask.StartTask()
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
@@ -597,31 +597,31 @@ class DisplaySequence(object):
             time_stamp.append(time.clock()-start_time)
 
             #set syncPuls signal
-            if self.is_sync_pulse: 
+            if self.is_sync_pulse:
                  _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
 
             #show visual stim
             window.flip()
             #set syncPuls signal
-            if self.is_sync_pulse: 
+            if self.is_sync_pulse:
                  _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
 
             self._update_display_status()
             i=i+1
-            
+
         stop_time = time.clock()
         window.close()
-        
+
         if self.is_sync_pulse:
              syncPulseTask.StopTask()
-        
+
         self.time_stamp = np.array(time_stamp)
         self.display_length = stop_time-start_time
 
         if self.display_frames is not None:
             self.display_frames = self.display_frames[:i]
 
-        if self.keep_display == True: 
+        if self.keep_display == True:
              print '\nDisplay successfully completed.'
 
     def flag_to_close(self):
@@ -629,7 +629,7 @@ class DisplaySequence(object):
 
     def _update_display_status(self):
 
-        if self.keep_display is None: 
+        if self.keep_display is None:
              raise LookupError, 'self.keep_display should start as True'
 
         #check keyboard input 'q' or 'escape'
@@ -639,27 +639,27 @@ class DisplaySequence(object):
             print "Keyboard stop signal detected. Stop displaying. \n"
 
     def set_display_order(self, display_order):
-        
+
         self.display_order = display_order
         self.clear()
-    
+
     def set_display_iteration(self, display_iter):
-        
+
         if display_iter % 1 == 0:
             self.display_iter = display_iter
         else:
             raise ArithmeticError, "`display_iter` should be a whole number."
         self.clear()
-        
+
     def save_log(self):
-        
+
         if self.display_length is None:
             self.clear()
             raise LookupError, "Please display sequence first!"
 
         if self.file_name is None:
             self._get_file_name()
-            
+
         if self.keep_display == True:
             self.file_name += '-complete'
         elif self.keep_display == False:
@@ -669,7 +669,7 @@ class DisplaySequence(object):
         directory = self.log_dir + '\sequence_display_log'
         if not(os.path.isdir(directory)):
              os.makedirs(directory)
-        
+
         logFile = dict(self.seq_log)
         displayLog = dict(self.__dict__)
         displayLog.pop('seq_log')
@@ -677,28 +677,28 @@ class DisplaySequence(object):
         logFile.update({'presentation':displayLog})
 
         file_name =  self.file_name + ".hdf5"
-        
+
         #generate full log dictionary
         path = os.path.join(directory, file_name)
         ft.saveFile(path,logFile)
         print ".pkl file generated successfully."
-        
+
         backupFileFolder = self._get_backup_folder()
         if backupFileFolder is not None:
-            if not (os.path.isdir(backupFileFolder)): 
+            if not (os.path.isdir(backupFileFolder)):
                  os.makedirs(backupFileFolder)
             backupFilePath = os.path.join(backupFileFolder,file_name)
             ft.saveFile(backupFilePath,logFile)
             print ".pkl backup file generate successfully"
         else:
             print "did not find backup path, no backup has been saved."
-            
+
     def _get_backup_folder(self):
-        
+
         if self.file_name is None:
             raise LookupError, 'self.file_name not found.'
         else:
-        
+
             if self.backupdir is not None:
 
                 curr_date = self.file_name[0:6]
