@@ -46,7 +46,7 @@ dis = 15.
 
 # Set the downsample rate; needs to be an integer `n` such that each resolution
 # number is divisble by `n`,
-downsample_rate = 16
+downsample_rate = 8
 
 # Initialize the monitor and ind objects
 mon = Monitor(resolution=resolution, dis=dis, mon_width_cm=mon_width_cm, mon_height_cm=mon_height_cm,
@@ -116,13 +116,13 @@ you might need to start debugging!
 #======================= Drifting Grating Circle Stimulus =====================
 dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
                                 center=(10., 90.), sf_list=(0.02, 0.04), tf_list=(1.0,),
-                                dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
-                                block_dur=4., midgap_dur=1., iteration=2, pregap_dur=2.,
+                                dire_list=(45., 270.), con_list=(0.8,), radius_list=(10., 20.),
+                                block_dur=4., midgap_dur=1., iteration=10, pregap_dur=2.,
                                 postgap_dur=3.)
 
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
                      is_sync_pulse=False, is_interpolate=False, display_screen=0,
-                     by_index=True)
+                     by_index=False)
 
 ds.set_stim(dg)
 ds.trigger_display()

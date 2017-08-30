@@ -2273,6 +2273,7 @@ class KSstimAllDir(object):
         Initialize stimulus object
         """
 
+        self.stim_name = 'KSstimAllDir'
         self.monitor = monitor
         self.indicator = indicator
         self.background = background

@@ -99,6 +99,7 @@ class DisplaySequence(object):
     def __init__(self,
                  log_dir,
                  backupdir=None,
+                 identifier='000',
                  display_iter=1,
                  display_order=1,
                  mouse_id='Test',
@@ -129,6 +130,9 @@ class DisplaySequence(object):
             system directory path to where log display will be saved.
         backupdir : str, optional
             copy of directory path to save backup, defaults to `None`.
+        identifier: str, optional
+            identifing string for this particular experiment, this will
+            show up in the name of log file when display is done.
         display_iter : int, optional
             defaults to `1`
         display_order : int, optional
@@ -172,7 +176,7 @@ class DisplaySequence(object):
             determines which monitor to display stimulus on. defaults to `0`.
         initial_background_color :
             defaults to `0`.
-        file_num_NI_dev :
+        file_num_NI_dev : obsolete functionality
             defaults to 'Dev1',
         file_num_NI_port :
             defaults to `0`,
@@ -182,6 +186,7 @@ class DisplaySequence(object):
 
         self.sequence = None
         self.seq_log = {}
+        self.identifier = str(identifier)
         self.psychopy_mon = psychopy_mon
         self.is_interpolate = is_interpolate
         self.is_triggered = is_triggered
@@ -215,8 +220,6 @@ class DisplaySequence(object):
 
         self.clear()
 
-
-
     def set_any_array(self, any_array, log_dict = None):
         """
         to display any numpy 3-d array.
@@ -239,7 +242,6 @@ class DisplaySequence(object):
             self.seq_log = {}
         self.clear()
 
-
     def set_stim(self, stim):
         """
         Calls the `generate_movie` method of the respective stim object and
@@ -251,10 +253,17 @@ class DisplaySequence(object):
             the type of stimulus to be presented in the experiment
         """
         if self.by_index:
+            if stim.stim_name in ['KSstim', 'KSstimAllDir']:
+                raise LookupError('Stimulus {} does not support indexed display.'.format(stim.name))
+
             self.sequence, self.seq_log = stim.generate_movie_by_index()
             self.clear()
 
         else:
+            if stim.stim_name in ['LocallySparseNoise', 'StaticGratingCircle', 'NaturalScene']:
+                raise LookupError('Stimulus {} does not support full sequence display. Please use '
+                                  'indexed display instead (set self.by_index = True).')
+
             self.sequence, self.seq_log = stim.generate_movie()
             self.clear()
 
@@ -290,28 +299,34 @@ class DisplaySequence(object):
             print "No monitor refresh rate information, assuming 60Hz.\n"
             refresh_rate = 60.
 
-        #prepare display frames log
+        # prepare display frames log
         if self.sequence is None:
-            raise LookupError, "Please set the sequence to be displayed!!\n"
-        try:
-            seq_frames = self.seq_log['stimulation']['frames']
-            if self.display_order == -1:
-                 seq_frames = seq_frames[::-1]
-            # generate display Frames
-            self.display_frames=[]
-            for i in range(self.display_iter):
-                self.display_frames += seq_frames
-        except Exception as e:
-            print '{}: {}'.format(type(e), str(e))
-            print "No frame information in seq_log dictionary."
-            print "Setting display_frames to 'None'.\n"
-            self.display_frames = None
+            raise LookupError ("Please set the sequence to be displayed by using self.set_stim().\n")
+        if not self.seq_log:
+            raise LookupError ("Please set the sequence log dictionary to be displayed "
+                               "by using self.set_stim().\n")
+
+        # if display by index, check frame indices were not larger than the number of frames in
+        # self.sequence
+        if self.by_index:
+            max_index = max(self.seq_log['stimulation']['index_to_display'])
+            min_index = min(self.seq_log['stimulation']['index_to_display'])
+            if  max_index >= self.sequence.shape[0] or  min_index < 0:
+                raise ValueError ('Max display index range: {} is out of self.sequence frame range: {}.'
+                                  .format((min_index, max_index), (0, self.sequence.shape[0] - 1)))
+            if 'frames_unique' not in self.seq_log['stimulation'].keys():
+                raise LookupError ('"frames_unique" is not found in self.seq_log["stimulation"]. This'
+                                   'is required when display by index.')
+        else:
+            if 'frames' not in self.seq_log['stimulation'].keys():
+                raise LookupError('"frames" is not found in self.seq_log["stimulation"]. This'
+                                   'is required when display by full sequence.')
 
         # calculate expected display time
         if self.by_index:
             index_to_display = self.seq_log['stimulation']['index_to_display']
-            display_time = (float(len(index_to_display))
-                               * self.display_iter/ refresh_rate)
+            display_time = (float(len(index_to_display)) *
+                            self.display_iter/ refresh_rate)
         else:
             display_time = (float(self.sequence.shape[0]) *
                             self.display_iter / refresh_rate)
@@ -320,7 +335,6 @@ class DisplaySequence(object):
         # generate file name
         self._get_file_name()
         print 'File name:', self.file_name + '\n'
-
 
         # -----------------setup psychopy window and stimulus--------------
         # start psychopy window
@@ -346,6 +360,7 @@ class DisplaySequence(object):
                 time.sleep(5.) # wait remote object to start
 
         # display sequence either frame by frame or by index
+        self.displayed_frames = []
         if self.by_index:
             # display by index
             self._display_by_index(window, stim)
@@ -363,7 +378,7 @@ class DisplaySequence(object):
         except KeyError:
             print "No monitor refresh rate information, assuming 60Hz."
             self.frame_duration, self.frame_stats = \
-                 analyze_frames(ts = self.time_stamp, refresh_rate = 60.)
+                 analyze_frames(ts=self.time_stamp, refresh_rate=60.)
 
         #clear display data
         self.clear()
@@ -462,43 +477,18 @@ class DisplaySequence(object):
 
         try:
             self.file_name = datetime.datetime.now().strftime('%y%m%d%H%M%S') + \
-                            '-' + \
-                            self.seq_log['stimulation']['stim_name'] + \
-                            '-M' + \
-                            self.mouse_id + \
-                            '-' + \
-                            self.user_id
+                            '-' + self.seq_log['stimulation']['stim_name'] + \
+                            '-M' + self.mouse_id + '-' + self.user_id + '-' + \
+                            self.identifier
         except KeyError:
             self.file_name = datetime.datetime.now().strftime('%y%m%d%H%M%S') + \
                             '-' + 'customStim' + '-M' + self.mouse_id + '-' + \
-                            self.user_id
-
-        file_number = self._get_file_number()
+                            self.user_id + '-' + self.identifier
 
         if self.is_triggered:
-             self.file_name += '-' + str(file_number)+'-Triggered'
+             self.file_name += '-Triggered'
         else:
-             self.file_name += '-' + str(file_number) + '-notTriggered'
-
-    def _get_file_number(self):
-        """
-        get synced file number for log file name
-        """
-
-        try:
-            file_num_task = iodaq.DigitalInput(self.file_num_NI_dev,
-                                             self.file_num_NI_port,
-                                             self.file_num_NI_lines)
-            file_num_task.StartTask()
-            array = file_num_task.read()
-            num_str = (''.join([str(line) for line in array]))[::-1]
-            file_number = int(num_str, 2)
-            # print array, file_number
-        except Exception as e:
-            print e
-            file_number = None
-
-        return file_number
+             self.file_name += '-notTriggered'
 
     def _display_by_index(self,window,stim):
         """ display by index routine for simpler stim routines """
@@ -519,6 +509,8 @@ class DisplaySequence(object):
             _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
 
         i = 0
+        self.displayed_frames = []
+
         while self.keep_display and i < (num_iters*self.display_iter):
 
             if self.display_order == 1:
@@ -543,6 +535,7 @@ class DisplaySequence(object):
 
             #show visual stim
             window.flip()
+            self.displayed_frames.append(self.seq_log['stimulation']['frames_unique'][frame_index])
 
             #set syncPuls signal
             if self.is_sync_pulse:
@@ -559,9 +552,6 @@ class DisplaySequence(object):
 
         self.time_stamp = np.array(time_stamps)
         self.display_length = stop_time-start_time
-
-        if self.display_frames is not None:
-            self.display_frames = self.display_frames[:i]
 
         if self.keep_display == True:
              print '\nDisplay successfully completed.'
@@ -602,6 +592,8 @@ class DisplaySequence(object):
 
             #show visual stim
             window.flip()
+            self.displayed_frames.append(self.seq_log['stimulation']['frames'][frame_num])
+
             #set syncPuls signal
             if self.is_sync_pulse:
                  _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
@@ -617,9 +609,6 @@ class DisplaySequence(object):
 
         self.time_stamp = np.array(time_stamp)
         self.display_length = stop_time-start_time
-
-        if self.display_frames is not None:
-            self.display_frames = self.display_frames[:i]
 
         if self.keep_display == True:
              print '\nDisplay successfully completed.'
@@ -676,7 +665,7 @@ class DisplaySequence(object):
         displayLog.pop('sequence')
         logFile.update({'presentation':displayLog})
 
-        file_name =  self.file_name + ".hdf5"
+        file_name =  self.file_name + ".pkl"
 
         #generate full log dictionary
         path = os.path.join(directory, file_name)
@@ -720,10 +709,11 @@ class DisplaySequence(object):
         self.display_length = None
         self.time_stamp = None
         self.frame_duration = None
-        self.display_frames = None
+        self.displayed_frames = None
         self.frame_stats = None
         self.file_name = None
         self.keep_display = None
+
 
 if __name__ == "__main__":
      pass
