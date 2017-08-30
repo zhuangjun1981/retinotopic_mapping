@@ -4,12 +4,11 @@ import numpy as np
 import pickle
 import os
 import shutil
-import struct
 import ImageAnalysis as ia
 import tifffile as tf
 
 
-try: 
+try:
      import cv2
 except ImportError as e: print 'can not import OpenCV. ' + e
 
@@ -25,6 +24,7 @@ def loadFile(path):
     data = pickle.load(f)
     f.close()
     return data
+
 
 def copy(src, dest):
     '''
@@ -45,6 +45,7 @@ def copy(src, dest):
 
     else: raise IOError, 'Source is neither a file or a directory. Can not be copied!'
 
+
 def list_all_files(folder):
     '''
     get a list of full path of all files in a folder (including subfolder)
@@ -54,6 +55,7 @@ def list_all_files(folder):
         for file_name in file_names:
             files.append(os.path.join(folder_path,file_name))
     return files
+
 
 def batchCopy(pathList, destinationFolder, isDelete=False):
     '''
@@ -166,6 +168,7 @@ def readBinaryFile(path,
     f.close()
     return data
 
+
 def readBinaryFile2(f,
                     position,
                     count = 1,
@@ -177,20 +180,6 @@ def readBinaryFile2(f,
     f.seek((position * dtype.alignment), whence)
     data = np.fromfile(f, dtype = dtype, count = count)
     return data
-
-def readBinaryFile3(f,
-                    position,
-                    count = 1,
-                    dtype = np.dtype('>f'),
-                    whence = os.SEEK_SET):
-    '''
-    reading arbituray byte from file without opening and closing file object
-    not using np.fromfile
-    '''
-    f.seek(position * dtype.alignment, whence)
-    data = struct.unpack('>f', f.read(count * dtype.alignment))
-    return data
-
 
 
 def importRawJPhys(path,
@@ -336,8 +325,6 @@ def importRawJPhys2(path,
     return np.array(imageFrameTS), visualStart
 
 
-
-
 def importRawNewJPhys2(path,
                        imageFrameNum,
                        photodiodeThr = .95, #threshold of photo diode signal,
@@ -403,7 +390,6 @@ def importRawNewJPhys2(path,
                 break
 
     return np.array(imageFrameTS), visualStart
-
 
 
 def getLog(logPath):
@@ -476,8 +462,8 @@ def generateAVI(saveFolder,
 
     out.release()
     cv2.destroyAllWindows()
-    
-    
+
+
 def importRawJCamF(path,
                    saveFolder = None,
                    dtype = np.dtype('<u2'),
@@ -487,7 +473,7 @@ def importRawJCamF(path,
                    row = 2048,
                    frame = None, #how many frame to read
                    crop = None):
-    
+
     if frame:
         data = np.fromfile(path,dtype=dtype,count=frame*column*row+headerLength)
         header = data[0:headerLength]
@@ -499,7 +485,7 @@ def importRawJCamF(path,
         tailer = data[len(data)-tailerLength:len(data)]
         frame = (len(data)-headerLength-tailerLength)/(column*row)
         mov = data[headerLength:len(data)-tailerLength].reshape((frame,column,row))
-    
+
     if saveFolder:
         if crop:
             try:
@@ -512,8 +498,9 @@ def importRawJCamF(path,
             fileName = path.split('\\')[-1] + '.tif'
 
         tf.imsave(os.path.join(saveFolder,fileName),mov)
-    
+
     return mov, header, tailer
+
 
 def int2str(num,length=None):
     '''
@@ -527,8 +514,6 @@ def int2str(num,length=None):
     if length is None or length == len(rawstr):return rawstr
     elif length < len(rawstr): raise ValueError, 'Length of the number is longer then defined display length!'
     elif length > len(rawstr): return '0'*(length-len(rawstr)) + rawstr
-
-
 
 
 #==============================  obsolete  =========================================
@@ -568,7 +553,7 @@ def int2str(num,length=None):
 #                    row = 2048,
 #                    frame = None,
 #                    crop = None):
-#                   
+#
 #    if frame:
 #        data = np.fromfile(path,dtype=dtype,count=frame*column*row+headerLength)
 #        mov = data[headerLength:].reshape((frame,column,row))
@@ -576,19 +561,18 @@ def int2str(num,length=None):
 #        data = np.fromfile(path,dtype=dtype)
 #        frame = (len(data)-headerLength-tailerLength)/(column*row)
 #        mov = data[headerLength:len(data)-tailerLength].reshape((frame,column,row))
-#    
+#
 #    if saveFolder:
-#        
+#
 #        if crop.any():
 #            mov = mov[:,crop[0]:crop[1],crop[2]:crop[3]]
 #            fileName = path.split('\\')[-1] + '_cropped.tif'
 #        else:
 #            fileName = path.split('\\')[-1] + '.tif'
-#            
+#
 #        tf.imsave(os.path.join(saveFolder,fileName),mov)
-#            
+#
 #    return mov
-
 
 
 if __name__=='__main__':
