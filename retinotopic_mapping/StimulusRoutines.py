@@ -226,6 +226,89 @@ def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis
     return probe_num_per_frame
 
 
+def get_grid_locations(subregion, grid_space, monitor_azi, monitor_alt, is_include_edge=True,
+                       is_plot=False):
+    """
+    generate all the grid points in display area (covered by both subregion and
+    monitor span), designed for SparseNoise and LocallySparseNoise stimuli.
+
+    Parameters
+    ----------
+    subregion : list, tuple or np.array
+        the region on the monitor that will display the sparse noise,
+        [min_alt, max_alt, min_azi, max_azi], all floats
+    grid_space : tuple or list of two floats
+        grid size of probes to be displayed, [altitude, azimuth]
+    monitor_azi : 2-d array
+        array mapping monitor pixels to azimuth in visual space
+    monitor_alt : 2-d array
+        array mapping monitor pixels to altitude in visual space
+    is_include_edge : bool, default True,
+        if True, the displayed probes will cover the edge case and ensure that
+        the entire subregion is covered.
+        If False, the displayed probes will exclude edge case and ensure that all
+        the centers of displayed probes are within the subregion.
+    is_plot : bool
+
+    Returns
+    -------
+    grid_locations : n x 2 array,
+        refined [azi, alt] pairs of probe centers going to be displayed
+    """
+
+    rows = np.arange(subregion[0],
+                     subregion[1] + grid_space[0],
+                     grid_space[0])
+    columns = np.arange(subregion[2],
+                        subregion[3] + grid_space[1],
+                        grid_space[1])
+
+    xx, yy = np.meshgrid(columns, rows)
+
+    grid_locations = np.transpose(np.array([xx.flatten(), yy.flatten()]))
+
+    left_alt = monitor_alt[:, 0]
+    right_alt = monitor_alt[:, -1]
+    top_azi = monitor_azi[0, :]
+    bottom_azi = monitor_azi[-1, :]
+
+    left_azi = monitor_azi[:, 0]
+    right_azi = monitor_azi[:, -1]
+    top_alt = monitor_alt[0, :]
+    bottom_alt = monitor_alt[-1, :]
+
+    left_azi_e = left_azi - grid_space[1]
+    right_azi_e = right_azi + grid_space[1]
+    top_alt_e = top_alt + grid_space[0]
+    bottom_alt_e = bottom_alt - grid_space[0]
+
+    all_alt = np.concatenate((left_alt, right_alt, top_alt, bottom_alt))
+    all_azi = np.concatenate((left_azi, right_azi, top_azi, bottom_azi))
+
+    all_alt_e = np.concatenate((left_alt, right_alt, top_alt_e, bottom_alt_e))
+    all_azi_e = np.concatenate((left_azi_e, right_azi_e, top_azi, bottom_azi))
+
+    monitorPoints = np.array([all_azi, all_alt]).transpose()
+    monitorPoints_e = np.array([all_azi_e, all_alt_e]).transpose()
+
+    # get the grid points within the coverage of monitor
+    if is_include_edge:
+        grid_locations = grid_locations[in_hull(grid_locations, monitorPoints_e)]
+    else:
+        grid_locations = grid_locations[in_hull(grid_locations, monitorPoints)]
+
+    if is_plot:
+        f = plt.figure()
+        ax = f.add_subplot(111)
+        ax.plot(monitorPoints[:, 0], monitorPoints[:, 1], '.r', label='monitor')
+        ax.plot(monitorPoints_e[:, 0], monitorPoints_e[:, 1], '.g', label='monitor_e')
+        ax.plot(grid_locations[:, 0], grid_locations[:, 1], '.b', label='grid')
+        ax.legend()
+        plt.show()
+
+    return grid_locations
+
+
 class Stim(object):
     """
     generic class for visual stimulation. parent class for individual
@@ -915,7 +998,7 @@ class SparseNoise(Stim):
 
         self.clear()
 
-    def _get_grid_points(self, is_plot=False):
+    def _get_grid_locations(self, is_plot=False):
         """
         generate all the grid points in display area (covered by both subregion and
         monitor span)
@@ -926,68 +1009,22 @@ class SparseNoise(Stim):
             refined [azi, alt] pairs of probe centers going to be displayed
         """
 
-        rows = np.arange(self.subregion[0],
-                         self.subregion[1] + self.grid_space[0],
-                         self.grid_space[0])
-        columns = np.arange(self.subregion[2],
-                            self.subregion[3] + self.grid_space[1],
-                            self.grid_space[1])
-
-        xx, yy = np.meshgrid(columns, rows)
-
-        gridPoints = np.transpose(np.array([xx.flatten(), yy.flatten()]))
-
         # get all the visual points for each pixels on monitor
         if self.coordinate == 'degree':
-            monitor_x = self.monitor.deg_coord_x
-            monitor_y = self.monitor.deg_coord_y
+            monitor_azi = self.monitor.deg_coord_x
+            monitor_alt = self.monitor.deg_coord_y
         elif self.coordinate == 'linear':
-            monitor_x = self.monitor.lin_coord_x
-            monitor_y = self.monitor.lin_coord_y
+            monitor_azi = self.monitor.lin_coord_x
+            monitor_alt = self.monitor.lin_coord_y
         else:
             raise ValueError('Do not understand coordinate system: {}. Should be either "linear" or "degree".'.
                              format(self.coordinate))
 
-        left_alt = monitor_y[:, 0]
-        right_alt = monitor_y[:, -1]
-        top_azi = monitor_x[0, :]
-        bottom_azi = monitor_x[-1, :]
+        grid_locations = get_grid_locations(subregion=self.subregion, grid_space=self.grid_space,
+                                            monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                            is_include_edge=self.is_include_edge, is_plot=is_plot)
 
-        left_azi = monitor_x[:, 0]
-        right_azi = monitor_x[:, -1]
-        top_alt = monitor_y[0, :]
-        bottom_alt = monitor_y[-1, :]
-
-        left_azi_e = left_azi - self.grid_space[1]
-        right_azi_e = right_azi + self.grid_space[1]
-        top_alt_e = top_alt + self.grid_space[0]
-        bottom_alt_e = bottom_alt - self.grid_space[0]
-
-        all_alt = np.concatenate((left_alt, right_alt, top_alt, bottom_alt))
-        all_azi = np.concatenate((left_azi, right_azi, top_azi, bottom_azi))
-
-        all_alt_e = np.concatenate((left_alt, right_alt, top_alt_e, bottom_alt_e))
-        all_azi_e = np.concatenate((left_azi_e, right_azi_e, top_azi, bottom_azi))
-
-        monitorPoints = np.array([all_azi, all_alt]).transpose()
-        monitorPoints_e = np.array([all_azi_e, all_alt_e]).transpose()
-
-        # get the grid points within the coverage of monitor
-        if self.is_include_edge:
-            gridPoints = gridPoints[in_hull(gridPoints, monitorPoints_e)]
-        else:
-            gridPoints = gridPoints[in_hull(gridPoints, monitorPoints)]
-
-        if is_plot:
-            f = plt.figure()
-            ax = f.add_subplot(111)
-            ax.plot(monitorPoints[:, 0], monitorPoints[:, 1], '.r', label='monitor')
-            ax.plot(monitorPoints_e[:, 0], monitorPoints_e[:, 1], '.g', label='monitor_e')
-            ax.plot(gridPoints[:, 0], gridPoints[:, 1], '.b', label='grid')
-            ax.legend()
-            plt.show()
-
-        return gridPoints
+        return grid_locations
 
     def _generate_grid_points_sequence(self):
         """
@@ -1000,7 +1037,7 @@ class SparseNoise(Stim):
             list of the form [grid_point, sign]
         """
 
-        grid_points = self._get_grid_points()
+        grid_points = self._get_grid_locations()
 
         if self.sign == 'ON':
             grid_points = [[x,1] for x in grid_points]
@@ -1096,7 +1133,7 @@ class SparseNoise(Stim):
 
             gap = [0., None, None, -1.]
             frames_unique.append(gap)
-            grid_points = self._get_grid_points()
+            grid_points = self._get_grid_locations()
             for grid_point in grid_points:
                 if self.sign == 'ON':
                     frames_unique.append([1., grid_point, 1., 1.])
@@ -1355,8 +1392,170 @@ class SparseNoise(Stim):
 
 
 class LocallySparseNoise(Stim):
-    #todo: finish this class
-    pass
+    """
+    generate locally sparse noise stimulus integrates flashing indicator for
+    photodiode
+
+    This stimulus routine presents quasi-random noise in a specified region of
+    the monitor. The `background` color can be customized but defaults to a
+    grey value. Can specify the `subregion` of the monitor where the pixels
+    will flash on and off (black and white respectively)
+
+    Different from SparseNoise stimulus which presents only one probe at a time,
+    the LocallySparseNoise presents multiple probes simultaneously to speed up
+    the sampling frequency. The sparsity of probes is defined by minimum distance
+    in visual degree: in any given frame, the centers of any pair of two probes
+    will have distance larger than minimum distance in visual degrees. The
+    method generate locally sparse noise here insures, for each iteration, all
+    the locations in the subregion will be sampled once and only once.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    min_distance: float, default 20.
+        the minimum distance in visual degree for any pair of probe centers
+         in a given frame
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    stim_name : str
+        Name of stimulus
+    grid_space : 2-tuple of floats, optional
+        first coordinate is altitude, second coordinate is azimuth
+    probe_size : 2-tuple of floats, optional
+        size of flicker probes. First coordinate defines the width, and
+        second coordinate defines the height
+    probe_orientation : float, optional
+        orientation of flicker probes
+    probe_frame_num : int, optional
+        number of frames for each square presentation
+    subregion :
+        the region on the monitor that will display the sparse noise,
+        list or tuple, [min_alt, max_alt, min_azi, max_azi]
+    sign : {'ON-OFF', 'ON', 'OFF'}, optional
+        determines which pixels appear in the `subregion`, defaults to
+        `'ON-Off'` so that both on and off pixels appear. If `'ON` selected
+        only on pixels (white) are displayed in the noise `subregion while if
+        `'OFF'` is selected only off (black) pixels are displayed in the noise
+    iteration : int, optional
+        number of times to present stimulus, defaults to `1`
+    is_include_edge : bool, default True,
+        if True, the displayed probes will cover the edge case and ensure that
+        the entire subregion is covered.
+        If False, the displayed probes will exclude edge case and ensure that all
+        the centers of displayed probes are within the subregion.
+    """
+
+    def __init__(self, monitor, indicator, min_distance=20., background=0., coordinate='degree',
+                 grid_space=(10.,10.), probe_size=(10.,10.), probe_orientation=0.,
+                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
+                 pregap_dur=2., postgap_dur=3., is_include_edge=True):
+
+        super(SparseNoise,self).__init__(monitor=monitor,
+                                         indicator=indicator,
+                                         background=background,
+                                         coordinate = coordinate,
+                                         pregap_dur=pregap_dur,
+                                         postgap_dur=postgap_dur)
+        """    
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
+
+        self.stim_name = 'LocallySparseNoise'
+        self.grid_space = grid_space
+        self.probe_size = probe_size
+        self.min_distance = float(min_distance)
+        self.probe_orientation = probe_orientation
+
+        if probe_frame_num >= 2:
+            self.probe_frame_num = int(probe_frame_num)
+        else:
+            raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
+
+        self.is_include_edge = is_include_edge
+        # self.frame_config = ('is_display', '(azimuth, altitude)',
+        #                      'polarity', 'indicator_color')
+
+        if subregion is None:
+            if self.coordinate == 'degree':
+                self.subregion = [np.amin(self.monitor.deg_coord_y),
+                                  np.amax(self.monitor.deg_coord_y),
+                                  np.amin(self.monitor.deg_coord_x),
+                                  np.amax(self.monitor.deg_coord_x)]
+            if self.coordinate == 'linear':
+                self.subregion = [np.amin(self.monitor.lin_coord_y),
+                                  np.amax(self.monitor.lin_coord_y),
+                                  np.amin(self.monitor.lin_coord_x),
+                                  np.amax(self.monitor.lin_coord_x)]
+        else:
+            self.subregion = subregion
+
+        self.sign = sign
+        if iteration >= 1:
+            self.iteration = int(iteration)
+        else:
+            raise ValueError('iteration should be no less than 1.')
+
+        self.clear()
+
+    def _get_grid_locations(self, is_plot=False):
+        """
+        generate all the grid points in display area (covered by both subregion and
+        monitor span)
+
+        Returns
+        -------
+        grid_points : n x 2 array,
+            refined [azi, alt] pairs of probe centers going to be displayed
+        """
+
+        # get all the visual points for each pixels on monitor
+        if self.coordinate == 'degree':
+            monitor_azi = self.monitor.deg_coord_x
+            monitor_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            monitor_azi = self.monitor.lin_coord_x
+            monitor_alt = self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. Should be either "linear" or "degree".'.
+                             format(self.coordinate))
+
+        grid_locations = get_grid_locations(subregion=self.subregion, grid_space=self.grid_space,
+                                            monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                            is_include_edge=self.is_include_edge, is_plot=is_plot)
+
+        return grid_locations
+
+    def _generate_all_probes(self, grid_locs):
+
+        # if self.sign == 'ON':
+        pass
+
+
+    def _generate_probe_locs_one_frame(self, grid_points):
+
+        pass
+
+    def _generate_probe_sequence_one_iteration(self):
+
+        pass
+
+    def _generate_frames_for_index_display(self):
+
+        pass
+
+    def _generate_display_index(self):
+
+        pass
+
+    def generate_movie_by_index(self):
+
+        pass
 
 
 class DriftingGratingCircle(Stim):
