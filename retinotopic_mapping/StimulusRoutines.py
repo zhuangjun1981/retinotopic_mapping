@@ -1531,15 +1531,65 @@ class LocallySparseNoise(Stim):
 
         return grid_locations
 
-    def _generate_all_probes(self, grid_locs):
+    def _generate_all_probes(self):
+        """
+        return all possible (grid location + sign) combinations within the subregion,
+        return a list of probe parameters, each element in the list is
+        [center_altitude, center_azimuth, sign]
+        """
+        grid_locs = self._get_grid_locations()
 
-        # if self.sign == 'ON':
-        pass
+        grid_locs = list([list(gl) for gl in grid_locs])
 
+        if self.sign == 'ON':
+            all_probes = [gl.append(1.) for gl in grid_locs]
+        elif self.sign == 'OFF':
+            all_probes = [gl.append(-1.) for gl in grid_locs]
+        elif self.sign == 'ON-OFF':
+            all_probes = [gl.append(1.) for gl in grid_locs] + [gl.append(-1.) for gl in grid_locs]
+        else:
+            raise ValueError('LocallySparseNoise: Cannot understand self.sign, should be '
+                             'one of "ON", "OFF", "ON-OFF".')
+        return all_probes
 
-    def _generate_probe_locs_one_frame(self, grid_points):
+    @staticmethod
+    def _generate_probe_locs_one_frame(probes, min_dis):
+        """
+        given the available probes, generate a sublist of the probes for a single frame,
+        all the probes in the sublist will have their visual space distance longer than
+        self.min_distance. This function will also update input probes, remove the
+        elements that have been selected into the sublist.
 
-        pass
+        parameters
+        ----------
+        probes : list of all available probes
+            each elements is [center_altitude, center_azimuth, sign] for a particular probe
+        min_dis : float
+            minimum distance to reject probes too close to each other
+
+        returns
+        -------
+        probes_one_frame : list of selected probes fo one frame
+            each elements is [center_altitude, center_azimuth, sign] for a selected probe
+        """
+
+        np.random.shuffle(probes)
+        probes_one_frame = []
+
+        for probe in probes:
+            is_overlap = False
+
+            for probe_frame in probes_one_frame:
+                curr_dis = ia.distance([probe[0], probe[1]], [probe_frame[0], probe_frame[1]])
+                if curr_dis <= min_dis:
+                    is_overlap = True
+                    break
+
+            if not is_overlap:
+                probes_one_frame.append(probe)
+                probes.remove(probe)
+
+        return probes_one_frame
 
     def _generate_probe_sequence_one_iteration(self):
 
