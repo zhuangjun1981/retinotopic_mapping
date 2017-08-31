@@ -9,10 +9,10 @@ class TestSimulation(unittest.TestCase):
 
     def setUp(self):
         import retinotopic_mapping.MonitorSetup as ms
-        
+
         # Setup monitor/indicator objects
-        self.monitor = ms.Monitor(resolution=(1200,1600), dis=15., 
-                                   mon_width_cm=40., mon_height_cm=30., 
+        self.monitor = ms.Monitor(resolution=(1200,1600), dis=15.,
+                                   mon_width_cm=40., mon_height_cm=30.,
                                    C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
@@ -75,7 +75,7 @@ class TestSimulation(unittest.TestCase):
         pregap_end = uc.pregap_frame_num
         on_end = pregap_end + int(uc.duration*ref_rate)
         postgap_end = on_end + uc.postgap_frame_num
-        
+
         for i in range(pregap_end):
             assert (all_frames[i] == (0., -1.))
 
@@ -105,7 +105,7 @@ class TestSimulation(unittest.TestCase):
         frames = []
         for ind in fc_full_dict['stimulation']['index_to_display']:
             frames.append(frames_unique[ind])
-        
+
         # Parameters defining where the frame blocks should start and end
         pregap_end = fc.pregap_frame_num
         flash_frames= fc.flash_frame_num
@@ -164,7 +164,7 @@ class TestSimulation(unittest.TestCase):
         # f, (ax) = plt.subplots(1)
         # ax.imshow(fc_full_seq[6])
         # plt.show()
-    
+
     # SPARSE NOISE TESTS #
     # ================== #
     def test_SN_generate_display_index(self):
@@ -346,6 +346,11 @@ class TestSimulation(unittest.TestCase):
         # print len(index_to_display)
         assert (len(index_to_display) == 1044)
 
-    
+    def test_get_sparse_loc_num_per_frame(self):
+        ppf = sr.get_sparse_loc_num_per_frame(min_alt=-20., max_alt=40., min_azi=-10.,
+                                              max_azi=120., minimum_dis=20.)
+        print ppf
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2.)
