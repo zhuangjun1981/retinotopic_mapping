@@ -14,6 +14,10 @@ class TestSimulation(unittest.TestCase):
         self.monitor = ms.Monitor(resolution=(1200,1600), dis=15.,
                                    mon_width_cm=40., mon_height_cm=30.,
                                    C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
+        # import matplotlib.pyplot as plt
+        # self.monitor.plot_map()
+        # plt.show()
+
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
 
@@ -27,12 +31,12 @@ class TestSimulation(unittest.TestCase):
         # import matplotlib.pyplot as plt
         # plt.imshow(cm)
         # plt.show()
-        assert (cm[27, 54] == 1)
+        assert (cm[28, 49] == 1)
         cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(10., 0.), radius=10.)
         # import matplotlib.pyplot as plt
         # plt.imshow(cm)
         # plt.show()
-        assert (cm[5, 28] == 1)
+        assert (cm[10, 30] == 1)
 
     def test_get_grating(self):
         import numpy as np
@@ -51,6 +55,14 @@ class TestSimulation(unittest.TestCase):
         # f, (ax) = plt.subplots(1)
         # ax.imshow(grating, cmap='gray')
         # plt.show()
+
+    def test_get_grid_locations(self):
+        monitor_azi = self.monitor.deg_coord_x
+        monitor_alt = self.monitor.deg_coord_y
+        grid_locs = sr.get_grid_locations(subregion=[-20., -10., 30., 90.], grid_space=[10., 10.],
+                                          monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                          is_include_edge=True, is_plot=False)
+        assert (len(grid_locs) == 14)
 
     # UNIFORM CONTRAST TESTS
     # ======================
@@ -121,7 +133,7 @@ class TestSimulation(unittest.TestCase):
         for i in range(flashing_end, postgap_end):
             assert (frames[i] == (0., -1.))
 
-        assert (fc_full_seq[1, 29, 124] == -1)
+        assert (fc_full_seq[1, 39, 124] == -1)
         # import matplotlib.pyplot as plt
         # f, (ax) = plt.subplots(1)
         # ax.imshow(fc_full_seq[1])
@@ -158,7 +170,7 @@ class TestSimulation(unittest.TestCase):
         for i in range(flashing_end, postgap_end):
             assert (frames[i] == (0., -1.))
 
-        assert (fc_full_seq[6, 29, 124] == -1)
+        assert (fc_full_seq[6, 39, 124] == -1.)
 
         # import matplotlib.pyplot as plt
         # f, (ax) = plt.subplots(1)
@@ -188,7 +200,7 @@ class TestSimulation(unittest.TestCase):
             assert (len(set(index_to_display[9 + probe_ind * 6: 12 + probe_ind * 6])) == 1)
             assert (index_to_display[9 + probe_ind * 6] - index_to_display[8 + probe_ind * 6] == 1)
 
-    def test_SN__get_probe_index_for_one_iter_on_off(self):
+    def test_SN_get_probe_index_for_one_iter_on_off(self):
         import numpy as np
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(5., 5.),
@@ -231,11 +243,10 @@ class TestSimulation(unittest.TestCase):
                             postgap_dur=0.2, is_include_edge=True)
         mov_unique, _ = sn.generate_movie_by_index()
         import numpy as np
-        assert (np.max(mov_unique, axis=0)[66, 121] == 1)
-
         # import matplotlib.pyplot as plt
         # plt.imshow(np.max(mov_unique, axis=0))
         # plt.show()
+        assert (np.max(mov_unique, axis=0)[66, 121] == 1)
 
     def test_SN_generate_movie(self):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
@@ -245,11 +256,10 @@ class TestSimulation(unittest.TestCase):
                             postgap_dur=0.2, is_include_edge=True)
         mov_unique, _ = sn.generate_movie_by_index()
         import numpy as np
-        assert (np.min(mov_unique, axis=0)[92, 38] == -1)
-
         # import matplotlib.pyplot as plt
         # plt.imshow(np.min(mov_unique, axis=0))
         # plt.show()
+        assert (np.min(mov_unique, axis=0)[92, 38] == -1)
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
@@ -346,10 +356,40 @@ class TestSimulation(unittest.TestCase):
         # print len(index_to_display)
         assert (len(index_to_display) == 1044)
 
-    def test_get_sparse_loc_num_per_frame(self):
-        ppf = sr.get_sparse_loc_num_per_frame(min_alt=-20., max_alt=40., min_azi=-10.,
-                                              max_azi=120., minimum_dis=20.)
-        print ppf
+    # def test_get_sparse_loc_num_per_frame(self):
+    #     ppf = sr.get_sparse_loc_num_per_frame(min_alt=-20., max_alt=40., min_azi=-10.,
+    #                                           max_azi=120., minimum_dis=20.)
+    #     print ppf
+
+    def test_LSN_generate_all_probes(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 10., 0., 30.],
+                                    sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        all_probes = [tuple(p) for p in all_probes]
+        assert (set(all_probes) == {
+                                    (-10., 0., 1.), (0., 0., 1.), (10., 0., 1.),
+                                    (-10., 10., 1.), (0., 10., 1.), (10., 10., 1.),
+                                    (-10., 20., 1.), (0., 20., 1.), (10., 20., 1.),
+                                    (-10., 30., 1.), (0., 30., 1.), (10., 30., 1.),
+                                    })
+
+    def test_LSN_generate_probe_locs_one_frame(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10.,10.), probe_size=(10.,10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        probes_one_frame = lsn._generate_probe_locs_one_frame(all_probes)
+        # print probes_one_frame
+        # todo: finish this
 
 
 if __name__ == '__main__':

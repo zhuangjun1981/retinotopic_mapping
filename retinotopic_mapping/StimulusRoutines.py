@@ -1456,12 +1456,9 @@ class LocallySparseNoise(Stim):
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
-        super(SparseNoise,self).__init__(monitor=monitor,
-                                         indicator=indicator,
-                                         background=background,
-                                         coordinate = coordinate,
-                                         pregap_dur=pregap_dur,
-                                         postgap_dur=postgap_dur)
+        super(LocallySparseNoise,self).__init__(monitor=monitor, indicator=indicator,
+                                                background=background, coordinate = coordinate,
+                                                pregap_dur=pregap_dur, postgap_dur=postgap_dur)
         """    
         Initialize sparse noise object, inherits Parameters from Stim object
         """
@@ -1514,6 +1511,7 @@ class LocallySparseNoise(Stim):
             refined [azi, alt] pairs of probe centers going to be displayed
         """
 
+
         # get all the visual points for each pixels on monitor
         if self.coordinate == 'degree':
             monitor_azi = self.monitor.deg_coord_x
@@ -1529,8 +1527,9 @@ class LocallySparseNoise(Stim):
                                             monitor_azi=monitor_azi, monitor_alt=monitor_alt,
                                             is_include_edge=self.is_include_edge, is_plot=is_plot)
 
-        return grid_locations
+        grid_locations = np.array([grid_locations[:,1], grid_locations[:, 0]]).transpose()
 
+        return grid_locations
     def _generate_all_probes(self):
         """
         return all possible (grid location + sign) combinations within the subregion,
@@ -1542,18 +1541,17 @@ class LocallySparseNoise(Stim):
         grid_locs = list([list(gl) for gl in grid_locs])
 
         if self.sign == 'ON':
-            all_probes = [gl.append(1.) for gl in grid_locs]
+            all_probes = [gl + [1.] for gl in grid_locs]
         elif self.sign == 'OFF':
-            all_probes = [gl.append(-1.) for gl in grid_locs]
+            all_probes = [gl + [-1.] for gl in grid_locs]
         elif self.sign == 'ON-OFF':
-            all_probes = [gl.append(1.) for gl in grid_locs] + [gl.append(-1.) for gl in grid_locs]
+            all_probes = [gl + [1.] for gl in grid_locs] + [gl + [-1.] for gl in grid_locs]
         else:
             raise ValueError('LocallySparseNoise: Cannot understand self.sign, should be '
                              'one of "ON", "OFF", "ON-OFF".')
         return all_probes
 
-    @staticmethod
-    def _generate_probe_locs_one_frame(probes, min_dis):
+    def _generate_probe_locs_one_frame(self, probes):
         """
         given the available probes, generate a sublist of the probes for a single frame,
         all the probes in the sublist will have their visual space distance longer than
@@ -1580,8 +1578,10 @@ class LocallySparseNoise(Stim):
             is_overlap = False
 
             for probe_frame in probes_one_frame:
+                # print probe
+                # print probe_frame
                 curr_dis = ia.distance([probe[0], probe[1]], [probe_frame[0], probe_frame[1]])
-                if curr_dis <= min_dis:
+                if curr_dis <= self.min_distance:
                     is_overlap = True
                     break
 
@@ -1591,9 +1591,36 @@ class LocallySparseNoise(Stim):
 
         return probes_one_frame
 
-    def _generate_probe_sequence_one_iteration(self):
+    def _generate_probe_sequence_one_iteration(self, all_probes, min_dis):
+        """
+        given all probes to be displayed and minimum distance between any pair of two probes
+        return frames of one iteration that ensure all probes will be present once
 
-        pass
+        parameters
+        ----------
+        all_probes : list
+            all probes to be displayed, each element (center_alt, center_azi, sign). ideally
+            outputs of self._generate_all_probes
+        min_dis : positive float
+            the minimum distance in visual degree for any pair of probe centers in a given
+            frame
+
+        returns
+        -------
+        frames : list
+            each element of the frames list represent one display frame, the element itself
+            is a list of the probes to be displayed in this particular frame
+        """
+
+        all_probes_cpy = list(all_probes)
+
+        frames = []
+
+        while len(all_probes_cpy) > 0:
+            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy,
+                                                              min_dis=min_dis)
+            frames.append(curr_frames)
+        return frames
 
     def _generate_frames_for_index_display(self):
 
