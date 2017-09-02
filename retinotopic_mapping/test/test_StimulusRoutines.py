@@ -388,8 +388,27 @@ class TestSimulation(unittest.TestCase):
 
         all_probes = lsn._generate_all_probes()
         probes_one_frame = lsn._generate_probe_locs_one_frame(all_probes)
-        # print probes_one_frame
-        # todo: finish this
+
+        import itertools
+        import numpy as np
+        for (p0, p1) in itertools.combinations(probes_one_frame, r=2):
+            curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) **2)
+            # print (p0, p1), curr_dis
+            assert (curr_dis > 20.)
+
+    def test_LSN_generate_probe_sequence_one_iteration(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes)
+        print '\n'.join([str(f) for f in frames])
+        print [len(f) for f in frames]
+        assert (sum([len(f) for f in frames]) == len(all_probes))
 
 
 if __name__ == '__main__':

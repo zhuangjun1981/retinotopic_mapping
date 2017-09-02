@@ -1591,7 +1591,7 @@ class LocallySparseNoise(Stim):
 
         return probes_one_frame
 
-    def _generate_probe_sequence_one_iteration(self, all_probes, min_dis):
+    def _generate_probe_sequence_one_iteration(self, all_probes):
         """
         given all probes to be displayed and minimum distance between any pair of two probes
         return frames of one iteration that ensure all probes will be present once
@@ -1601,9 +1601,6 @@ class LocallySparseNoise(Stim):
         all_probes : list
             all probes to be displayed, each element (center_alt, center_azi, sign). ideally
             outputs of self._generate_all_probes
-        min_dis : positive float
-            the minimum distance in visual degree for any pair of probe centers in a given
-            frame
 
         returns
         -------
@@ -1617,8 +1614,7 @@ class LocallySparseNoise(Stim):
         frames = []
 
         while len(all_probes_cpy) > 0:
-            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy,
-                                                              min_dis=min_dis)
+            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
             frames.append(curr_frames)
         return frames
 
