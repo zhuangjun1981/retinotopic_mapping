@@ -2281,6 +2281,11 @@ class StaticGratingCircle(Stim):
     pass
 
 
+class NaturalScene(Stim):
+    #todo: finish this class
+    pass
+
+
 class KSstim(Stim):
     """
     generate Kalatsky & Stryker stimulus
