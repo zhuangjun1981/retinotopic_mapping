@@ -406,10 +406,27 @@ class TestSimulation(unittest.TestCase):
 
         all_probes = lsn._generate_all_probes()
         frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=False)
-        print '\n'.join([str(f) for f in frames])
-        print [len(f) for f in frames]
+        # print '\n'.join([str(f) for f in frames])
+        # print [len(f) for f in frames]
         assert (sum([len(f) for f in frames]) == len(all_probes))
-        # todo: finish this
+
+        import itertools
+        import numpy as np
+        alt_lst = np.arange(-10., 25., 10)
+        azi_lst = np.arange(0., 65., 10)
+        all_probes = list(itertools.product(alt_lst, azi_lst, [-1., 1.]))
+        all_probes_frame = []
+
+        for frame in frames:
+            all_probes_frame += [tuple(probe) for probe in frame]
+            # asserting all pairs in the particular frame meet sparsity criterion
+            for (p0, p1) in itertools.combinations(frame, r=2):
+                curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2)
+                # print (p0, p1), curr_dis
+                assert (curr_dis > 20.)
+
+        # assert all frames combined cover whole subregion
+        assert (set(all_probes) == set(all_probes_frame))
 
     def test_LSN_is_fit(self):
         # todo: finish this
@@ -429,10 +446,27 @@ class TestSimulation(unittest.TestCase):
 
         all_probes = lsn._generate_all_probes()
         frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=True)
-        print '\n'.join([str(f) for f in frames])
-        print [len(f) for f in frames]
+        # print '\n'.join([str(f) for f in frames])
+        # print [len(f) for f in frames]
         assert (sum([len(f) for f in frames]) == len(all_probes))
-        # todo: finish this
+
+        import itertools
+        import numpy as np
+        alt_lst = np.arange(-10., 25., 10)
+        azi_lst = np.arange(0., 65., 10)
+        all_probes = list(itertools.product(alt_lst, azi_lst, [-1., 1.]))
+        all_probes_frame = []
+
+        for frame in frames:
+            all_probes_frame += [tuple(probe) for probe in frame]
+            # asserting all pairs in the particular frame meet sparsity criterion
+            for (p0, p1) in itertools.combinations(frame, r=2):
+                curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2)
+                # print (p0, p1), curr_dis
+                assert (curr_dis > 20.)
+
+        # assert all frames combined cover whole subregion
+        assert (set(all_probes) == set(all_probes_frame))
 
 
 if __name__ == '__main__':

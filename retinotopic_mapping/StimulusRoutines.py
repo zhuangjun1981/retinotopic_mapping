@@ -1629,8 +1629,6 @@ class LocallySparseNoise(Stim):
 
     def _redistribute_one_probe(self, frames):
 
-        # todo: finish this
-
         # initiate is_moved variable
         is_moved = False
 
