@@ -405,10 +405,34 @@ class TestSimulation(unittest.TestCase):
                                     is_include_edge=True)
 
         all_probes = lsn._generate_all_probes()
-        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes)
+        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=False)
         print '\n'.join([str(f) for f in frames])
         print [len(f) for f in frames]
         assert (sum([len(f) for f in frames]) == len(all_probes))
+        # todo: finish this
+
+    def test_LSN_is_fit(self):
+        # todo: finish this
+        pass
+
+    def test_LSN_redistribute_one_probe(self):
+        # todo: finish this
+        pass
+
+    def test_LSN_redistribute_probes(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=True)
+        print '\n'.join([str(f) for f in frames])
+        print [len(f) for f in frames]
+        assert (sum([len(f) for f in frames]) == len(all_probes))
+        # todo: finish this
 
 
 if __name__ == '__main__':

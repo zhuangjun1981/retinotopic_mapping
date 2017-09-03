@@ -1530,6 +1530,7 @@ class LocallySparseNoise(Stim):
         grid_locations = np.array([grid_locations[:,1], grid_locations[:, 0]]).transpose()
 
         return grid_locations
+
     def _generate_all_probes(self):
         """
         return all possible (grid location + sign) combinations within the subregion,
@@ -1591,7 +1592,7 @@ class LocallySparseNoise(Stim):
 
         return probes_one_frame
 
-    def _generate_probe_sequence_one_iteration(self, all_probes):
+    def _generate_probe_sequence_one_iteration(self, all_probes, is_redistribute=True):
         """
         given all probes to be displayed and minimum distance between any pair of two probes
         return frames of one iteration that ensure all probes will be present once
@@ -1601,6 +1602,10 @@ class LocallySparseNoise(Stim):
         all_probes : list
             all probes to be displayed, each element (center_alt, center_azi, sign). ideally
             outputs of self._generate_all_probes
+        is_redistribute : bool
+            redistribute the probes among frames after initial generation or not.
+            redistribute will use self._redistribute_probes() and try to minimize the difference
+            of probe numbers among different frames
 
         returns
         -------
@@ -1616,7 +1621,128 @@ class LocallySparseNoise(Stim):
         while len(all_probes_cpy) > 0:
             curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
             frames.append(curr_frames)
+
+        if is_redistribute:
+            frames = self._redistribute_probes(frames=frames)
+
         return frames
+
+    def _redistribute_one_probe(self, frames):
+
+        # todo: finish this
+
+        # initiate is_moved variable
+        is_moved = False
+
+        # reorder frames from most probes to least probes
+        new_frames = sorted(frames, key=lambda frame: len(frame))
+        probe_num_most = len(new_frames[-1])
+
+        # the indices of frames in new_frames that contain most probes
+        frame_ind_most = []
+
+        # the indices of frames in new_frames that contain less probes
+        frame_ind_less = []
+
+        for frame_ind, frame in enumerate(new_frames):
+            if len(frame) == probe_num_most:
+                frame_ind_most.append(frame_ind)
+            elif len(frame) <= probe_num_most - 2:  # '-1' means well distributed
+                frame_ind_less.append(frame_ind)
+
+        # constructing a list of probes that potentially can be moved
+        # each element is [(center_alt, center_azi, sign), frame_ind]
+        probes_to_be_moved = []
+        for frame_ind in frame_ind_most:
+            frame_most = new_frames[frame_ind]
+            for probe in frame_most:
+                probes_to_be_moved.append((probe, frame_ind))
+
+        # loop through probes_to_be_moved to see if any of them will fit into
+        # frames with less probes, once find a case, break the loop and return
+        for probe, frame_ind_src in probes_to_be_moved:
+            frame_src = new_frames[frame_ind_src]
+            for frame_ind_dst in frame_ind_less:
+                frame_dst = new_frames[frame_ind_dst]
+                if self._is_fit(probe, frame_dst):
+                    frame_src.remove(probe)
+                    frame_dst.append(probe)
+                    is_moved = True
+                    break
+            if is_moved:
+                break
+
+        return is_moved, new_frames
+
+    def _is_fit(self, probe, probes):
+        """
+        test if a given probe will fit a group of probes without breaking the
+        sparcity
+
+        parameters
+        ----------
+        probe : list or tuple of three floats
+            (center_alt, center_azi, sign)
+        probes : list of probes
+            [(center_alt, center_zai, sign), (center_alt, center_azi, sign), ...]
+
+        returns
+        -------
+        is_fit : bool
+            the probe will fit or not
+        """
+
+        is_fit = True
+        for probe2 in probes:
+            if ia.distance([probe[0], probe[1]], [probe2[0], probe2[1]]) <= self.min_distance:
+                is_fit = False
+                break
+        return is_fit
+
+    def _redistribute_probes(self, frames):
+        """
+        attempt to redistribute probes among frames for one iteration of display
+        the algorithm is to pick a probe from the frames with most probes to the
+        frames with least probes and do it iteratively until it can not move
+        anymore and the biggest difference of probe numbers among all frames is
+        no more than 1 (most evenly distributed).
+
+        the algorithm is implemented by self._redistribute_probes() function,
+        this is just to roughly massage the probes among frames, but not the
+        attempt to find the best solution.
+
+        parameters
+        ----------
+        frames : list
+            each element of the frames list represent one display frame, the element
+            itself is a list of the probes (center_alt, center_azi, sign) to be
+            displayed in this particular frame
+
+        returns
+        -------
+        new_frames : list
+            same structure as input frames but with redistributed probes
+        """
+
+        new_frames = list(frames)
+        is_moved = True
+        probe_nums = [len(frame) for frame in new_frames]
+        probe_nums.sort()
+        probe_diff = probe_nums[-1] - probe_nums[0]
+
+        while is_moved and probe_diff > 1:
+
+            is_moved, new_frames = self._redistribute_one_probe(new_frames)
+            probe_nums = [len(frame) for frame in new_frames]
+            probe_nums.sort()
+            probe_diff = probe_nums[-1] - probe_nums[0]
+        else:
+            if not is_moved:
+                print ('redistributing probes among frames: no more probes can be moved.')
+            if probe_diff <= 1:
+                print ('redistributing probes among frames: probes already well distributed.')
+
+        return new_frames
 
     def _generate_frames_for_index_display(self):
 
