@@ -468,6 +468,33 @@ class TestSimulation(unittest.TestCase):
         # assert all frames combined cover whole subregion
         assert (set(all_probes) == set(all_probes_frame))
 
+    def test_LSN_generate_frames_for_index_display(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        frames_unique = lsn._generate_frames_for_index_display()
+        # print len(frames_unique)
+        # print '\n'.join([str(f) for f in frames_unique])
+        assert (len(frames_unique) % 2 == 1)
+
+    def test_LSN_generate_display_index(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=30., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+        frames_unique, index_to_display = lsn._generate_display_index()
+        # print index_to_display
+        assert (index_to_display[:lsn.pregap_frame_num] == [0] * lsn.pregap_frame_num)
+        assert (index_to_display[-lsn.postgap_frame_num:] == [0] * lsn.postgap_frame_num)
+        assert (len(index_to_display) == (len(frames_unique) - 1) * lsn.probe_frame_num / 2 +
+                lsn.pregap_frame_num + lsn.postgap_frame_num)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2.)

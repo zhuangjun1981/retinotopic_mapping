@@ -41,19 +41,19 @@ def in_hull(p, hull):
     return hull.find_simplex(p)>=0
 
 
-def get_warped_square(deg_coord_x,deg_coord_y,center,width,
-                      height,ori,foreground_color=1.,background_color=0.):
+def get_warped_square(deg_coord_x, deg_coord_y, center, width,
+                      height, ori, foreground_color=1., background_color=0.):
     """
-    Generate a frame (matrix) with single square defined by `center`, `width`,
-    `height` and orientation in degress visual degree value of each pixel is
+    Generate a frame (matrix) with single probe defined by `center`, `width`,
+    `height` and orientation in degrees. visual degree coordinate of each pixel is
     defined by deg_coord_x, and deg_coord_y
 
     Parameters
     ----------
-    deg_coord_x : ndarray
-        contains
-    deg_coord_y :
-
+    deg_coord_alt : ndarray
+        2d array of warped altitude coordinates of monitor pixels
+    deg_coord_alt : ndarray
+        2d array of warped azimuth coordinates of monitor pixels
     center : tuple
         center of the square
     width :
@@ -88,6 +88,59 @@ def get_warped_square(deg_coord_x,deg_coord_y,center,width,
 
     frame[np.logical_and(dis_width<=width/2.,
                          dis_height<=height/2.)] = foreground_color
+
+    return frame
+
+
+def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
+                      height, ori=0., background_color=0.):
+    """
+    Generate a frame (matrix) with multiple probes defined by 'porbes', `width`,
+    `height` and orientation in degrees. visual degree coordinate of each pixel is
+    defined by deg_coord_azi, and deg_coord_alt
+
+    Parameters
+    ----------
+    deg_coord_alt : ndarray
+        2d array of warped altitude coordinates of monitor pixels
+    deg_coord_alt : ndarray
+        2d array of warped azimuth coordinates of monitor pixels
+    probes : tuple or list
+        each element of probes represents a single probe (center_alt, center_azi, sign)
+    width :
+         width of the square
+    height :
+         height of the square
+    ori :
+        angle in degree, should be 0~180
+    foreground_color : float, optional
+         color of the noise pixels, takes values in [-1,1] and defaults to `1.`
+    background_color : float, optional
+         color of the background behind the noise pixels, takes values in
+         [-1,1] and defaults to `0.`
+    Returns
+    -------
+    frame : ndarray
+         the warped s
+    """
+
+    frame = np.ones(deg_coord_azi.shape, dtype=np.float32) * background_color
+
+    if ori < 0. or ori > 180.:
+         raise ValueError, 'ori should be between 0 and 180.'
+
+    k1 = np.tan(ori*np.pi/180.)
+    k2 = np.tan((ori+90.)*np.pi/180.)
+
+    for probe in probes:
+
+        dis_width = np.abs(((k1 * deg_coord_azi - deg_coord_alt
+                             + probe[1] - k1 * probe[0]) / np.sqrt(k1**2 +1)))
+        dis_height = np.abs(((k2 * deg_coord_azi - deg_coord_alt
+                              + probe[1] - k2 * probe[0]) / np.sqrt(k2**2 +1)))
+
+        frame[np.logical_and(dis_width<=width/2.,
+                             dis_height<=height/2.)] = probe[2]
 
     return frame
 
@@ -1337,33 +1390,57 @@ class SparseNoise(Stim):
         for i, curr_frame in enumerate(self.frames):
             if curr_frame[0] == 1: # not a gap
                 if i == 0: # first frame and (not a gap)
-                    curr_disp_mat = get_warped_square(coord_x,
-                                                      coord_y,
-                                                      center = curr_frame[1],
+                    # curr_disp_mat = get_warped_square(coord_x,
+                    #                                   coord_y,
+                    #                                   center = curr_frame[1],
+                    #                                   width=self.probe_size[0],
+                    #                                   height=self.probe_size[1],
+                    #                                   ori=self.probe_orientation,
+                    #                                   foreground_color=curr_frame[2],
+                    #                                   background_color=self.background)
+                    curr_probes = ([curr_frame[1][0], curr_frame[1][1], curr_frame[2]])
+                    curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                      deg_coord_azi=coord_x,
+                                                      probes=curr_probes,
                                                       width=self.probe_size[0],
                                                       height=self.probe_size[1],
                                                       ori=self.probe_orientation,
-                                                      foreground_color=curr_frame[2],
                                                       background_color=self.background)
                 else: # (not first frame) and (not a gap)
                     if self.frames[i-1][1] is None: # (not first frame) and (not a gap) and (new square from gap)
-                        curr_disp_mat = get_warped_square(coord_x,
-                                                          coord_y,
-                                                          center=curr_frame[1],
+                        # curr_disp_mat = get_warped_square(coord_x,
+                        #                                   coord_y,
+                        #                                   center=curr_frame[1],
+                        #                                   width=self.probe_size[0],
+                        #                                   height=self.probe_size[1],
+                        #                                   ori=self.probe_orientation,
+                        #                                   foreground_color=curr_frame[2],
+                        #                                   background_color=self.background)
+                        curr_probes = ([curr_frame[1][0], curr_frame[1][1], curr_frame[2]])
+                        curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                          deg_coord_azi=coord_x,
+                                                          probes=curr_probes,
                                                           width=self.probe_size[0],
                                                           height=self.probe_size[1],
                                                           ori=self.probe_orientation,
-                                                          foreground_color=curr_frame[2],
                                                           background_color=self.background)
                     elif (curr_frame[1]!=self.frames[i-1][1]).any() or (curr_frame[2]!=self.frames[i-1][2]):
                         # (not first frame) and (not a gap) and (new square from old square)
-                        curr_disp_mat = get_warped_square(coord_x,
-                                                          coord_y,
-                                                          center=curr_frame[1],
+                        # curr_disp_mat = get_warped_square(coord_x,
+                        #                                   coord_y,
+                        #                                   center=curr_frame[1],
+                        #                                   width=self.probe_size[0],
+                        #                                   height=self.probe_size[1],
+                        #                                   ori=self.probe_orientation,
+                        #                                   foreground_color=curr_frame[2],
+                        #                                   background_color=self.background)
+                        curr_probes = ([curr_frame[1][0], curr_frame[1][1], curr_frame[2]])
+                        curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                          deg_coord_azi=coord_x,
+                                                          probes=curr_probes,
                                                           width=self.probe_size[0],
                                                           height=self.probe_size[1],
                                                           ori=self.probe_orientation,
-                                                          foreground_color=curr_frame[2],
                                                           background_color=self.background)
 
                 #assign current display matrix to full sequence
@@ -1601,7 +1678,7 @@ class LocallySparseNoise(Stim):
         ----------
         all_probes : list
             all probes to be displayed, each element (center_alt, center_azi, sign). ideally
-            outputs of self._generate_all_probes
+            outputs of self._generate_all_probes()
         is_redistribute : bool
             redistribute the probes among frames after initial generation or not.
             redistribute will use self._redistribute_probes() and try to minimize the difference
@@ -1609,9 +1686,9 @@ class LocallySparseNoise(Stim):
 
         returns
         -------
-        frames : list
-            each element of the frames list represent one display frame, the element itself
-            is a list of the probes to be displayed in this particular frame
+        frames : tuple
+            each element of the frames tuple represent one display frame, the element itself
+            is a tuple of the probes to be displayed in this particular frame
         """
 
         all_probes_cpy = list(all_probes)
@@ -1624,6 +1701,8 @@ class LocallySparseNoise(Stim):
 
         if is_redistribute:
             frames = self._redistribute_probes(frames=frames)
+
+        frames = tuple(tuple(f) for f in frames)
 
         return frames
 
@@ -1743,12 +1822,63 @@ class LocallySparseNoise(Stim):
         return new_frames
 
     def _generate_frames_for_index_display(self):
+        """
+        compute the information that defines the frames used for index display
 
-        pass
+        parameters
+        ----------
+        all_probes : list
+            all probes to be displayed, each element (center_alt, center_azi, sign). ideally
+            outputs of self._generate_all_probes()
+
+        returns
+        -------
+        frames_unique : tuple
+        """
+        all_probes = self._generate_all_probes()
+
+        if self.indicator.is_sync:
+            frames_unique = []
+
+            gap = [0., None, None, -1.]
+            frames_unique.append(gap)
+            for i in range(self.iteration):
+                probes_iter = self._generate_probe_sequence_one_iteration(all_probes=all_probes,
+                                                                          is_redistribute=True)
+                for probes in probes_iter:
+                        frames_unique.append([1., probes, i, 1.])
+                        frames_unique.append([1., probes, i, -1.])
+
+            frames_unique = tuple([tuple(f) for f in frames_unique])
+
+            return frames_unique
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator"
 
     def _generate_display_index(self):
+        """
+        compute a list of indices corresponding to each frame to display.
+        """
 
-        pass
+        frames_unique = self._generate_frames_for_index_display()
+        if len(frames_unique) % 2 == 1:
+            display_num = (len(frames_unique) - 1) / 2  # number of each unique display frame
+        else:
+            raise ValueError('LocallySparseNoise: number of unique frames is not correct. Should be odd.')
+
+        probe_on_frame_num = self.probe_frame_num // 2
+        probe_off_frame_num = self.probe_frame_num - probe_on_frame_num
+
+        index_to_display = []
+        index_to_display += [0] * self.pregap_frame_num
+
+        for display_ind in range(display_num):
+            index_to_display += [display_ind * 2 + 1] * probe_on_frame_num
+            index_to_display += [display_ind * 2 + 2] * probe_off_frame_num
+
+        index_to_display += [0] * self.postgap_frame_num
+
+        return frames_unique, index_to_display
 
     def generate_movie_by_index(self):
 
@@ -2283,6 +2413,10 @@ class StaticGratingCircle(Stim):
 
 class NaturalScene(Stim):
     #todo: finish this class
+    pass
+
+
+class StimulusSeparator(Stim):
     pass
 
 
