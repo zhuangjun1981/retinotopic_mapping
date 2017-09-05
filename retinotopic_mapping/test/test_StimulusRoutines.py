@@ -9,13 +9,40 @@ class TestSimulation(unittest.TestCase):
 
     def setUp(self):
         import retinotopic_mapping.MonitorSetup as ms
-        
+
         # Setup monitor/indicator objects
-        self.monitor = ms.Monitor(resolution=(1200,1600), dis=15., 
-                                   mon_width_cm=40., mon_height_cm=30., 
-                                   C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
+        self.monitor = ms.Monitor(resolution=(1200,1600), dis=15.,
+                                  mon_width_cm=40., mon_height_cm=30.,
+                                  C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
+        # import matplotlib.pyplot as plt
+        # self.monitor.plot_map()
+        # plt.show()
+
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
+
+    def test_get_warped_probes(self):
+
+        import numpy as np
+        azis = np.arange(0, 10, 0.1)
+        alts = np.arange(30, 40, 0.1)[::-1]
+        coord_azi, coord_alt = np.meshgrid(azis, alts)
+        probes = ([32., 5., 1.],)
+
+        frame = sr.get_warped_probes(deg_coord_alt=coord_alt, deg_coord_azi=coord_azi,
+                                     probes=probes, width=0.5,
+                                     height=1., ori=0., background_color=0.)
+
+        # import matplotlib.pyplot as plt
+        # plt.imshow(frame)
+        # plt.show()
+        assert (frame[75, 51] == 1)
+
+        frame = sr.get_warped_probes(deg_coord_alt=coord_alt, deg_coord_azi=coord_azi,
+                                     probes=probes, width=0.5,
+                                     height=1., ori=30., background_color=0.)
+        assert (frame[76, 47] == 1)
+        assert (frame[81, 53] == 1)
 
     def test_get_circle_mask(self):
         import numpy as np
@@ -27,12 +54,12 @@ class TestSimulation(unittest.TestCase):
         # import matplotlib.pyplot as plt
         # plt.imshow(cm)
         # plt.show()
-        assert (cm[27, 54] == 1)
+        assert (cm[28, 49] == 1)
         cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(10., 0.), radius=10.)
         # import matplotlib.pyplot as plt
         # plt.imshow(cm)
         # plt.show()
-        assert (cm[5, 28] == 1)
+        assert (cm[10, 30] == 1)
 
     def test_get_grating(self):
         import numpy as np
@@ -51,6 +78,14 @@ class TestSimulation(unittest.TestCase):
         # f, (ax) = plt.subplots(1)
         # ax.imshow(grating, cmap='gray')
         # plt.show()
+
+    def test_get_grid_locations(self):
+        monitor_azi = self.monitor.deg_coord_x
+        monitor_alt = self.monitor.deg_coord_y
+        grid_locs = sr.get_grid_locations(subregion=[-20., -10., 30., 90.], grid_space=[10., 10.],
+                                          monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                          is_include_edge=True, is_plot=False)
+        assert (len(grid_locs) == 14)
 
     # UNIFORM CONTRAST TESTS
     # ======================
@@ -75,7 +110,7 @@ class TestSimulation(unittest.TestCase):
         pregap_end = uc.pregap_frame_num
         on_end = pregap_end + int(uc.duration*ref_rate)
         postgap_end = on_end + uc.postgap_frame_num
-        
+
         for i in range(pregap_end):
             assert (all_frames[i] == (0., -1.))
 
@@ -105,7 +140,7 @@ class TestSimulation(unittest.TestCase):
         frames = []
         for ind in fc_full_dict['stimulation']['index_to_display']:
             frames.append(frames_unique[ind])
-        
+
         # Parameters defining where the frame blocks should start and end
         pregap_end = fc.pregap_frame_num
         flash_frames= fc.flash_frame_num
@@ -121,7 +156,7 @@ class TestSimulation(unittest.TestCase):
         for i in range(flashing_end, postgap_end):
             assert (frames[i] == (0., -1.))
 
-        assert (fc_full_seq[1, 29, 124] == -1)
+        assert (fc_full_seq[1, 39, 124] == -1)
         # import matplotlib.pyplot as plt
         # f, (ax) = plt.subplots(1)
         # ax.imshow(fc_full_seq[1])
@@ -158,13 +193,13 @@ class TestSimulation(unittest.TestCase):
         for i in range(flashing_end, postgap_end):
             assert (frames[i] == (0., -1.))
 
-        assert (fc_full_seq[6, 29, 124] == -1)
+        assert (fc_full_seq[6, 39, 124] == -1.)
 
         # import matplotlib.pyplot as plt
         # f, (ax) = plt.subplots(1)
         # ax.imshow(fc_full_seq[6])
         # plt.show()
-    
+
     # SPARSE NOISE TESTS #
     # ================== #
     def test_SN_generate_display_index(self):
@@ -188,7 +223,7 @@ class TestSimulation(unittest.TestCase):
             assert (len(set(index_to_display[9 + probe_ind * 6: 12 + probe_ind * 6])) == 1)
             assert (index_to_display[9 + probe_ind * 6] - index_to_display[8 + probe_ind * 6] == 1)
 
-    def test_SN__get_probe_index_for_one_iter_on_off(self):
+    def test_SN_get_probe_index_for_one_iter_on_off(self):
         import numpy as np
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(5., 5.),
@@ -231,11 +266,10 @@ class TestSimulation(unittest.TestCase):
                             postgap_dur=0.2, is_include_edge=True)
         mov_unique, _ = sn.generate_movie_by_index()
         import numpy as np
-        assert (np.max(mov_unique, axis=0)[66, 121] == 1)
-
         # import matplotlib.pyplot as plt
         # plt.imshow(np.max(mov_unique, axis=0))
         # plt.show()
+        assert (np.max(mov_unique, axis=0)[66, 121] == 1)
 
     def test_SN_generate_movie(self):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
@@ -243,13 +277,12 @@ class TestSimulation(unittest.TestCase):
                             probe_size=(10., 10.), probe_orientation=0., probe_frame_num=6,
                             subregion=[-20., -10., 30., 90.], sign='OFF', iteration=1, pregap_dur=0.1,
                             postgap_dur=0.2, is_include_edge=True)
-        mov_unique, _ = sn.generate_movie_by_index()
+        mov, _ = sn.generate_movie()
         import numpy as np
-        assert (np.min(mov_unique, axis=0)[92, 38] == -1)
-
-        # import matplotlib.pyplot as plt
-        # plt.imshow(np.min(mov_unique, axis=0))
+        import matplotlib.pyplot as plt
+        # plt.imshow(np.min(mov, axis=0))
         # plt.show()
+        assert (np.min(mov, axis=0)[92, 38] == -1)
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
@@ -346,6 +379,145 @@ class TestSimulation(unittest.TestCase):
         # print len(index_to_display)
         assert (len(index_to_display) == 1044)
 
-    
+    # def test_get_sparse_loc_num_per_frame(self):
+    #     ppf = sr.get_sparse_loc_num_per_frame(min_alt=-20., max_alt=40., min_azi=-10.,
+    #                                           max_azi=120., minimum_dis=20.)
+    #     print ppf
+
+    def test_LSN_generate_all_probes(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 10., 0., 30.],
+                                    sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        all_probes = [tuple(p) for p in all_probes]
+        assert (set(all_probes) == {
+                                    (-10., 0., 1.), (0., 0., 1.), (10., 0., 1.),
+                                    (-10., 10., 1.), (0., 10., 1.), (10., 10., 1.),
+                                    (-10., 20., 1.), (0., 20., 1.), (10., 20., 1.),
+                                    (-10., 30., 1.), (0., 30., 1.), (10., 30., 1.),
+                                    })
+
+    def test_LSN_generate_probe_locs_one_frame(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10.,10.), probe_size=(10.,10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        probes_one_frame = lsn._generate_probe_locs_one_frame(all_probes)
+
+        import itertools
+        import numpy as np
+        for (p0, p1) in itertools.combinations(probes_one_frame, r=2):
+            curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) **2)
+            # print (p0, p1), curr_dis
+            assert (curr_dis > 20.)
+
+    def test_LSN_generate_probe_sequence_one_iteration(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=False)
+        # print '\n'.join([str(f) for f in frames])
+        # print [len(f) for f in frames]
+        assert (sum([len(f) for f in frames]) == len(all_probes))
+
+        import itertools
+        import numpy as np
+        alt_lst = np.arange(-10., 25., 10)
+        azi_lst = np.arange(0., 65., 10)
+        all_probes = list(itertools.product(alt_lst, azi_lst, [-1., 1.]))
+        all_probes_frame = []
+
+        for frame in frames:
+            all_probes_frame += [tuple(probe) for probe in frame]
+            # asserting all pairs in the particular frame meet sparsity criterion
+            for (p0, p1) in itertools.combinations(frame, r=2):
+                curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2)
+                # print (p0, p1), curr_dis
+                assert (curr_dis > 20.)
+
+        # assert all frames combined cover whole subregion
+        assert (set(all_probes) == set(all_probes_frame))
+
+    def test_LSN_is_fit(self):
+        # todo: finish this
+        pass
+
+    def test_LSN_redistribute_one_probe(self):
+        # todo: finish this
+        pass
+
+    def test_LSN_redistribute_probes(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        all_probes = lsn._generate_all_probes()
+        frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=True)
+        # print '\n'.join([str(f) for f in frames])
+        # print [len(f) for f in frames]
+        assert (sum([len(f) for f in frames]) == len(all_probes))
+
+        import itertools
+        import numpy as np
+        alt_lst = np.arange(-10., 25., 10)
+        azi_lst = np.arange(0., 65., 10)
+        all_probes = list(itertools.product(alt_lst, azi_lst, [-1., 1.]))
+        all_probes_frame = []
+
+        for frame in frames:
+            all_probes_frame += [tuple(probe) for probe in frame]
+            # asserting all pairs in the particular frame meet sparsity criterion
+            for (p0, p1) in itertools.combinations(frame, r=2):
+                curr_dis = np.sqrt((p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2)
+                # print (p0, p1), curr_dis
+                assert (curr_dis > 20.)
+
+        # assert all frames combined cover whole subregion
+        assert (set(all_probes) == set(all_probes_frame))
+
+    def test_LSN_generate_frames_for_index_display(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+
+        frames_unique = lsn._generate_frames_for_index_display()
+        # print len(frames_unique)
+        # print '\n'.join([str(f) for f in frames_unique])
+        assert (len(frames_unique) % 2 == 1)
+
+    def test_LSN_generate_display_index(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=30., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True)
+        frames_unique, index_to_display = lsn._generate_display_index()
+        # print index_to_display
+        assert (index_to_display[:lsn.pregap_frame_num] == [0] * lsn.pregap_frame_num)
+        assert (index_to_display[-lsn.postgap_frame_num:] == [0] * lsn.postgap_frame_num)
+        assert (len(index_to_display) == (len(frames_unique) - 1) * lsn.probe_frame_num / 2 +
+                lsn.pregap_frame_num + lsn.postgap_frame_num)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2.)

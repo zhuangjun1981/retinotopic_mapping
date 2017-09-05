@@ -6,6 +6,13 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+with open(os.path.join(here, 'requirements.txt')) as req_f:
+    install_reqs = req_f.read().splitlines()
+
+install_reqs = [ir for ir in install_reqs if '#' not in ir]
+
+# print install_reqs
+
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')
@@ -36,7 +43,7 @@ setup(
       version = '2.1.1',
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
-      install_requires=['numpy', 'scipy', 'opencv-python', 'scikit-image', 'tifffile'],
+      install_requires=install_reqs,
       author_email='junz@alleninstitute.org',
       description='retinotopic mapping tools',
       long_description=long_description,

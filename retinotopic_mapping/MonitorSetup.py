@@ -5,24 +5,25 @@ Notes
 
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Monitor(object):
     """
-    monitor object created by Jun, has the method "remap" to generate the 
+    monitor object created by Jun, has the method "remap" to generate the
     spherical corrected coordinates in degrees
-    
-    This object contains the relevant data for the monitor used within a 
+
+    This object contains the relevant data for the monitor used within a
     given experimental setup. When initialized, the rectangular coordinates
-    of the pixels on the monitor are computed and stored as `lin_coord_x`, 
-    `lin_coord_y`. The rectangular coordinates are then transformed and 
+    of the pixels on the monitor are computed and stored as `lin_coord_x`,
+    `lin_coord_y`. The rectangular coordinates are then transformed and
     warped by calling the `remap` method to populate the `deg_coord_x` and
     `deg_coord_y` attributes.
-   
+
     Parameters
     ----------
     resolution : tuple
         value of the monitor resolution
-    dis : float 
+    dis : float
          distance from eyeball to monitor (in cm)
     mon_width_cm : float
         width of monitor (in cm)
@@ -53,39 +54,39 @@ class Monitor(object):
     refresh_rate : float, optional
         the refresh rate of the monitor in Hz, defaults to 60
     """
-    def __init__(self, 
-                 resolution, 
-                 dis, 
-                 mon_width_cm, 
-                 mon_height_cm, 
-                 C2T_cm, 
-                 C2A_cm, 
-                 mon_tilt, 
+    def __init__(self,
+                 resolution,
+                 dis,
+                 mon_width_cm,
+                 mon_height_cm,
+                 C2T_cm,
+                 C2A_cm,
+                 mon_tilt,
                  visual_field='right',
-                 deg_coord_x=None, 
-                 deg_coord_y=None, 
-                 name='testMonitor', 
-                 gamma=None, 
-                 gamma_grid=None, 
+                 deg_coord_x=None,
+                 deg_coord_y=None,
+                 name='testMonitor',
+                 gamma=None,
+                 gamma_grid=None,
                  luminance=None,
-                 downsample_rate=10, 
+                 downsample_rate=10,
                  refresh_rate = 60.):
         """
         Initialize monitor object.
-        
+
         """
-                     
+
         if resolution[0] % downsample_rate != 0 \
-                       or resolution[1] % downsample_rate != 0:           
+                       or resolution[1] % downsample_rate != 0:
            raise ArithmeticError, 'Resolution pixel numbers are not' \
            ' divisible by down sampling rate'
-        
+
         self.resolution = resolution
         self.dis = dis
         self.mon_width_cm = mon_width_cm
         self.mon_height_cm = mon_height_cm
-        self.C2T_cm = C2T_cm 
-        self.C2A_cm = C2A_cm 
+        self.C2T_cm = C2T_cm
+        self.C2A_cm = C2A_cm
         self.mon_tilt = mon_tilt
         self.visual_field = visual_field
         self.deg_coord_x = deg_coord_x
@@ -96,107 +97,194 @@ class Monitor(object):
         self.gamma_grid = gamma_grid
         self.luminance = luminance
         self.refresh_rate = 60
-        
+
         #distance form projection point of the eye to bottom of the monitor
         self.C2B_cm = self.mon_height_cm - self.C2T_cm
         #distance form projection point of the eye to right of the monitor
         self.C2P_cm = self.mon_width_cm - self.C2A_cm
-        
-        resolution=[0,0]        
+
+        resolution=[0,0]
         resolution[0]=self.resolution[0]/downsample_rate
         resolution[1]=self.resolution[1]/downsample_rate
-        
-        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]), 
+
+        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
-        
-        if self.visual_field == "left": 
+
+        if self.visual_field == "left":
             map_x = np.linspace(self.C2A_cm, -1.0 * self.C2P_cm, resolution[1])
-            
+
         if self.visual_field == "right":
             map_x = np.linspace(-1 * self.C2A_cm, self.C2P_cm, resolution[1])
-            
+
         map_y = np.linspace(self.C2T_cm, -1.0 * self.C2B_cm, resolution[0])
         old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse = False)
-        
+
         self.lin_coord_x=old_map_x
         self.lin_coord_y=old_map_y
-        
+
         self.remap()
-        
+
     def set_gamma(self, gamma, gamma_grid):
         self.gamma = gamma
         self.gamma_grid = gamma_grid
-        
+
     def set_luminance(self, luminance):
         self.luminance = luminance
-        
+
     def set_downsample_rate(self, downsample_rate):
-        
+
         if self.resolution[0] % downsample_rate != 0 \
              or self.resolution[1] % downsample_rate != 0:
-           
+
            raise ArithmeticError, 'Resolution pixel numbers are not' \
            'divisible by down sampling rate'
-        
+
         self.downsample_rate = downsample_rate
-        
-        resolution = [0,0]        
+
+        resolution = [0,0]
         resolution[0] = self.resolution[0]/downsample_rate
         resolution[1] = self.resolution[1]/downsample_rate
-        
-        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]), 
+
+        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
-        
-        if self.visual_field == "left": 
+
+        if self.visual_field == "left":
             map_x = np.linspace(self.C2A_cm, -1.0 * self.C2P_cm, resolution[1])
-            
+
         if self.visual_field == "right":
             map_x = np.linspace(-1 * self.C2P_cm, self.C2P_cm, resolution[1])
-            
+
         map_y = np.linspace(self.C2T_cm, -1.0 * self.C2B_cm, resolution[0])
         old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse = False)
-        
+
         self.lin_coord_x = old_map_x
         self.lin_coord_y = old_map_y
-        
+
         self.remap()
-        
-        
+
     def remap(self):
         """
         warp the linear pixel coordinates to a spherical corrected representation.
-        
-        Function is called when the monitor object is initialized and populate 
-        the `deg_coord_x` and `deg_coord_y` attributes. 
+
+        Function is called when the monitor object is initialized and populate
+        the `deg_coord_x` and `deg_coord_y` attributes.
         """
-        
-        resolution = [0,0]        
+
+        resolution = [0,0]
         resolution[0] = self.resolution[0]/self.downsample_rate
         resolution[1] = self.resolution[1]/self.downsample_rate
-        
-        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]), 
+
+        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
-        
-        new_map_x = np.zeros(resolution,dtype=np.float16)
-        new_map_y = np.zeros(resolution,dtype=np.float16)
-        
+
+        new_map_x = np.zeros(resolution,dtype=np.float32)
+        new_map_y = np.zeros(resolution,dtype=np.float32)
+
         for j in range(resolution[1]):
-            new_map_x[:, j] = ((180.0 / np.pi) * 
+            new_map_x[:, j] = ((180.0 / np.pi) *
                                np.arctan(self.lin_coord_x[0, j] / self.dis))
-            dis2 = np.sqrt(np.square(self.dis) + 
-                           np.square(self.lin_coord_x[0, j])) 
-            
+            dis2 = np.sqrt(np.square(self.dis) +
+                           np.square(self.lin_coord_x[0, j]))
+
             for i in range(resolution[0]):
-                new_map_y[i, j] = ((180.0 / np.pi) * 
+                new_map_y[i, j] = ((180.0 / np.pi) *
                                    np.arctan(self.lin_coord_y[i, 0] / dis2))
-                
+
         self.deg_coord_x = new_map_x + 90 - self.mon_tilt
         self.deg_coord_y = new_map_y
-        
+
+    def plot_map(self):
+
+        resolution = [0, 0]
+        resolution[0] = self.resolution[0] / self.downsample_rate
+        resolution[1] = self.resolution[1] / self.downsample_rate
+
+        mapcorX, mapcorY = np.meshgrid(range(resolution[1]), range(resolution[0]))
+
+        f1 = plt.figure(figsize=(12, 7))
+        f1.suptitle('Remap monitor', fontsize=14, fontweight='bold')
+
+        OMX = plt.subplot(221)
+        OMX.set_title('Linear Map X (cm)')
+        currfig = plt.imshow(self.lin_coord_x)
+        levels1 = range(int(np.floor(self.lin_coord_x.min() / 10) * 10),
+                        int((np.ceil(self.lin_coord_x.max() / 10) + 1) * 10), 10)
+        im1 = plt.contour(mapcorX, mapcorY, self.lin_coord_x, levels1, colors='k', linewidth=2)
+        #        plt.clabel(im1, levels1, fontsize = 10, inline = 1, fmt='%2.1f')
+        f1.colorbar(currfig, ticks=levels1)
+        plt.gca().set_axis_off()
+
+        OMY = plt.subplot(222)
+        OMY.set_title('Linear Map Y (cm)')
+        currfig = plt.imshow(self.lin_coord_y)
+        levels2 = range(int(np.floor(self.lin_coord_y.min() / 10) * 10),
+                        int((np.ceil(self.lin_coord_y.max() / 10) + 1) * 10), 10)
+        im2 = plt.contour(mapcorX, mapcorY, self.lin_coord_y, levels2, colors='k', linewidth=2)
+        #        plt.clabel(im2, levels2, fontsize = 10, inline = 1, fmt='%2.2f')
+        f1.colorbar(currfig, ticks=levels2)
+        plt.gca().set_axis_off()
+
+        NMX = plt.subplot(223)
+        NMX.set_title('Spherical Map X (deg)')
+        currfig = plt.imshow(self.deg_coord_x)
+        levels3 = range(int(np.floor(self.deg_coord_x.min() / 10) * 10),
+                        int((np.ceil(self.deg_coord_x.max() / 10) + 1) * 10), 10)
+        im3 = plt.contour(mapcorX, mapcorY, self.deg_coord_x, levels3, colors='k', linewidth=2)
+        #        plt.clabel(im3, levels3, fontsize = 10, inline = 1, fmt='%2.1f')
+        f1.colorbar(currfig, ticks=levels3)
+        plt.gca().set_axis_off()
+        #
+        NMY = plt.subplot(224)
+        NMY.set_title('Spherical Map Y (deg)')
+        currfig = plt.imshow(self.deg_coord_y)
+        levels4 = range(int(np.floor(self.deg_coord_y.min() / 10) * 10),
+                        int((np.ceil(self.deg_coord_y.max() / 10) + 1) * 10), 10)
+        im4 = plt.contour(mapcorX, mapcorY, self.deg_coord_y, levels4, colors='k', linewidth=2)
+        #        plt.clabel(im4, levels4, fontsize = 10, inline = 1, fmt='%2.1f')
+        f1.colorbar(currfig, ticks=levels4)
+        plt.gca().set_axis_off()
+
+    def generate_Lookup_table(self):
+        """
+        generate lookup talbe between degree corrdinates and linear corrdinates
+        return two matrix:
+        lookupI: i index in linear matrix to this pixel after warping
+        lookupJ: j index in linear matrix to this pixel after warping
+        """
+
+        #length of one degree on monitor at gaze point
+        degDis = np.tan(np.pi / 180) * self.dis
+
+        #generate degree coordinate without warpping
+        degNoWarpCorX = self.lin_coord_x / degDis
+        degNoWarpCorY = self.lin_coord_y / degDis
+
+        #deg coordinates
+        degCorX = self.deg_coord_x+self.mon_tilt-90
+        degCorY = self.deg_coord_y
+
+        lookupI = np.zeros(degCorX.shape).astype(np.int32)
+        lookupJ = np.zeros(degCorX.shape).astype(np.int32)
+
+        for j in xrange(lookupI.shape[1]):
+            currDegX = degCorX[0,j]
+            diffDegX = degNoWarpCorX[0,:] - currDegX
+            IndJ = np.argmin(np.abs(diffDegX))
+            lookupJ[:,j] = IndJ
+
+            for i in xrange(lookupI.shape[0]):
+                currDegY = degCorY[i,j]
+                diffDegY = degNoWarpCorY[:,IndJ] - currDegY
+                indI = np.argmin(np.abs(diffDegY))
+                lookupI[i,j] = indI
+
+        return lookupI, lookupJ
+
+
 class Indicator(object):
     """
     flashing indicator for photodiode
-    
+
     Parameters
     ----------
     monitor : monitor object
@@ -223,7 +311,7 @@ class Indicator(object):
         """
         Initialize indicator object
         """
-        
+
         self.monitor=monitor
         self.width_cm = width_cm
         self.height_cm = height_cm
@@ -241,23 +329,23 @@ class Indicator(object):
 
     def get_size_pixel(self):
 
-        screen_width = (self.monitor.resolution[1] / 
+        screen_width = (self.monitor.resolution[1] /
                         self.monitor.downsample_rate)
-        screen_height = (self.monitor.resolution[0] / 
+        screen_height = (self.monitor.resolution[0] /
                          self.monitor.downsample_rate)
 
-        indicator_width = int((self.width_cm / self.monitor.mon_width_cm ) * 
+        indicator_width = int((self.width_cm / self.monitor.mon_width_cm ) *
                               screen_width)
-        indicator_height = int((self.height_cm / self.monitor.mon_height_cm ) * 
+        indicator_height = int((self.height_cm / self.monitor.mon_height_cm ) *
                                screen_height)
 
         return indicator_width, indicator_height
 
     def get_center(self):
 
-        screen_width = (self.monitor.resolution[1] / 
+        screen_width = (self.monitor.resolution[1] /
                         self.monitor.downsample_rate)
-        screen_height = (self.monitor.resolution[0] / 
+        screen_height = (self.monitor.resolution[0] /
                          self.monitor.downsample_rate)
 
         if self.position == 'northeast':

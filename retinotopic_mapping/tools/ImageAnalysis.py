@@ -7,9 +7,9 @@ import scipy.ndimage as ni
 import skimage.morphology as sm
 import FileTools as ft
 import PlottingTools as pt
-try: 
+try:
      import cv2
-except ImportError as e: 
+except ImportError as e:
      print e
 
 def resample(t1,y1,interval,kind='linear', isPlot = False):
@@ -87,7 +87,7 @@ def array_nor_mean(A):
 
 def array_nor_mean_std(A):
     '''
-    normalize array by minus mean and then devided by standard deviation, 
+    normalize array by minus mean and then devided by standard deviation,
     data type will be switched to np.float
     '''
     A=A.astype(np.float)
@@ -113,7 +113,7 @@ def distance(p0, p1):
 
     if not isinstance(p0, np.ndarray):p0 = np.array(p0)
     if not isinstance(p1, np.ndarray):p1 = np.array(p1)
-    return np.sqrt(np.mean(np.square(p0-p1).flatten()))
+    return np.sqrt(np.sum(np.square(p0-p1).flatten()))
 
 
 def array_diff(a0, a1):
@@ -129,15 +129,15 @@ def binarize(array, threshold):
     '''
     binarize array to 0s and 1s, by cutting at threshold
     '''
-    
+
     newArray = np.array(array)
-    
+
     newArray[array>=threshold] = 1.
-    
+
     newArray[array<threshold] = 0.
-    
+
     newArray = newArray.astype(array.dtype)
-    
+
     return newArray
 
 
@@ -171,16 +171,16 @@ def resize_image(img, outputShape, fillValue = 0.):
     if the original image is too big it will be truncated
     if the original image is too small, value defined as fillValue will filled in. default: 0
     '''
-    
+
     width = outputShape[1]
     height = outputShape[0]
-    
+
     if width < 1:
         raise ValueError, 'width should be bigger than 0!!'
-        
+
     if height < 1:
         raise ValueError, 'height should be bigger than 0!!'
-        
+
     if len(img.shape) !=2 and len(img.shape) !=3 :
         raise ValueError, 'input image should be a 2-d or 3-d array!!'
 
@@ -224,7 +224,7 @@ def resize_image(img, outputShape, fillValue = 0.):
             attachBottom[:] = fillValue
             attachBottom.astype(img.dtype)
             newImg = np.concatenate((newImg,attachBottom),axis=1)
-        
+
     return newImg
 
 
@@ -410,7 +410,7 @@ def rigid_transform_cv2_2d(img, zoom=None, rotation=None, offset=None, outputSha
 
 
 def rigid_transform_cv2_3d(img, zoom=None, rotation=None, offset=None, outputShape=None):
-    
+
     if len(img.shape) != 3:
         raise LookupError, 'Input image is not a 3d array!'
 
@@ -425,10 +425,10 @@ def rigid_transform_cv2_3d(img, zoom=None, rotation=None, offset=None, outputSha
         newHeight = outputShape[0]
         newWidth = outputShape[1]
     newImg = np.empty((img.shape[0],newHeight,newWidth),dtype=img.dtype)
-    
+
     for i in range(img.shape[0]):
         newImg[i,:,:] = rigid_transform_cv2_2d(img[i, :, :], zoom=zoom, rotation=rotation, offset=offset, outputShape=outputShape)
-    
+
     return newImg
 
 
@@ -458,30 +458,30 @@ def boxcartime_dff(data,
                    ):
     """
     Created on Mon Nov 24 14:37:02 2014
-    
+
     [dff] = boxcartime_dff(data[t,y,x], rollingwindow[in s], samplerate[in ms])
     boxcar average uses scipy.signal package, imported locally
-    
+
     @author: mattv
     """
     import scipy.signal as sig
-    
+
     if data.ndim != 3:
-        raise LookupError, 'input images must be a 3-dim array format [t,y,x]'   
+        raise LookupError, 'input images must be a 3-dim array format [t,y,x]'
 
     exposure = np.float(fs/1000) #convert exposure from ms to s
     win = np.float(window)
     win = win/exposure
     win = np.ceil(win)
-    
+
     # rolling average
-    kernal = np.ones(win, dtype=('float')) 
+    kernal = np.ones(win, dtype=('float'))
     padsize = data.shape[0] + win*2
     mov_ave = np.zeros([padsize+win-1], dtype=('float'))
     mov_pad = np.zeros([padsize], dtype=('float'))
     mov_dff = np.zeros([data.shape[0]-win, data.shape[1], data.shape[2]])
     for y in range(data.shape[1]):
-        for x in range(data.shape[2]):      
+        for x in range(data.shape[2]):
             # put data within padded array
             mov_pad[win:(padsize-win)] = data[:,y,x]
             # moving average by convolution
@@ -490,7 +490,7 @@ def boxcartime_dff(data,
             mov_ave = mov_ave[win*2:1+mov_ave.shape[0]-win*2]
             # use moving average as f0 for df/f
             mov_dff[:,y,x] = (data[(win/2):data.shape[0]-(win/2),y,x] - mov_ave)/mov_ave
-            
+
     return mov_dff
 
 
@@ -588,7 +588,7 @@ def generate_oval_mask(shape, center, width, height, isplot = False):
     if len(shape) !=2: raise LookupError, 'Shape should be two dimensional.'
 
     mask = np.zeros(shape); mask[:] = np.nan
-    
+
     width = float(width); height = float(height)
 
     for i in range(shape[0]):

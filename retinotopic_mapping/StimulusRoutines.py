@@ -41,21 +41,21 @@ def in_hull(p, hull):
     return hull.find_simplex(p)>=0
 
 
-def get_warped_square(deg_coord_x,deg_coord_y,center,width,
-                      height,ori,foreground_color=1.,background_color=0.):
+def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
+                      height, ori=0., background_color=0.):
     """
-    Generate a frame (matrix) with single square defined by `center`, `width`,
-    `height` and orientation in degress visual degree value of each pixel is
-    defined by deg_coord_x, and deg_coord_y
+    Generate a frame (matrix) with multiple probes defined by 'porbes', `width`,
+    `height` and orientation in degrees. visual degree coordinate of each pixel is
+    defined by deg_coord_azi, and deg_coord_alt
 
     Parameters
     ----------
-    deg_coord_x : ndarray
-        contains
-    deg_coord_y :
-
-    center : tuple
-        center of the square
+    deg_coord_alt : ndarray
+        2d array of warped altitude coordinates of monitor pixels
+    deg_coord_alt : ndarray
+        2d array of warped azimuth coordinates of monitor pixels
+    probes : tuple or list
+        each element of probes represents a single probe (center_alt, center_azi, sign)
     width :
          width of the square
     height :
@@ -73,21 +73,32 @@ def get_warped_square(deg_coord_x,deg_coord_y,center,width,
          the warped s
     """
 
-    frame = np.ones(deg_coord_x.shape,dtype=np.float32)*background_color
+    frame = np.ones(deg_coord_azi.shape, dtype=np.float32) * background_color
 
-    if ori < 0. or ori > 180.:
-         raise ValueError, 'ori should be between 0 and 180.'
+    # if ori < 0. or ori > 180.:
+    #      raise ValueError, 'ori should be between 0 and 180.'
 
-    k1 = np.tan(ori*np.pi/180.)
-    k2 = np.tan((ori+90.)*np.pi/180.)
+    ori_arc = (ori % 360.) * 2 * np.pi / 360.
 
-    dis_width = np.abs(((k1*deg_coord_x - deg_coord_y
-                         + center[1] - k1 * center[0]) / np.sqrt(k1**2 +1)))
-    dis_height = np.abs(((k2*deg_coord_x - deg_coord_y
-                          + center[1] - k2 * center[0]) / np.sqrt(k2**2 +1)))
+    for probe in probes:
 
-    frame[np.logical_and(dis_width<=width/2.,
-                         dis_height<=height/2.)] = foreground_color
+        dis_width = np.abs(np.cos(ori_arc) * (deg_coord_azi - probe[1]) +
+                           np.sin(ori_arc) * (deg_coord_alt - probe[0]))
+
+        dis_height = np.abs(np.cos(ori_arc + np.pi / 2) * (deg_coord_azi - probe[1]) +
+                            np.sin(ori_arc + np.pi / 2) * (deg_coord_alt - probe[0]))
+
+        # f, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+        # fig1 = ax1.imshow(dis_width)
+        # ax1.set_title('width')
+        # f.colorbar(fig1, ax=ax1)
+        # fig2 = ax2.imshow(dis_height)
+        # ax2.set_title('height')
+        # f.colorbar(fig2, ax=ax2)
+        # plt.show()
+
+        frame[np.logical_and(dis_width<=width/2.,
+                             dis_height<=height/2.)] = probe[2]
 
     return frame
 
@@ -183,6 +194,132 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
     grating = (grating + 1.) / 2. # change the scale of grating to be [0., 1.]
 
     return grating
+
+
+def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis):
+    """
+    given the subregion of visual space and the minmum distance between the probes
+    within a frame (definition of sparseness), return generously how many probes
+    will be presented of a given frame
+
+    Parameters
+    ----------
+    min_alt : float
+        minimum altitude of display region, in visual degrees
+    max_alt : float
+        maximum altitude of display region, in visual degrees
+    min_azi : float
+        minimum azimuth of display region, in visual degrees
+    max_azi : float
+        maximum azimuth of display region, in visual degrees
+    minimum_dis : float
+        minimum distance allowed among probes within a frame
+
+    returns
+    -------
+    probe_num_per_frame : uint
+        generously how many probes will be presented in a given frame
+    """
+    if min_alt >= max_alt:
+        raise ValueError('min_alt should be less than max_alt.')
+
+    if min_azi >= max_azi:
+        raise ValueError('min_azi should be less than max_azi.')
+
+    min_alt = float(min_alt)
+    max_alt = float(max_alt)
+    min_azi = float(min_azi)
+    max_azi = float(max_azi)
+
+    area_tot = (max_alt - min_alt) * (max_azi - min_azi)
+    area_circle = np.pi * (minimum_dis ** 2)
+    probe_num_per_frame = int(np.ceil((2.0 * (area_tot / area_circle))))
+    return probe_num_per_frame
+
+
+def get_grid_locations(subregion, grid_space, monitor_azi, monitor_alt, is_include_edge=True,
+                       is_plot=False):
+    """
+    generate all the grid points in display area (covered by both subregion and
+    monitor span), designed for SparseNoise and LocallySparseNoise stimuli.
+
+    Parameters
+    ----------
+    subregion : list, tuple or np.array
+        the region on the monitor that will display the sparse noise,
+        [min_alt, max_alt, min_azi, max_azi], all floats
+    grid_space : tuple or list of two floats
+        grid size of probes to be displayed, [altitude, azimuth]
+    monitor_azi : 2-d array
+        array mapping monitor pixels to azimuth in visual space
+    monitor_alt : 2-d array
+        array mapping monitor pixels to altitude in visual space
+    is_include_edge : bool, default True,
+        if True, the displayed probes will cover the edge case and ensure that
+        the entire subregion is covered.
+        If False, the displayed probes will exclude edge case and ensure that all
+        the centers of displayed probes are within the subregion.
+    is_plot : bool
+
+    Returns
+    -------
+    grid_locations : n x 2 array,
+        refined [alt, azi] pairs of probe centers going to be displayed
+    """
+
+    rows = np.arange(subregion[0],
+                     subregion[1] + grid_space[0],
+                     grid_space[0])
+    columns = np.arange(subregion[2],
+                        subregion[3] + grid_space[1],
+                        grid_space[1])
+
+    azis, alts = np.meshgrid(columns, rows)
+
+    grid_locations = np.transpose(np.array([alts.flatten(), azis.flatten()]))
+
+    left_alt = monitor_alt[:, 0]
+    right_alt = monitor_alt[:, -1]
+    top_azi = monitor_azi[0, :]
+    bottom_azi = monitor_azi[-1, :]
+
+    left_azi = monitor_azi[:, 0]
+    right_azi = monitor_azi[:, -1]
+    top_alt = monitor_alt[0, :]
+    bottom_alt = monitor_alt[-1, :]
+
+    left_azi_e = left_azi - grid_space[1]
+    right_azi_e = right_azi + grid_space[1]
+    top_alt_e = top_alt + grid_space[0]
+    bottom_alt_e = bottom_alt - grid_space[0]
+
+    all_alt = np.concatenate((left_alt, right_alt, top_alt, bottom_alt))
+    all_azi = np.concatenate((left_azi, right_azi, top_azi, bottom_azi))
+
+    all_alt_e = np.concatenate((left_alt, right_alt, top_alt_e, bottom_alt_e))
+    all_azi_e = np.concatenate((left_azi_e, right_azi_e, top_azi, bottom_azi))
+
+    monitorPoints = np.array([all_alt, all_azi]).transpose()
+    monitorPoints_e = np.array([all_alt_e, all_azi_e]).transpose()
+
+    # get the grid points within the coverage of monitor
+    if is_include_edge:
+        grid_locations = grid_locations[in_hull(grid_locations, monitorPoints_e)]
+    else:
+        grid_locations = grid_locations[in_hull(grid_locations, monitorPoints)]
+
+    # grid_locations = np.array([grid_locations[:, 1], grid_locations[:, 0]]).transpose()
+
+    if is_plot:
+        f = plt.figure()
+        ax = f.add_subplot(111)
+        ax.plot(monitorPoints[:, 1], monitorPoints[:, 0], '.r', label='monitor')
+        ax.plot(monitorPoints_e[:, 1], monitorPoints_e[:, 0], '.g', label='monitor_e')
+        ax.plot(grid_locations[:, 1], grid_locations[:, 0], '.b', label='grid')
+        ax.legend()
+        plt.show()
+
+    return grid_locations
 
 
 class Stim(object):
@@ -824,7 +961,7 @@ class SparseNoise(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 grid_space=(10.,10.), probe_size=(10.,10.), probe_orientation=0.,
+                 grid_space=(10.,10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
@@ -874,7 +1011,7 @@ class SparseNoise(Stim):
 
         self.clear()
 
-    def _get_grid_points(self, is_plot=False):
+    def _get_grid_locations(self, is_plot=False):
         """
         generate all the grid points in display area (covered by both subregion and
         monitor span)
@@ -882,71 +1019,26 @@ class SparseNoise(Stim):
         Returns
         -------
         grid_points : n x 2 array,
-            refined [azi, alt] pairs of probe centers going to be displayed
+            refined [alt, azi] pairs of probe centers going to be displayed
         """
-
-        rows = np.arange(self.subregion[0],
-                         self.subregion[1] + self.grid_space[0],
-                         self.grid_space[0])
-        columns = np.arange(self.subregion[2],
-                            self.subregion[3] + self.grid_space[1],
-                            self.grid_space[1])
-
-        xx, yy = np.meshgrid(columns, rows)
-
-        gridPoints = np.transpose(np.array([xx.flatten(), yy.flatten()]))
 
         # get all the visual points for each pixels on monitor
         if self.coordinate == 'degree':
-            monitor_x = self.monitor.deg_coord_x
-            monitor_y = self.monitor.deg_coord_y
+            monitor_azi = self.monitor.deg_coord_x
+            monitor_alt = self.monitor.deg_coord_y
         elif self.coordinate == 'linear':
-            monitor_x = self.monitor.lin_coord_x
-            monitor_y = self.monitor.lin_coord_y
+            monitor_azi = self.monitor.lin_coord_x
+            monitor_alt = self.monitor.lin_coord_y
         else:
-            raise ValueError('Do not understand coordinate system: {}. Should be either "linear" or "degree".'.
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
                              format(self.coordinate))
 
-        left_alt = monitor_y[:, 0]
-        right_alt = monitor_y[:, -1]
-        top_azi = monitor_x[0, :]
-        bottom_azi = monitor_x[-1, :]
+        grid_locations = get_grid_locations(subregion=self.subregion, grid_space=self.grid_space,
+                                            monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                            is_include_edge=self.is_include_edge, is_plot=is_plot)
 
-        left_azi = monitor_x[:, 0]
-        right_azi = monitor_x[:, -1]
-        top_alt = monitor_y[0, :]
-        bottom_alt = monitor_y[-1, :]
-
-        left_azi_e = left_azi - self.grid_space[1]
-        right_azi_e = right_azi + self.grid_space[1]
-        top_alt_e = top_alt + self.grid_space[0]
-        bottom_alt_e = bottom_alt - self.grid_space[0]
-
-        all_alt = np.concatenate((left_alt, right_alt, top_alt, bottom_alt))
-        all_azi = np.concatenate((left_azi, right_azi, top_azi, bottom_azi))
-
-        all_alt_e = np.concatenate((left_alt, right_alt, top_alt_e, bottom_alt_e))
-        all_azi_e = np.concatenate((left_azi_e, right_azi_e, top_azi, bottom_azi))
-
-        monitorPoints = np.array([all_azi, all_alt]).transpose()
-        monitorPoints_e = np.array([all_azi_e, all_alt_e]).transpose()
-
-        # get the grid points within the coverage of monitor
-        if self.is_include_edge:
-            gridPoints = gridPoints[in_hull(gridPoints, monitorPoints_e)]
-        else:
-            gridPoints = gridPoints[in_hull(gridPoints, monitorPoints)]
-
-        if is_plot:
-            f = plt.figure()
-            ax = f.add_subplot(111)
-            ax.plot(monitorPoints[:, 0], monitorPoints[:, 1], '.r', label='monitor')
-            ax.plot(monitorPoints_e[:, 0], monitorPoints_e[:, 1], '.g', label='monitor_e')
-            ax.plot(gridPoints[:, 0], gridPoints[:, 1], '.b', label='grid')
-            ax.legend()
-            plt.show()
-
-        return gridPoints
+        return grid_locations
 
     def _generate_grid_points_sequence(self):
         """
@@ -959,7 +1051,7 @@ class SparseNoise(Stim):
             list of the form [grid_point, sign]
         """
 
-        grid_points = self._get_grid_points()
+        grid_points = self._get_grid_locations()
 
         if self.sign == 'ON':
             grid_points = [[x,1] for x in grid_points]
@@ -999,7 +1091,7 @@ class SparseNoise(Stim):
                   when stimulus is displayed value is equal to 1, otherwise
                   equal to 0,
              second element - tuple,
-                  retinotopic location of the center of current square,[azi,alt]
+                  retinotopic location of the center of current square,[alt, azi]
              third element -
                   polarity of current square, 1 -> bright, -1-> dark
              forth element - color of indicator
@@ -1055,7 +1147,7 @@ class SparseNoise(Stim):
 
             gap = [0., None, None, -1.]
             frames_unique.append(gap)
-            grid_points = self._get_grid_points()
+            grid_points = self._get_grid_locations()
             for grid_point in grid_points:
                 if self.sign == 'ON':
                     frames_unique.append([1., grid_point, 1., 1.])
@@ -1182,11 +1274,15 @@ class SparseNoise(Stim):
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
         if self.coordinate=='degree':
-             coord_x=self.monitor.deg_coord_x
-             coord_y=self.monitor.deg_coord_y
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
         elif self.coordinate=='linear':
-             coord_x=self.monitor.lin_coord_x
-             coord_y=self.monitor.lin_coord_y
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
 
         indicator_width_min = (self.indicator.center_width_pixel
                                - self.indicator.width_pixel / 2)
@@ -1201,14 +1297,15 @@ class SparseNoise(Stim):
                    np.ones((num_unique_frames, num_pixels_width, num_pixels_height), dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
-            if frame[0] == 1.:
-                disp_mat = get_warped_square(coord_x,
-                                             coord_y,
-                                             center=frame[1],
+            if frame[0] == 1:
+                curr_probes = ([frame[1][0], frame[1][1], frame[2]],)
+                # print type(curr_probes)
+                disp_mat = get_warped_probes(deg_coord_alt=coord_alt,
+                                             deg_coord_azi=coord_azi,
+                                             probes=curr_probes,
                                              width=self.probe_size[0],
                                              height=self.probe_size[1],
                                              ori=self.probe_orientation,
-                                             foreground_color=frame[2],
                                              background_color=self.background)
 
                 full_seq[i] = disp_mat
@@ -1241,6 +1338,10 @@ class SparseNoise(Stim):
         elif self.coordinate=='linear':
              coord_x=self.monitor.lin_coord_x
              coord_y=self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
 
         indicator_width_min = (self.indicator.center_width_pixel
                                - self.indicator.width_pixel / 2)
@@ -1258,34 +1359,34 @@ class SparseNoise(Stim):
 
         for i, curr_frame in enumerate(self.frames):
             if curr_frame[0] == 1: # not a gap
+
+                curr_probes = ([curr_frame[1][0], curr_frame[1][1], curr_frame[2]],)
+
                 if i == 0: # first frame and (not a gap)
-                    curr_disp_mat = get_warped_square(coord_x,
-                                                      coord_y,
-                                                      center = curr_frame[1],
+                    curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                      deg_coord_azi=coord_x,
+                                                      probes=curr_probes,
                                                       width=self.probe_size[0],
                                                       height=self.probe_size[1],
                                                       ori=self.probe_orientation,
-                                                      foreground_color=curr_frame[2],
                                                       background_color=self.background)
                 else: # (not first frame) and (not a gap)
                     if self.frames[i-1][1] is None: # (not first frame) and (not a gap) and (new square from gap)
-                        curr_disp_mat = get_warped_square(coord_x,
-                                                          coord_y,
-                                                          center=curr_frame[1],
+                        curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                          deg_coord_azi=coord_x,
+                                                          probes=curr_probes,
                                                           width=self.probe_size[0],
                                                           height=self.probe_size[1],
                                                           ori=self.probe_orientation,
-                                                          foreground_color=curr_frame[2],
                                                           background_color=self.background)
                     elif (curr_frame[1]!=self.frames[i-1][1]).any() or (curr_frame[2]!=self.frames[i-1][2]):
                         # (not first frame) and (not a gap) and (new square from old square)
-                        curr_disp_mat = get_warped_square(coord_x,
-                                                          coord_y,
-                                                          center=curr_frame[1],
+                        curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
+                                                          deg_coord_azi=coord_x,
+                                                          probes=curr_probes,
                                                           width=self.probe_size[0],
                                                           height=self.probe_size[1],
                                                           ori=self.probe_orientation,
-                                                          foreground_color=curr_frame[2],
                                                           background_color=self.background)
 
                 #assign current display matrix to full sequence
@@ -1314,18 +1415,480 @@ class SparseNoise(Stim):
 
 
 class LocallySparseNoise(Stim):
-    #todo: finish this class
-    pass
+    """
+    generate locally sparse noise stimulus integrates flashing indicator for
+    photodiode
+
+    This stimulus routine presents quasi-random noise in a specified region of
+    the monitor. The `background` color can be customized but defaults to a
+    grey value. Can specify the `subregion` of the monitor where the pixels
+    will flash on and off (black and white respectively)
+
+    Different from SparseNoise stimulus which presents only one probe at a time,
+    the LocallySparseNoise presents multiple probes simultaneously to speed up
+    the sampling frequency. The sparsity of probes is defined by minimum distance
+    in visual degree: in any given frame, the centers of any pair of two probes
+    will have distance larger than minimum distance in visual degrees. The
+    method generate locally sparse noise here insures, for each iteration, all
+    the locations in the subregion will be sampled once and only once.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    min_distance: float, default 20.
+        the minimum distance in visual degree for any pair of probe centers
+         in a given frame
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    stim_name : str
+        Name of stimulus
+    grid_space : 2-tuple of floats, optional
+        first coordinate is altitude, second coordinate is azimuth
+    probe_size : 2-tuple of floats, optional
+        size of flicker probes. First coordinate defines the width, and
+        second coordinate defines the height
+    probe_orientation : float, optional
+        orientation of flicker probes
+    probe_frame_num : int, optional
+        number of frames for each square presentation
+    subregion :
+        the region on the monitor that will display the sparse noise,
+        list or tuple, [min_alt, max_alt, min_azi, max_azi]
+    sign : {'ON-OFF', 'ON', 'OFF'}, optional
+        determines which pixels appear in the `subregion`, defaults to
+        `'ON-Off'` so that both on and off pixels appear. If `'ON` selected
+        only on pixels (white) are displayed in the noise `subregion while if
+        `'OFF'` is selected only off (black) pixels are displayed in the noise
+    iteration : int, optional
+        number of times to present stimulus, defaults to `1`
+    is_include_edge : bool, default True,
+        if True, the displayed probes will cover the edge case and ensure that
+        the entire subregion is covered.
+        If False, the displayed probes will exclude edge case and ensure that all
+        the centers of displayed probes are within the subregion.
+    """
+
+    def __init__(self, monitor, indicator, min_distance=20., background=0., coordinate='degree',
+                 grid_space=(10.,10.), probe_size=(10.,10.), probe_orientation=0.,
+                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
+                 pregap_dur=2., postgap_dur=3., is_include_edge=True):
+
+        super(LocallySparseNoise,self).__init__(monitor=monitor, indicator=indicator,
+                                                background=background, coordinate = coordinate,
+                                                pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+        """    
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
+
+        self.stim_name = 'LocallySparseNoise'
+        self.grid_space = grid_space
+        self.probe_size = probe_size
+        self.min_distance = float(min_distance)
+        self.probe_orientation = probe_orientation
+
+        if probe_frame_num >= 2:
+            self.probe_frame_num = int(probe_frame_num)
+        else:
+            raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
+
+        self.is_include_edge = is_include_edge
+        # self.frame_config = ('is_display', '(azimuth, altitude)',
+        #                      'polarity', 'indicator_color')
+
+        if subregion is None:
+            if self.coordinate == 'degree':
+                self.subregion = [np.amin(self.monitor.deg_coord_y),
+                                  np.amax(self.monitor.deg_coord_y),
+                                  np.amin(self.monitor.deg_coord_x),
+                                  np.amax(self.monitor.deg_coord_x)]
+            if self.coordinate == 'linear':
+                self.subregion = [np.amin(self.monitor.lin_coord_y),
+                                  np.amax(self.monitor.lin_coord_y),
+                                  np.amin(self.monitor.lin_coord_x),
+                                  np.amax(self.monitor.lin_coord_x)]
+        else:
+            self.subregion = subregion
+
+        self.sign = sign
+        if iteration >= 1:
+            self.iteration = int(iteration)
+        else:
+            raise ValueError('iteration should be no less than 1.')
+
+        self.clear()
+
+    def _get_grid_locations(self, is_plot=False):
+        """
+        generate all the grid points in display area (covered by both subregion and
+        monitor span)
+
+        Returns
+        -------
+        grid_points : n x 2 array,
+            refined [azi, alt] pairs of probe centers going to be displayed
+        """
+
+
+        # get all the visual points for each pixels on monitor
+        if self.coordinate == 'degree':
+            monitor_azi = self.monitor.deg_coord_x
+            monitor_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            monitor_azi = self.monitor.lin_coord_x
+            monitor_alt = self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. Should be either "linear" or "degree".'.
+                             format(self.coordinate))
+
+        grid_locations = get_grid_locations(subregion=self.subregion, grid_space=self.grid_space,
+                                            monitor_azi=monitor_azi, monitor_alt=monitor_alt,
+                                            is_include_edge=self.is_include_edge, is_plot=is_plot)
+
+        return grid_locations
+
+    def _generate_all_probes(self):
+        """
+        return all possible (grid location + sign) combinations within the subregion,
+        return a list of probe parameters, each element in the list is
+        [center_altitude, center_azimuth, sign]
+        """
+        grid_locs = self._get_grid_locations()
+
+        grid_locs = list([list(gl) for gl in grid_locs])
+
+        if self.sign == 'ON':
+            all_probes = [gl + [1.] for gl in grid_locs]
+        elif self.sign == 'OFF':
+            all_probes = [gl + [-1.] for gl in grid_locs]
+        elif self.sign == 'ON-OFF':
+            all_probes = [gl + [1.] for gl in grid_locs] + [gl + [-1.] for gl in grid_locs]
+        else:
+            raise ValueError('LocallySparseNoise: Cannot understand self.sign, should be '
+                             'one of "ON", "OFF", "ON-OFF".')
+        return all_probes
+
+    def _generate_probe_locs_one_frame(self, probes):
+        """
+        given the available probes, generate a sublist of the probes for a single frame,
+        all the probes in the sublist will have their visual space distance longer than
+        self.min_distance. This function will also update input probes, remove the
+        elements that have been selected into the sublist.
+
+        parameters
+        ----------
+        probes : list of all available probes
+            each elements is [center_altitude, center_azimuth, sign] for a particular probe
+        min_dis : float
+            minimum distance to reject probes too close to each other
+
+        returns
+        -------
+        probes_one_frame : list of selected probes fo one frame
+            each elements is [center_altitude, center_azimuth, sign] for a selected probe
+        """
+
+        np.random.shuffle(probes)
+        probes_one_frame = []
+
+        for probe in probes:
+            is_overlap = False
+
+            for probe_frame in probes_one_frame:
+                # print probe
+                # print probe_frame
+                curr_dis = ia.distance([probe[0], probe[1]], [probe_frame[0], probe_frame[1]])
+                if curr_dis <= self.min_distance:
+                    is_overlap = True
+                    break
+
+            if not is_overlap:
+                probes_one_frame.append(probe)
+                probes.remove(probe)
+
+        return probes_one_frame
+
+    def _generate_probe_sequence_one_iteration(self, all_probes, is_redistribute=True):
+        """
+        given all probes to be displayed and minimum distance between any pair of two probes
+        return frames of one iteration that ensure all probes will be present once
+
+        parameters
+        ----------
+        all_probes : list
+            all probes to be displayed, each element (center_alt, center_azi, sign). ideally
+            outputs of self._generate_all_probes()
+        is_redistribute : bool
+            redistribute the probes among frames after initial generation or not.
+            redistribute will use self._redistribute_probes() and try to minimize the difference
+            of probe numbers among different frames
+
+        returns
+        -------
+        frames : tuple
+            each element of the frames tuple represent one display frame, the element itself
+            is a tuple of the probes to be displayed in this particular frame
+        """
+
+        all_probes_cpy = list(all_probes)
+
+        frames = []
+
+        while len(all_probes_cpy) > 0:
+            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
+            frames.append(curr_frames)
+
+        if is_redistribute:
+            frames = self._redistribute_probes(frames=frames)
+
+        frames = tuple(tuple(f) for f in frames)
+
+        return frames
+
+    def _redistribute_one_probe(self, frames):
+
+        # initiate is_moved variable
+        is_moved = False
+
+        # reorder frames from most probes to least probes
+        new_frames = sorted(frames, key=lambda frame: len(frame))
+        probe_num_most = len(new_frames[-1])
+
+        # the indices of frames in new_frames that contain most probes
+        frame_ind_most = []
+
+        # the indices of frames in new_frames that contain less probes
+        frame_ind_less = []
+
+        for frame_ind, frame in enumerate(new_frames):
+            if len(frame) == probe_num_most:
+                frame_ind_most.append(frame_ind)
+            elif len(frame) <= probe_num_most - 2:  # '-1' means well distributed
+                frame_ind_less.append(frame_ind)
+
+        # constructing a list of probes that potentially can be moved
+        # each element is [(center_alt, center_azi, sign), frame_ind]
+        probes_to_be_moved = []
+        for frame_ind in frame_ind_most:
+            frame_most = new_frames[frame_ind]
+            for probe in frame_most:
+                probes_to_be_moved.append((probe, frame_ind))
+
+        # loop through probes_to_be_moved to see if any of them will fit into
+        # frames with less probes, once find a case, break the loop and return
+        for probe, frame_ind_src in probes_to_be_moved:
+            frame_src = new_frames[frame_ind_src]
+            for frame_ind_dst in frame_ind_less:
+                frame_dst = new_frames[frame_ind_dst]
+                if self._is_fit(probe, frame_dst):
+                    frame_src.remove(probe)
+                    frame_dst.append(probe)
+                    is_moved = True
+                    break
+            if is_moved:
+                break
+
+        return is_moved, new_frames
+
+    def _is_fit(self, probe, probes):
+        """
+        test if a given probe will fit a group of probes without breaking the
+        sparcity
+
+        parameters
+        ----------
+        probe : list or tuple of three floats
+            (center_alt, center_azi, sign)
+        probes : list of probes
+            [(center_alt, center_zai, sign), (center_alt, center_azi, sign), ...]
+
+        returns
+        -------
+        is_fit : bool
+            the probe will fit or not
+        """
+
+        is_fit = True
+        for probe2 in probes:
+            if ia.distance([probe[0], probe[1]], [probe2[0], probe2[1]]) <= self.min_distance:
+                is_fit = False
+                break
+        return is_fit
+
+    def _redistribute_probes(self, frames):
+        """
+        attempt to redistribute probes among frames for one iteration of display
+        the algorithm is to pick a probe from the frames with most probes to the
+        frames with least probes and do it iteratively until it can not move
+        anymore and the biggest difference of probe numbers among all frames is
+        no more than 1 (most evenly distributed).
+
+        the algorithm is implemented by self._redistribute_probes() function,
+        this is just to roughly massage the probes among frames, but not the
+        attempt to find the best solution.
+
+        parameters
+        ----------
+        frames : list
+            each element of the frames list represent one display frame, the element
+            itself is a list of the probes (center_alt, center_azi, sign) to be
+            displayed in this particular frame
+
+        returns
+        -------
+        new_frames : list
+            same structure as input frames but with redistributed probes
+        """
+
+        new_frames = list(frames)
+        is_moved = True
+        probe_nums = [len(frame) for frame in new_frames]
+        probe_nums.sort()
+        probe_diff = probe_nums[-1] - probe_nums[0]
+
+        while is_moved and probe_diff > 1:
+
+            is_moved, new_frames = self._redistribute_one_probe(new_frames)
+            probe_nums = [len(frame) for frame in new_frames]
+            probe_nums.sort()
+            probe_diff = probe_nums[-1] - probe_nums[0]
+        else:
+            if not is_moved:
+                print ('redistributing probes among frames: no more probes can be moved.')
+            if probe_diff <= 1:
+                print ('redistributing probes among frames: probes already well distributed.')
+
+        return new_frames
+
+    def _generate_frames_for_index_display(self):
+        """
+        compute the information that defines the frames used for index display
+
+        parameters
+        ----------
+        all_probes : list
+            all probes to be displayed, each element (center_alt, center_azi, sign). ideally
+            outputs of self._generate_all_probes()
+
+        returns
+        -------
+        frames_unique : tuple
+        """
+        all_probes = self._generate_all_probes()
+
+        frames_unique = []
+
+        gap = [0., None, None, -1.]
+        frames_unique.append(gap)
+        for i in range(self.iteration):
+            probes_iter = self._generate_probe_sequence_one_iteration(all_probes=all_probes,
+                                                                      is_redistribute=True)
+            for probes in probes_iter:
+                    frames_unique.append([1., probes, i, 1.])
+                    frames_unique.append([1., probes, i, -1.])
+
+        frames_unique = tuple([tuple(f) for f in frames_unique])
+
+        return frames_unique
+
+    def _generate_display_index(self):
+        """
+        compute a list of indices corresponding to each frame to display.
+        """
+
+        if self.indicator.is_sync:
+
+            frames_unique = self._generate_frames_for_index_display()
+            if len(frames_unique) % 2 == 1:
+                display_num = (len(frames_unique) - 1) / 2  # number of each unique display frame
+            else:
+                raise ValueError('LocallySparseNoise: number of unique frames is not correct. Should be odd.')
+
+            probe_on_frame_num = self.probe_frame_num // 2
+            probe_off_frame_num = self.probe_frame_num - probe_on_frame_num
+
+            index_to_display = []
+            index_to_display += [0] * self.pregap_frame_num
+
+            for display_ind in range(display_num):
+                index_to_display += [display_ind * 2 + 1] * probe_on_frame_num
+                index_to_display += [display_ind * 2 + 2] * probe_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+
+            return frames_unique, index_to_display
+
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator"
+
+    def generate_movie_by_index(self):
+
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+
+        num_unique_frames = len(self.frames_unique)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        full_seq = self.background * \
+                   np.ones((num_unique_frames, num_pixels_width, num_pixels_height), dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+            if frame[0] == 1.:
+                disp_mat = get_warped_probes(deg_coord_alt=coord_alt,
+                                             deg_coord_azi=coord_azi,
+                                             probes=frame[1],
+                                             width=self.probe_size[0],
+                                             height=self.probe_size[1],
+                                             ori=self.probe_orientation,
+                                             background_color=self.background)
+
+                full_seq[i] = disp_mat
+
+            full_seq[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[3]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        SNdict = dict(self.__dict__)
+        SNdict.pop('monitor')
+        SNdict.pop('indicator')
+        full_dict = {'stimulation': SNdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
+
+        return full_seq, full_dict
 
 
 class DriftingGratingCircle(Stim):
     """
     Generate drifting grating circle stimulus
 
-    Stimulus routine presents drifting checkerboard grating stimulus inside
+    Stimulus routine presents drifting grating stimulus inside
     of a circle centered at `center`. The drifting gratings are determined by
-    spatial and temporal frequencies, directionality, contrast, and radius of
-    the circle. The routine can generate several different gratings within
+    spatial and temporal frequencies, directionality, contrast, and radius.
+    The routine can generate several different gratings within
     one presentation by specifying multiple values of the parameters which
     characterize the stimulus.
 
@@ -1350,20 +1913,20 @@ class DriftingGratingCircle(Stim):
         list of directions in degrees, defaults to `(0.)`
     con_list : n-tuple, optional
         list of contrasts taking values in [0.,1.], defaults to `(0.5)`
-    size_list : n-tuple
+    radius_list : n-tuple
        list of radii of circles, unit defined by `self.coordinate`, defaults
-       to `(5.)`
-    block_dur = float, optional
+       to `(10.)`
+    block_dur : float, optional
         duration of each condition in seconds, defaults to `2.`
-    midgap_dur = float, optional
+    midgap_dur : float, optional
         duration of gap between conditions, defaults to `0.5`
-    iteration = int, optional
+    iteration : int, optional
         number of times the stimulus is displayed, defaults to `1`
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
-                 con_list=(0.5,), radius_list=(5.,), block_dur=2., midgap_dur=0.5,
+                 con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(DriftingGratingCircle,self).__init__(monitor=monitor,
@@ -1840,7 +2403,15 @@ class DriftingGratingCircle(Stim):
 
 
 class StaticGratingCircle(Stim):
+    pass
+
+
+class NaturalScene(Stim):
     #todo: finish this class
+    pass
+
+
+class StimulusSeparator(Stim):
     pass
 
 

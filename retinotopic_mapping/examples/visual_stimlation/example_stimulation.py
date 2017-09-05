@@ -30,9 +30,9 @@ here is just making sure that we can display stimulus on a monitor and learning
 how to work with the different stimulus routines.
 """
 #==============================================================================
-resolution = (1280,1024) #enter your monitors resolution
-mon_width_cm = 38 #enter your monitors width in cm
-mon_height_cm = 40 #enter your monitors height in cm
+resolution = (1200,1920) #enter your monitors resolution
+mon_width_cm = 52 #enter your monitors width in cm
+mon_height_cm = 32 #enter your monitors height in cm
 refresh_rate = 60  #enter your monitors height in Hz
 #==============================================================================
 # The following variables correspond to the geometry of the mouse with
@@ -46,11 +46,13 @@ dis = 15.
 
 # Set the downsample rate; needs to be an integer `n` such that each resolution
 # number is divisble by `n`,
-downsample_rate = 8
+downsample_rate = 5
 
 # Initialize the monitor and ind objects
 mon = Monitor(resolution=resolution, dis=dis, mon_width_cm=mon_width_cm, mon_height_cm=mon_height_cm,
               C2T_cm=C2T_cm, C2A_cm=C2A_cm, mon_tilt=mon_tilt, downsample_rate=downsample_rate)
+# mon.plot_map()
+# plt.show()
 ind = Indicator(mon, width_cm = 3., height_cm = 3., position = 'northeast', is_sync = True, freq = 2.)
 
 """ Now for the fun stuff! Each block of code below shows an example of
@@ -101,31 +103,56 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Sparse Noise pt 2 ====================================
-# sparse_noise = stim.SparseNoise(mon, ind, subregion=(-50.,0.,-10.,60.), grid_space=(8., 8.),
+# sparse_noise = stim.SparseNoise(mon, ind, subregion=(-30.,10.,30.,90.), grid_space=(8., 8.),
 #                                 background=0., sign='ON', pregap_dur=0., postgap_dur=0.,
 #                                 coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
 #                                 probe_frame_num=6, iteration=2, is_include_edge=False)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-#                      is_sync_pulse=False, display_iter=2, display_screen=1,
+#                      is_sync_pulse=False, display_iter=2, display_screen=0,
 #                      by_index=False)
 # ds.set_stim(sparse_noise)
 # ds.trigger_display()
 #==============================================================================
 
+#======================= Locally Sparse Noise ====================================
+# sparse_noise = stim.LocallySparseNoise(mon, ind, subregion=(-30.,10.,30.,90.), grid_space=(8., 8.),
+#                                        background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.,
+#                                        coordinate='degree', probe_size=(4., 10.), probe_orientation=30.,
+#                                        probe_frame_num=8, iteration=2, is_include_edge=True,
+#                                        min_distance=50.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      by_index=True)
+# ds.set_stim(sparse_noise)
+# ds.trigger_display()
+#==============================================================================
+
+#======================= Locally Sparse Noise ====================================
+sparse_noise = stim.LocallySparseNoise(mon, ind, subregion=None, grid_space=(8., 8.),
+                                       background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.,
+                                       coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
+                                       probe_frame_num=15, iteration=50, is_include_edge=True,
+                                       min_distance=50.)
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+                     is_sync_pulse=False, display_iter=1, display_screen=0,
+                     by_index=True)
+ds.set_stim(sparse_noise)
+ds.trigger_display()
+#==============================================================================
 
 #======================= Drifting Grating Circle Stimulus =====================
-dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
-                                center=(10., 90.), sf_list=(0.02, 0.04), tf_list=(1.0,),
-                                dire_list=(45., 270.), con_list=(0.8,), radius_list=(10., 20.),
-                                block_dur=4., midgap_dur=1., iteration=10, pregap_dur=2.,
-                                postgap_dur=3.)
-
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
-                     is_sync_pulse=False, is_interpolate=False, display_screen=0,
-                     by_index=False)
-
-ds.set_stim(dg)
-ds.trigger_display()
+# dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
+#                                 center=(10., 90.), sf_list=(0.02, 0.04), tf_list=(1.0,),
+#                                 dire_list=(45., 270.), con_list=(0.8,), radius_list=(10., 20.),
+#                                 block_dur=4., midgap_dur=1., iteration=10, pregap_dur=2.,
+#                                 postgap_dur=3.)
+#
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
+#                      is_sync_pulse=False, is_interpolate=False, display_screen=0,
+#                      by_index=False)
+#
+# ds.set_stim(dg)
+# ds.trigger_display()
 
 #======================== Drifting Grating pt 2 ===============================
 #drifting_grating2 = stim.DriftingGratingCircle(mon,
