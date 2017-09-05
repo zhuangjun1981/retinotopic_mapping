@@ -11,7 +11,7 @@ with open(os.path.join(here, 'requirements.txt')) as req_f:
 
 install_reqs = [ir for ir in install_reqs if '#' not in ir]
 
-print install_reqs
+# print install_reqs
 
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
