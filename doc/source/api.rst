@@ -20,8 +20,8 @@ and `StimulusRoutines` modules.
 
 MonitorSetup
 ++++++++++++
-.. autoclass:: retinotopic_mapping.MonitorSetup.Monitor
-   :members:
+
+    MonitorSetup
 
 Indicator
 +++++++++
