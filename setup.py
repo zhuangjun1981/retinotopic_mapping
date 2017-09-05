@@ -24,8 +24,6 @@ def read(*filenames, **kwargs):
 
 long_description = read('README.md')
 
-print long_description
-
 def prepend_find_packages(*roots):
     '''
     Recursively traverse nested packages under the root directories
