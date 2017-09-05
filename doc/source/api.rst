@@ -5,7 +5,7 @@ API Documentation
    :maxdepth: 4
 
 MonitorSetup
---------------------------
+------------
 Used to store the display monitor and particular geometry used within a given
 experimental setup. The `Monitor` class holds references to the sizing of the
 monitor that is used to display stimulus routines and contains the necessary
@@ -18,10 +18,10 @@ synchronising the indicator with the triggering of specific stimulus events.
 The module will most definitely be used in conjunction with the `DisplayStimulus`
 and `StimulusRoutines` modules.
 
-Monitor
-+++++++
+MonitorSetup
+++++++++++++
 .. automodule:: retinotopic_mapping.MonitorSetup
-   :members:
+   :members: Monitor, Indicator
 
 
 StimulusRoutines
