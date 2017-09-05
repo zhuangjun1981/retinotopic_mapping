@@ -47,6 +47,11 @@ SparseNoise
 .. autoclass:: retinotopic_mapping.StimulusRoutines.SparseNoise
    :members:
 
+LocallySparseNoise
+++++++++++++++++++
+.. autoclass:: retinotopic_mapping.StimulusRoutines.LocallySparseNoise
+   :members:
+
 DriftingGratingCircle
 +++++++++++++++++++++
 .. autoclass:: retinotopic_mapping.StimulusRoutines.DriftingGratingCircle
