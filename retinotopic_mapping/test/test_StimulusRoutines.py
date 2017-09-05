@@ -12,14 +12,31 @@ class TestSimulation(unittest.TestCase):
 
         # Setup monitor/indicator objects
         self.monitor = ms.Monitor(resolution=(1200,1600), dis=15.,
-                                   mon_width_cm=40., mon_height_cm=30.,
-                                   C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
+                                  mon_width_cm=40., mon_height_cm=30.,
+                                  C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
         # import matplotlib.pyplot as plt
         # self.monitor.plot_map()
         # plt.show()
 
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
+
+    def test_get_warped_probes(self):
+
+        import numpy as np
+        azis = np.arange(0, 10, 0.1)
+        alts = np.arange(30, 40, 0.1)[::-1]
+        coord_azi, coord_alt = np.meshgrid(azis, alts)
+        probes = ([32., 5., 1.],)
+
+        frame = sr.get_warped_probes(deg_coord_alt=coord_alt, deg_coord_azi=coord_azi,
+                                     probes=probes, width=0.5,
+                                     height=1., ori=0., background_color=0.)
+
+        # import matplotlib.pyplot as plt
+        # plt.imshow(frame)
+        # plt.show()
+        assert (frame[75, 51] == 1)
 
     def test_get_circle_mask(self):
         import numpy as np
@@ -254,12 +271,12 @@ class TestSimulation(unittest.TestCase):
                             probe_size=(10., 10.), probe_orientation=0., probe_frame_num=6,
                             subregion=[-20., -10., 30., 90.], sign='OFF', iteration=1, pregap_dur=0.1,
                             postgap_dur=0.2, is_include_edge=True)
-        mov_unique, _ = sn.generate_movie_by_index()
+        mov, _ = sn.generate_movie()
         import numpy as np
-        # import matplotlib.pyplot as plt
-        # plt.imshow(np.min(mov_unique, axis=0))
-        # plt.show()
-        assert (np.min(mov_unique, axis=0)[92, 38] == -1)
+        import matplotlib.pyplot as plt
+        plt.imshow(np.min(mov, axis=0))
+        plt.show()
+        assert (np.min(mov, axis=0)[92, 38] == -1)
 
     # DRIFTING GRATING CIRCLE TESTS #
     # ============================= #
