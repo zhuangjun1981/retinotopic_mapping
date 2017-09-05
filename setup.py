@@ -1,10 +1,13 @@
 __author__ = 'junz'
 
 from setuptools import setup, find_packages
+from pip.req import parse_requirements
 import io
 import os
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+install_reqs = parse_requirements(os.path.join(here, 'requirements.txt'))
 
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
@@ -36,7 +39,7 @@ setup(
       version = '2.1.1',
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
-      install_requires=['numpy', 'scipy', 'opencv-python', 'scikit-image', 'tifffile'],
+      install_requires=install_reqs,
       author_email='junz@alleninstitute.org',
       description='retinotopic mapping tools',
       long_description=long_description,
