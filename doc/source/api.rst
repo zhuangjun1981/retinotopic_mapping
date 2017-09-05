@@ -19,47 +19,14 @@ The module will most definitely be used in conjunction with the `DisplayStimulus
 and `StimulusRoutines` modules.
 
 .. toctree::
-
     MonitorSetup
+
 
 StimulusRoutines
 ----------------
 
-UniformContrast
-+++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.UniformContrast
-   :members:
-
-FlashingCircle
-++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.FlashingCircle
-   :members:
-
-SparseNoise
-+++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.SparseNoise
-   :members:
-
-LocallySparseNoise
-++++++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.LocallySparseNoise
-   :members:
-
-DriftingGratingCircle
-+++++++++++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.DriftingGratingCircle
-   :members:
-
-KSstim
-+++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.KSstim
-   :members:
-
-KSstimAllDir
-+++++++++++++
-.. autoclass:: retinotopic_mapping.StimulusRoutines.KSstimAllDir
-   :members:
-
+.. toctree::
+   StimulusRoutines
 
 
 DisplayStimulus
@@ -71,8 +38,6 @@ interact with :mod:`StimulusRoutines` module to produce visual display and log d
 May also be used to save and export movies of experimental stimulus routines for
 presentation.
 
-DisplaySequence
-++++++++++++++++
-.. autoclass:: retinotopic_mapping.DisplayStimulus.DisplaySequence
-   :members:
+.. toctree::
+   DisplayStimulus
 
