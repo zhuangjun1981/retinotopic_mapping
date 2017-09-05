@@ -23,12 +23,6 @@ MonitorSetup
 
     MonitorSetup
 
-Indicator
-+++++++++
-.. autoclass:: retinotopic_mapping.MonitorSetup.Indicator
-   :members:
-
-
 StimulusRoutines
 ----------------
 
