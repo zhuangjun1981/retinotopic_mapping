@@ -1913,9 +1913,9 @@ class DriftingGratingCircle(Stim):
         list of directions in degrees, defaults to `(0.)`
     con_list : n-tuple, optional
         list of contrasts taking values in [0.,1.], defaults to `(0.5)`
-    size_list : n-tuple
+    radius_list : n-tuple
        list of radii of circles, unit defined by `self.coordinate`, defaults
-       to `(5.)`
+       to `(10.)`
     block_dur : float, optional
         duration of each condition in seconds, defaults to `2.`
     midgap_dur : float, optional
@@ -1926,7 +1926,7 @@ class DriftingGratingCircle(Stim):
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
-                 con_list=(0.5,), radius_list=(5.,), block_dur=2., midgap_dur=0.5,
+                 con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(DriftingGratingCircle,self).__init__(monitor=monitor,
@@ -2428,13 +2428,13 @@ class StaticGratingCircle(Stim):
         coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
         list of spatial frequencies in cycles/unit, defaults to `(0.08)`
-    dire_list : n-tuple, optional
-        list of directions in degrees, defaults to `(0.)`
+    ori_list : n-tuple, optional
+        list of directions in degrees, defaults to `(0., 90.)`
     con_list : n-tuple, optional
         list of contrasts taking values in [0.,1.], defaults to `(0.5)`
-    size_list : n-tuple, optional
+    radius_list : n-tuple, optional
        list of radii of circles, unit defined by `self.coordinate`, defaults
-       to `(5.)`
+       to `(10.)`
     phase_list : n-tuple, optional
        list of phase of gratings in degrees, default (0., 90., 180., 270.)
     display_dur : float, optional
@@ -2446,8 +2446,8 @@ class StaticGratingCircle(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 center=(0., 60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
-                 con_list=(0.5,), radius_list=(5.,), block_dur=2., midgap_dur=0.5,
+                 center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.),
+                 con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
         super(DriftingGratingCircle, self).__init__(monitor=monitor,
