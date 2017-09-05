@@ -1,13 +1,15 @@
 __author__ = 'junz'
 
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
 import io
 import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-install_reqs = parse_requirements(os.path.join(here, 'requirements.txt'))
+with open(os.path.join(here, 'requirements.txt')) as req_f:
+    install_reqs = req_f.readlines()
+
+install_reqs = [ir[0:-1] for ir in install_reqs if ir[0] != '#']
 
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
