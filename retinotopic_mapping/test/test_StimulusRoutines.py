@@ -38,6 +38,12 @@ class TestSimulation(unittest.TestCase):
         # plt.show()
         assert (frame[75, 51] == 1)
 
+        frame = sr.get_warped_probes(deg_coord_alt=coord_alt, deg_coord_azi=coord_azi,
+                                     probes=probes, width=0.5,
+                                     height=1., ori=30., background_color=0.)
+        assert (frame[76, 47] == 1)
+        assert (frame[81, 53] == 1)
+
     def test_get_circle_mask(self):
         import numpy as np
 
@@ -274,8 +280,8 @@ class TestSimulation(unittest.TestCase):
         mov, _ = sn.generate_movie()
         import numpy as np
         import matplotlib.pyplot as plt
-        plt.imshow(np.min(mov, axis=0))
-        plt.show()
+        # plt.imshow(np.min(mov, axis=0))
+        # plt.show()
         assert (np.min(mov, axis=0)[92, 38] == -1)
 
     # DRIFTING GRATING CIRCLE TESTS #

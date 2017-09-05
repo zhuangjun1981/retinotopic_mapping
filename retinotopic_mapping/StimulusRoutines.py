@@ -78,15 +78,15 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
     # if ori < 0. or ori > 180.:
     #      raise ValueError, 'ori should be between 0 and 180.'
 
-    ori_arc = (ori % 180.) * np.pi / 180.
+    ori_arc = (ori % 360.) * 2 * np.pi / 360.
 
     for probe in probes:
 
         dis_width = np.abs(np.cos(ori_arc) * (deg_coord_azi - probe[1]) +
                            np.sin(ori_arc) * (deg_coord_alt - probe[0]))
 
-        dis_height = np.abs(np.sin(ori_arc) * (deg_coord_azi - probe[1]) +
-                            np.cos(ori_arc) * (deg_coord_alt - probe[0]))
+        dis_height = np.abs(np.cos(ori_arc + np.pi / 2) * (deg_coord_azi - probe[1]) +
+                            np.sin(ori_arc + np.pi / 2) * (deg_coord_alt - probe[0]))
 
         # f, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
         # fig1 = ax1.imshow(dis_width)
