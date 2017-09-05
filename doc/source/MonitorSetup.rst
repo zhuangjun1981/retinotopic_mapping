@@ -1,5 +1,11 @@
 retinotopic_mapping.MonitorSetup
 ================================
 
-.. automodule:: retinotopic_mapping.MonitorSetup
-   :members: Monitor, Indicator
+Monitor
+-------
+.. autoclass:: retinotopic_mapping.MonitorSetup.Monitor
+
+
+Indicator
+---------
+.. autoclass:: retinotopic_mapping.MonitorSetup.Indicator
