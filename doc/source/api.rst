@@ -21,6 +21,8 @@ and `StimulusRoutines` modules.
 MonitorSetup
 ++++++++++++
 
+.. toctree::
+
     MonitorSetup
 
 StimulusRoutines
