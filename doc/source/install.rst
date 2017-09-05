@@ -29,14 +29,16 @@ in the command line:
 Dependencies
 +++++++++++++++++++++
         1. numpy, version 1.13.1 or later
-        2. scipy, version 0.17.0 or later
+        2. scipy, version 0.17.1 or later
         3. matplotlib, version 1.5.1 or later
-        4. OpenCV-Python, version 2.4.8 or later
+        4. psychopy, version 1.85.2 or later
+        5. pyglet, version 1.2.4 or later
+        4. OpenCV-Python, version >= 2.4.8, <= 2.4.10
         5. scikit-image, version 0.12.3 or later
         6. tifffile, version 0.7.0 or later
-	7. PyDAQmx, version ...
+        7. PyDAQmx, version 1.3.2 or later
 
-	   * also requires National Instruments DAQmx driver
+        * also requires National Instruments DAQmx driver
 
 Operating Systems Supported
 +++++++++++++++++++++++++++
