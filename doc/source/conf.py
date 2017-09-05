@@ -30,7 +30,7 @@ needs_sphinx = '1.6'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax',#'sphinx.ext.napoleon',
-'numpydoc','sphinx.ext.autosummary','nbsphinx',
+'numpydoc','sphinx.ext.autosummary', #'nbsphinx',
 'IPython.sphinxext.ipython_console_highlighting']
 #numpydoc_show_class_members = False
 
