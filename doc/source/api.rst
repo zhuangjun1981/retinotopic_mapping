@@ -2,7 +2,7 @@ API Documentation
 =================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 10
 
 MonitorSetup
 ------------
