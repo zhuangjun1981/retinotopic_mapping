@@ -29,12 +29,17 @@ needs_sphinx = '1.6.3'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax',#'sphinx.ext.napoleon',
-'numpydoc','sphinx.ext.autosummary', #'nbsphinx',
-'IPython.sphinxext.ipython_console_highlighting']
-#numpydoc_show_class_members = False
-
-#class_members_toctree = False
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
+    # 'sphinx.ext.napoleon',
+    'numpydoc',
+    'sphinx.ext.autosummary',
+    # 'nbsphinx',
+    # 'IPython.sphinxext.ipython_console_highlighting'
+    ]
+numpydoc_show_class_members = True
+class_members_toctree = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

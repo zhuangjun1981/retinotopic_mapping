@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
+
+'''
 Contains various stimulus routines
 
-"""
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
 from tools import ImageAnalysis as ia
 
 
@@ -196,45 +195,45 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
     return grating
 
 
-def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis):
-    """
-    given the subregion of visual space and the minmum distance between the probes
-    within a frame (definition of sparseness), return generously how many probes
-    will be presented of a given frame
-
-    Parameters
-    ----------
-    min_alt : float
-        minimum altitude of display region, in visual degrees
-    max_alt : float
-        maximum altitude of display region, in visual degrees
-    min_azi : float
-        minimum azimuth of display region, in visual degrees
-    max_azi : float
-        maximum azimuth of display region, in visual degrees
-    minimum_dis : float
-        minimum distance allowed among probes within a frame
-
-    returns
-    -------
-    probe_num_per_frame : uint
-        generously how many probes will be presented in a given frame
-    """
-    if min_alt >= max_alt:
-        raise ValueError('min_alt should be less than max_alt.')
-
-    if min_azi >= max_azi:
-        raise ValueError('min_azi should be less than max_azi.')
-
-    min_alt = float(min_alt)
-    max_alt = float(max_alt)
-    min_azi = float(min_azi)
-    max_azi = float(max_azi)
-
-    area_tot = (max_alt - min_alt) * (max_azi - min_azi)
-    area_circle = np.pi * (minimum_dis ** 2)
-    probe_num_per_frame = int(np.ceil((2.0 * (area_tot / area_circle))))
-    return probe_num_per_frame
+# def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis):
+#     """
+#     given the subregion of visual space and the minmum distance between the probes
+#     within a frame (definition of sparseness), return generously how many probes
+#     will be presented of a given frame
+#
+#     Parameters
+#     ----------
+#     min_alt : float
+#         minimum altitude of display region, in visual degrees
+#     max_alt : float
+#         maximum altitude of display region, in visual degrees
+#     min_azi : float
+#         minimum azimuth of display region, in visual degrees
+#     max_azi : float
+#         maximum azimuth of display region, in visual degrees
+#     minimum_dis : float
+#         minimum distance allowed among probes within a frame
+#
+#     returns
+#     -------
+#     probe_num_per_frame : uint
+#         generously how many probes will be presented in a given frame
+#     """
+#     if min_alt >= max_alt:
+#         raise ValueError('min_alt should be less than max_alt.')
+#
+#     if min_azi >= max_azi:
+#         raise ValueError('min_azi should be less than max_azi.')
+#
+#     min_alt = float(min_alt)
+#     max_alt = float(max_alt)
+#     min_azi = float(min_azi)
+#     max_azi = float(max_azi)
+#
+#     area_tot = (max_alt - min_alt) * (max_azi - min_azi)
+#     area_circle = np.pi * (minimum_dis ** 2)
+#     probe_num_per_frame = int(np.ceil((2.0 * (area_tot / area_circle))))
+#     return probe_num_per_frame
 
 
 def get_grid_locations(subregion, grid_space, monitor_azi, monitor_alt, is_include_edge=True,
@@ -422,6 +421,8 @@ class Stim(object):
             del self.frames_unique
         if hasattr(self, 'index_to_display'):
             del self.index_to_display
+        if hasattr(self, 'frame_config'):
+            del self.frame_config
 
     def set_pre_gap_dur(self,pregap_dur):
         self.pregap_frame_num = int(self.pregap_dur*self.monitor.refresh_rate)
@@ -476,7 +477,7 @@ class UniformContrast(Stim):
         self.stim_name = 'UniformContrast'
         self.duration = duration
         self.color = color
-        self.frame_config = ('is_display', 'indicator_color')
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
     def generate_frames(self):
         """
@@ -493,9 +494,9 @@ class UniformContrast(Stim):
 
         displayframe_num = int(self.duration * self.monitor.refresh_rate)
 
-        frames = [(0., -1.)] * self.pregap_frame_num + \
-                 [(1., 1.)] * displayframe_num + \
-                 [(0., -1.)] * self.postgap_frame_num
+        frames = [(0, -1.)] * self.pregap_frame_num + \
+                 [(1, 1.)] * displayframe_num + \
+                 [(0, -1.)] * self.postgap_frame_num
 
         return tuple(frames)
 
@@ -503,7 +504,7 @@ class UniformContrast(Stim):
         " parameters are predefined here, nothing to compute. "
         if self.indicator.is_sync:
             # Parameters that define the stimulus
-            frames = ((0.,-1.), (1.,1.))
+            frames = ((0, -1.), (1, 1.))
             return frames
         else:
             raise NotImplementedError, "method not avaialable for non-sync indicator"
@@ -525,10 +526,10 @@ class UniformContrast(Stim):
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
         # Initialize numpy array of 0's as placeholder for stimulus routine
-        full_sequence = np.zeros((num_frames,
+        full_sequence = np.ones((num_frames,
                                   num_pixels_width,
                                   num_pixels_height),
-                                  dtype=np.float32)
+                                  dtype=np.float32) * self.background
 
         # Compute pixel coordinates for indicator
         indicator_width_min = (self.indicator.center_width_pixel
@@ -540,18 +541,12 @@ class UniformContrast(Stim):
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel/2)
 
-        background = self.background*np.ones((num_pixels_width,
-                                              num_pixels_height),
-                                              dtype=np.float32)
-
         display = self.color*np.ones((num_pixels_width,
                                       num_pixels_height),
                                       dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
-            if frame[0] == 0:
-                full_sequence[i] = background
-            else:
+            if frame[0] == 1:
                 full_sequence[i] = display
 
             # Insert indicator pixels
@@ -690,7 +685,7 @@ class FlashingCircle(Stim):
         self.radius = radius
         self.color = color
         self.flash_frame_num = flash_frame_num
-        self.frame_config = ('is_display', 'indicator_color')
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
         if self.pregap_frame_num + self.postgap_frame_num == 0:
             raise ValueError('pregap_frame_num + postgap_frame_num should be larger than 0.')
@@ -986,8 +981,8 @@ class SparseNoise(Stim):
             raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
 
         self.is_include_edge = is_include_edge
-        self.frame_config = ('is_display', '(azimuth, altitude)',
-                             'polarity', 'indicator_color')
+        self.frame_config = ('is_display', 'probe center (altitude, azimuth)',
+                             'polarity (-1 or 1)', 'indicator color [-1., 1.]')
 
         if subregion is None:
             if self.coordinate == 'degree':
@@ -1492,6 +1487,10 @@ class LocallySparseNoise(Stim):
         self.min_distance = float(min_distance)
         self.probe_orientation = probe_orientation
 
+        self.is_include_edge = is_include_edge
+        self.frame_config = ('is_display', 'probes ((altitude, azimuth, sign), ...)',
+                             'iteration', 'indicator color [-1., 1.]')
+
         if probe_frame_num >= 2:
             self.probe_frame_num = int(probe_frame_num)
         else:
@@ -1942,11 +1941,11 @@ class DriftingGratingCircle(Stim):
 
         self.stim_name = 'DriftingGratingCircle'
         self.center = center
-        self.sf_list = sf_list
-        self.tf_list = tf_list
-        self.dire_list = dire_list
-        self.con_list = con_list
-        self.radius_list = radius_list
+        self.sf_list = list(set(sf_list))
+        self.tf_list = list(set(tf_list))
+        self.dire_list = list(set(dire_list))
+        self.con_list = list(set(con_list))
+        self.radius_list = list(set(radius_list))
 
         if block_dur > 0.:
             self.block_dur = float(block_dur)
@@ -1959,9 +1958,10 @@ class DriftingGratingCircle(Stim):
             raise ValueError('midgap_dur should be no less than 0 second')
 
         self.iteration = iteration
-        self.frame_config = ('is_display', 'isCycleStart', 'spatialFrequency',
-                            'temporalFrequency', 'direction',
-                            'contrast', 'radius', 'phase', 'indicator_color')
+        self.frame_config = ('is_display', 'isCycleStart', 'spatial frequency (cycle/deg)',
+                            'temporal frequency (Hz)', 'direction (deg)',
+                            'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
+                             'indicator color [-1., 1.]')
 
         for tf in tf_list:
             period = 1. / tf
@@ -1990,7 +1990,7 @@ class DriftingGratingCircle(Stim):
         -------
         all_conditions : list of tuples
              all unique combinations of spatial frequency, temporal frequency,
-             direction, contrast, and size. Output depends on initialization
+             direction, contrast, and radius. Output depends on initialization
              parameters.
 
         """
@@ -2403,7 +2403,278 @@ class DriftingGratingCircle(Stim):
 
 
 class StaticGratingCircle(Stim):
-    pass
+    """
+        Generate static grating circle stimulus
+
+        Stimulus routine presents flashing static grating stimulus inside
+        of a circle centered at `center`. The static gratings are determined by
+        spatial frequencies, orientation, contrast, radius and phase. The
+        routine can generate several different gratings within
+        one presentation by specifying multiple values of the parameters which
+        characterize the stimulus.
+
+        Parameters
+        ----------
+        monitor : monitor object
+            contains display monitor information
+        indicator : indicator object
+            contains indicator information
+        coordinate : str from {'degree','linear'}, optional
+            specifies coordinates, defaults to 'degree'
+        background : float, optional
+            color of background. Takes values in [-1,1] where -1 is black and 1
+            is white
+        center : 2-tuple of floats, optional
+            coordintes for center of the stimulus (altitude, azimuth)
+        sf_list : n-tuple, optional
+            list of spatial frequencies in cycles/unit, defaults to `(0.08)`
+        ori_list : n-tuple, optional
+            list of directions in degrees, defaults to `(0., 90.)`
+        con_list : n-tuple, optional
+            list of contrasts taking values in [0.,1.], defaults to `(0.5)`
+        radius_list : n-tuple, optional
+           list of radii of circles, unit defined by `self.coordinate`, defaults
+           to `(10.)`
+        phase_list : n-tuple, optional
+           list of phase of gratings in degrees, default (0., 90., 180., 270.)
+        display_dur : float, optional
+            duration of each condition in seconds, defaults to `0.25`
+        midgap_dur, float, optional
+            duration of gap between conditions, defaults to `0.`
+        iteration, int, optional
+            number of times the stimulus is displayed, defaults to `1`
+        """
+
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
+                 radius_list=(10.,), phase_list=(0., 90., 180., 270.), display_dur=0.25,
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+
+        super(StaticGratingCircle, self).__init__(monitor=monitor,
+                                                  indicator=indicator,
+                                                  background=background,
+                                                  coordinate=coordinate,
+                                                  pregap_dur=pregap_dur,
+                                                  postgap_dur=postgap_dur)
+        """
+        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
+        from `Stim` class
+        """
+
+        self.stim_name = 'DriftingGratingCircle'
+        self.center = center
+        self.sf_list = list(set(sf_list))
+        self.phase_list = list(set([p % 360. for p in phase_list]))
+        self.ori_list = list(set([o % 180. for o in ori_list]))
+        self.con_list = list(set(con_list))
+        self.radius_list = list(set(radius_list))
+
+        if display_dur > 0.:
+            self.display_dur = float(display_dur)
+        else:
+            raise ValueError('block_dur should be larger than 0 second.')
+
+        if midgap_dur >= 0.:
+            self.midgap_dur = float(midgap_dur)
+        else:
+            raise ValueError('midgap_dur should be no less than 0 second')
+
+        self.iteration = iteration
+        self.frame_config = ('is_display', 'spatial frequency (cycle/deg)',
+                             'phase (deg)', 'orientation (deg)',
+                             'contrast [0., 1.]', 'radius (deg)', 'indicator_color [-1., 1.]')
+
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
+
+    @property
+    def display_frame_num(self):
+        return int(self.display_dur * self.monitor.refresh_rate)
+
+    @staticmethod
+    def _get_dire(ori):
+        return (ori + 90.) % 180.
+
+    def _generate_circle_mask_dict(self):
+        """
+        generate a dictionary of circle masks for each size in size list
+        """
+        masks = {}
+        if self.coordinate=='degree':
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
+        elif self.coordinate=='linear':
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
+
+        for radius in self.radius_list:
+            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi, center=self.center, radius=radius)
+            masks.update({radius: curr_mask})
+
+        return masks
+
+    def _generate_all_conditions(self):
+        """
+        generate all possible conditions for one iteration given the lists of
+        parameters
+
+        Returns
+        -------
+        all_conditions : list of tuples
+             all unique combinations of spatial frequency, phase,
+             orientation, contrast, and radius. Output depends on initialization
+             parameters.
+
+        """
+        all_conditions = [(sf, ph, ori, con, radius) for sf in self.sf_list
+                          for ph in self.phase_list
+                          for ori in self.ori_list
+                          for con in self.con_list
+                          for radius in self.radius_list]
+        # random.shuffle(all_conditions)
+
+        return all_conditions
+
+    def _generate_frames_for_index_display(self):
+        """
+        generate a tuple of unique frames, each element of the tuple
+        represents a unique display condition including gap
+
+        frame structure:
+            0. is_display: if gap --> 0; if display --> 1
+            1. spatial frequency, cyc/deg
+            2. phase, deg
+            3. orientation, deg
+            4. contrast, [0., 1.]
+            5. radius, deg
+            6. indicator color, [-1., 1.]
+        """
+
+        all_conditions =  self._generate_all_conditions()
+        gap_frame = (0., None, None, None, None, None, None, None, -1.)
+        frames_unique = [gap_frame]
+
+        for condition in all_conditions:
+            frames_unique.append([1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 1.])
+            frames_unique.append([1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 0.])
+
+        return frames_unique
+
+    def _generate_display_index(self):
+
+        if self.indicator.is_sync:
+
+            display_frame_num = int(self.display_dur * self.monitor.refresh_rate)
+            if display_frame_num < 2:
+                raise ValueError('StaticGratingCircle: display_dur too short, should be '
+                                 'at least 2 display frames.')
+            indicator_on_frame_num = display_frame_num // 2
+            indicator_off_frame_num = display_frame_num - indicator_on_frame_num
+
+            frames_unique = self._generate_frames_for_index_display()
+            condition_num = (len(frames_unique) - 1) / 2
+
+            index_to_display = [0] * self.pregap_frame_num
+
+            for iter in range(self.iteration):
+                display_sequence = range(condition_num)
+                random.shuffle(display_sequence)
+                for cond_ind in display_sequence:
+                    index_to_display += [0] * self.midgap_frame_num
+                    index_to_display += [cond_ind * 2 + 1] * indicator_on_frame_num
+                    index_to_display += [cond_ind * 2 + 2] * indicator_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+
+            # remove the extra mid gap
+            index_to_display = index_to_display[self.midgap_frame_num:]
+
+            return frames_unique, index_to_display
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator."
+
+    def generate_movie_by_index(self):
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+
+        # print '\n'.join([str(f) for f in self.frames_unique])
+
+        mask_dict = self._generate_circle_mask_dict()
+
+        num_unique_frames = len(self.frames_unique)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        mov = self.background * np.ones((num_unique_frames,
+                                         num_pixels_width,
+                                         num_pixels_height),
+                                        dtype=np.float32)
+
+        background_frame = self.background * np.ones((num_pixels_width,
+                                                      num_pixels_height),
+                                                     dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+
+            if frame[0] == 1:  # not a gap
+
+                # curr_ori = self._get_ori(frame[3])
+
+                curr_grating = get_grating(alt_map=coord_alt,
+                                           azi_map=coord_azi,
+                                           dire=self._get_dire(frame[3]),
+                                           spatial_freq=frame[1],
+                                           center=self.center,
+                                           phase=frame[2],
+                                           contrast=frame[4])
+
+                curr_grating = curr_grating * 2. - 1.
+
+                curr_circle_mask = mask_dict[frame[5]]
+
+                mov[i] = ((curr_grating * curr_circle_mask) +
+                          (background_frame * (curr_circle_mask * -1. + 1.)))
+
+            # add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[-1]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
 
 
 class NaturalScene(Stim):

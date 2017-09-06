@@ -128,16 +128,16 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= Locally Sparse Noise ====================================
-sparse_noise = stim.LocallySparseNoise(mon, ind, subregion=None, grid_space=(8., 8.),
-                                       background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.,
-                                       coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
-                                       probe_frame_num=15, iteration=50, is_include_edge=True,
-                                       min_distance=50.)
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-                     is_sync_pulse=False, display_iter=1, display_screen=0,
-                     by_index=True)
-ds.set_stim(sparse_noise)
-ds.trigger_display()
+# sparse_noise = stim.LocallySparseNoise(mon, ind, subregion=None, grid_space=(8., 8.),
+#                                        background=0., sign='ON-OFF', pregap_dur=0., postgap_dur=0.,
+#                                        coordinate='degree', probe_size=(8., 8.), probe_orientation=0.,
+#                                        probe_frame_num=15, iteration=10, is_include_edge=True,
+#                                        min_distance=50.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      by_index=True)
+# ds.set_stim(sparse_noise)
+# ds.trigger_display()
 #==============================================================================
 
 #======================= Drifting Grating Circle Stimulus =====================
@@ -206,5 +206,31 @@ ds.trigger_display()
 #                     is_sync_pulse=False,
 #                     display_screen=1)
 # ds.set_stim(KS_stim_all_dir)
+# ds.trigger_display()
+#==============================================================================
+
+#======================= static grating cricle ================================
+# sgc = stim.StaticGratingCircle(monitor=mon, indicator=ind, background=0.,
+#                                coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
+#                                ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
+#                                radius_list=(50.,), phase_list=(0., 90., 180., 270.),
+#                                display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2., postgap_dur=3.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      by_index=True)
+# ds.set_stim(sgc)
+# ds.trigger_display()
+#==============================================================================
+
+#======================= static grating cricle ================================
+# sgc = stim.StaticGratingCircle(monitor=mon, indicator=ind, background=0.,
+#                                coordinate='degree', center=(0., 30.), sf_list=(0.02,),
+#                                ori_list=(0.,), con_list=(0.5,),
+#                                radius_list=(20., 50.,), phase_list=(0.,),
+#                                display_dur=0.25, midgap_dur=0., iteration=50, pregap_dur=2., postgap_dur=3.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      by_index=True, identifier='test')
+# ds.set_stim(sgc)
 # ds.trigger_display()
 #==============================================================================

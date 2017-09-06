@@ -78,8 +78,8 @@ class Monitor(object):
 
         if resolution[0] % downsample_rate != 0 \
                        or resolution[1] % downsample_rate != 0:
-           raise ArithmeticError, 'Resolution pixel numbers are not' \
-           ' divisible by down sampling rate'
+           raise ArithmeticError ('Resolution pixel numbers are not '
+                                  'divisible by down sampling rate.')
 
         self.resolution = resolution
         self.dis = dis
@@ -136,8 +136,7 @@ class Monitor(object):
         if self.resolution[0] % downsample_rate != 0 \
              or self.resolution[1] % downsample_rate != 0:
 
-           raise ArithmeticError, 'Resolution pixel numbers are not' \
-           'divisible by down sampling rate'
+           raise ArithmeticError ('Resolution pixel numbers are not divisible by down sampling rate.')
 
         self.downsample_rate = downsample_rate
 
@@ -363,10 +362,9 @@ class Indicator(object):
         elif self.position == 'southwest':
             center_width = self.width_pixel / 2
             center_height = screen_height - self.height_pixel / 2
-
         else:
-            raise LookupError, '`position` attribute not in' \
-            ' {"northeast","northwest","southeast","southwest"}'
+            raise LookupError ('`position` attribute not in '
+                               '{"northeast","northwest","southeast","southwest"}.')
 
         return int(center_width), int(center_height)
 
@@ -379,6 +377,6 @@ class Indicator(object):
         refresh_rate = self.monitor.refresh_rate
 
         if refresh_rate % self.freq != 0:
-            raise ArithmeticError, "`freq` not divisble by monitor ref rate."
+            raise ArithmeticError ("`freq` not divisble by monitor ref rate.")
 
         return refresh_rate/self.freq
