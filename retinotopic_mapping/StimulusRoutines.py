@@ -421,6 +421,8 @@ class Stim(object):
             del self.frames_unique
         if hasattr(self, 'index_to_display'):
             del self.index_to_display
+        if hasattr(self, 'frame_config'):
+            del self.frame_config
 
     def set_pre_gap_dur(self,pregap_dur):
         self.pregap_frame_num = int(self.pregap_dur*self.monitor.refresh_rate)
@@ -475,7 +477,7 @@ class UniformContrast(Stim):
         self.stim_name = 'UniformContrast'
         self.duration = duration
         self.color = color
-        self.frame_config = ('is_display', 'indicator_color')
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
     def generate_frames(self):
         """
@@ -492,9 +494,9 @@ class UniformContrast(Stim):
 
         displayframe_num = int(self.duration * self.monitor.refresh_rate)
 
-        frames = [(0., -1.)] * self.pregap_frame_num + \
-                 [(1., 1.)] * displayframe_num + \
-                 [(0., -1.)] * self.postgap_frame_num
+        frames = [(0, -1.)] * self.pregap_frame_num + \
+                 [(1, 1.)] * displayframe_num + \
+                 [(0, -1.)] * self.postgap_frame_num
 
         return tuple(frames)
 
@@ -502,7 +504,7 @@ class UniformContrast(Stim):
         " parameters are predefined here, nothing to compute. "
         if self.indicator.is_sync:
             # Parameters that define the stimulus
-            frames = ((0.,-1.), (1.,1.))
+            frames = ((0, -1.), (1, 1.))
             return frames
         else:
             raise NotImplementedError, "method not avaialable for non-sync indicator"
@@ -524,10 +526,10 @@ class UniformContrast(Stim):
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
         # Initialize numpy array of 0's as placeholder for stimulus routine
-        full_sequence = np.zeros((num_frames,
+        full_sequence = np.ones((num_frames,
                                   num_pixels_width,
                                   num_pixels_height),
-                                  dtype=np.float32)
+                                  dtype=np.float32) * self.background
 
         # Compute pixel coordinates for indicator
         indicator_width_min = (self.indicator.center_width_pixel
@@ -539,18 +541,12 @@ class UniformContrast(Stim):
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel/2)
 
-        background = self.background*np.ones((num_pixels_width,
-                                              num_pixels_height),
-                                              dtype=np.float32)
-
         display = self.color*np.ones((num_pixels_width,
                                       num_pixels_height),
                                       dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
-            if frame[0] == 0:
-                full_sequence[i] = background
-            else:
+            if frame[0] == 1:
                 full_sequence[i] = display
 
             # Insert indicator pixels
@@ -689,7 +685,7 @@ class FlashingCircle(Stim):
         self.radius = radius
         self.color = color
         self.flash_frame_num = flash_frame_num
-        self.frame_config = ('is_display', 'indicator_color')
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
         if self.pregap_frame_num + self.postgap_frame_num == 0:
             raise ValueError('pregap_frame_num + postgap_frame_num should be larger than 0.')
@@ -985,8 +981,8 @@ class SparseNoise(Stim):
             raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
 
         self.is_include_edge = is_include_edge
-        self.frame_config = ('is_display', '(azimuth, altitude)',
-                             'polarity', 'indicator_color')
+        self.frame_config = ('is_display', 'probe center (altitude, azimuth)',
+                             'polarity (-1 or 1)', 'indicator color [-1., 1.]')
 
         if subregion is None:
             if self.coordinate == 'degree':
@@ -1491,6 +1487,10 @@ class LocallySparseNoise(Stim):
         self.min_distance = float(min_distance)
         self.probe_orientation = probe_orientation
 
+        self.is_include_edge = is_include_edge
+        self.frame_config = ('is_display', 'probes ((altitude, azimuth, sign), ...)',
+                             'iteration', 'indicator color [-1., 1.]')
+
         if probe_frame_num >= 2:
             self.probe_frame_num = int(probe_frame_num)
         else:
@@ -1958,9 +1958,10 @@ class DriftingGratingCircle(Stim):
             raise ValueError('midgap_dur should be no less than 0 second')
 
         self.iteration = iteration
-        self.frame_config = ('is_display', 'isCycleStart', 'spatialFrequency',
-                            'temporalFrequency', 'direction',
-                            'contrast', 'radius', 'phase', 'indicator_color')
+        self.frame_config = ('is_display', 'isCycleStart', 'spatial frequency (cycle/deg)',
+                            'temporal frequency (Hz)', 'direction (deg)',
+                            'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
+                             'indicator color [-1., 1.]')
 
         for tf in tf_list:
             period = 1. / tf
@@ -2479,9 +2480,9 @@ class StaticGratingCircle(Stim):
             raise ValueError('midgap_dur should be no less than 0 second')
 
         self.iteration = iteration
-        self.frame_config = ('is_display', 'isCycleStart', 'spatialFrequency',
-                             'temporalFrequency', 'direction',
-                             'contrast', 'radius', 'phase', 'indicator_color')
+        self.frame_config = ('is_display', 'spatial frequency (cycle/deg)',
+                             'phase (deg)', 'orientation (deg)',
+                             'contrast [0., 1.]', 'radius (deg)', 'indicator_color [-1., 1.]')
 
     @property
     def midgap_frame_num(self):
