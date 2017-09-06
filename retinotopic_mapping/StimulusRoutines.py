@@ -439,8 +439,12 @@ class Stim(object):
         """
         place holder of function 'generate_movie' for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print 'Nothing executed! This is a place holder function. ' \
+              'See documentation in the respective stimulus. \n' \
+              'It is possible that full sequence generation is not' \
+              'implemented in this particular stimulus. Try ' \
+              'generate_movie_by_index() function to see if indexed ' \
+              'sequence generation is implemented.'
 
     def _generate_frames_for_index_display(self):
         """
@@ -2577,7 +2581,7 @@ class StaticGratingCircle(Stim):
         from `Stim` class
         """
 
-        self.stim_name = 'DriftingGratingCircle'
+        self.stim_name = 'StaticGratingCircle'
         self.center = center
         self.sf_list = list(set(sf_list))
         self.phase_list = list(set([p % 360. for p in phase_list]))
@@ -2807,7 +2811,96 @@ class NaturalScene(Stim):
 
 
 class StimulusSeparator(Stim):
-    pass
+    """
+    a quick flash of indicator to separate different
+    visual stimuli when displayed in the same session
+    """
+
+    def __init__(self,  monitor, indicator, coordinate='degree', background=0.,
+                 indicator_on_frame_num=4, indicator_off_frame_num=4,
+                 cycle_num=10, pregap_dur=0., postgap_dur=0.):
+
+        super(StimulusSeparator, self).__init__(monitor=monitor,
+                                                indicator=indicator,
+                                                background=background,
+                                                coordinate=coordinate,
+                                                pregap_dur=pregap_dur,
+                                                postgap_dur=postgap_dur)
+
+        self.stim_name = 'StimulusSeparator'
+        self.background = float(background)
+        self.indicator_on_frame_num = int(indicator_on_frame_num)
+        self.indicator_off_frame_num = int(indicator_off_frame_num)
+        self.cycle_num = int(cycle_num)
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]')
+
+    def _generate_frames_for_index_display(self):
+        """
+        frame structure is as following
+
+        first element: is_display
+        second element: indicator color
+        """
+        return ((0, -1), (1, 1.), (1, -1.))
+
+    def _generate_display_index(self):
+
+        if self.indicator.is_sync:
+            frames_unique = self._generate_frames_for_index_display()
+            index_to_display = [0] * self.pregap_frame_num
+
+            for cycle_ind in range(self.cycle_num):
+                index_to_display += [1] * self.indicator_on_frame_num
+                index_to_display += [2] * self.indicator_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+            return frames_unique, index_to_display
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator."
+
+    def generate_movie_by_index(self):
+
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        mov = self.background * np.ones((len(self.frames_unique),
+                                         coord_azi.shape[0],
+                                         coord_azi.shape[1]),
+                                        dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+            # add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[-1]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
 
 
 class KSstim(Stim):

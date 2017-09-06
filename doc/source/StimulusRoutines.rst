@@ -37,6 +37,12 @@ DriftingGratingCircle
    :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
 
 
+StaticGratingCircle
+---------------------
+.. autoclass:: retinotopic_mapping.StimulusRoutines.StaticGratingCircle
+   :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
+
+
 KSstim
 ------
 .. autoclass:: retinotopic_mapping.StimulusRoutines.KSstim

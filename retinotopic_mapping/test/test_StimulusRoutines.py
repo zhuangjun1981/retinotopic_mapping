@@ -566,6 +566,15 @@ class TestSimulation(unittest.TestCase):
         # print index_to_display
         assert (len(index_to_display) == 6342)
 
+    def test_SS_generate_display_index(self):
+        ss = sr.StimulusSeparator(monitor=self.monitor, indicator=self.indicator,
+                                  coordinate='degree', background=0.,
+                                  indicator_on_frame_num=4, indicator_off_frame_num=4,
+                                  cycle_num=10, pregap_dur=0., postgap_dur=0.)
+
+        frames_unique, index_to_display = ss._generate_display_index()
+        assert (frames_unique == ((0, -1), (1, 1.), (1, -1.)))
+        assert (len(index_to_display) == 80)
 
 
 if __name__ == '__main__':
