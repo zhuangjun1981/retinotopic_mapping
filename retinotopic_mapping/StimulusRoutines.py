@@ -1989,7 +1989,7 @@ class DriftingGratingCircle(Stim):
         -------
         all_conditions : list of tuples
              all unique combinations of spatial frequency, temporal frequency,
-             direction, contrast, and size. Output depends on initialization
+             direction, contrast, and radius. Output depends on initialization
              parameters.
 
         """
@@ -2456,20 +2456,20 @@ class StaticGratingCircle(Stim):
                                                   pregap_dur=pregap_dur,
                                                   postgap_dur=postgap_dur)
         """
-        Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
+        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
         from `Stim` class
         """
 
         self.stim_name = 'DriftingGratingCircle'
         self.center = center
         self.sf_list = list(set(sf_list))
-        self.phase_list = list(set(phase_list))
-        self.ori_list = list(set(ori_list))
+        self.phase_list = list(set([p % 360. for p in phase_list]))
+        self.ori_list = list(set([o % 180. for o in ori_list]))
         self.con_list = list(set(con_list))
         self.radius_list = list(set(radius_list))
 
-        if block_dur > 0.:
-            self.block_dur = float(block_dur)
+        if display_dur > 0.:
+            self.display_dur = float(display_dur)
         else:
             raise ValueError('block_dur should be larger than 0 second.')
 
@@ -2483,15 +2483,196 @@ class StaticGratingCircle(Stim):
                              'temporalFrequency', 'direction',
                              'contrast', 'radius', 'phase', 'indicator_color')
 
-        for tf in tf_list:
-            period = 1. / tf
-            if (0.05 * period) < (block_dur % period) < (0.95 * period):
-                print period
-                print block_dur % period
-                print 0.95 * period
-                error_msg = ('Duration of each block times tf ' + str(tf)
-                             + ' should be close to a whole number!')
-                raise ValueError, error_msg
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
+
+    @property
+    def display_frame_num(self):
+        return int(self.display_dur * self.monitor.refresh_rate)
+
+    @staticmethod
+    def _get_dire(ori):
+        return (ori + 90.) % 180.
+
+    def _generate_circle_mask_dict(self):
+        """
+        generate a dictionary of circle masks for each size in size list
+        """
+        masks = {}
+        if self.coordinate=='degree':
+             coord_azi=self.monitor.deg_coord_x
+             coord_alt=self.monitor.deg_coord_y
+        elif self.coordinate=='linear':
+             coord_azi=self.monitor.lin_coord_x
+             coord_alt=self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
+
+        for radius in self.radius_list:
+            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi, center=self.center, radius=radius)
+            masks.update({radius: curr_mask})
+
+        return masks
+
+    def _generate_all_conditions(self):
+        """
+        generate all possible conditions for one iteration given the lists of
+        parameters
+
+        Returns
+        -------
+        all_conditions : list of tuples
+             all unique combinations of spatial frequency, phase,
+             orientation, contrast, and radius. Output depends on initialization
+             parameters.
+
+        """
+        all_conditions = [(sf, ph, ori, con, radius) for sf in self.sf_list
+                          for ph in self.phase_list
+                          for ori in self.ori_list
+                          for con in self.con_list
+                          for radius in self.radius_list]
+        # random.shuffle(all_conditions)
+
+        return all_conditions
+
+    def _generate_frames_for_index_display(self):
+        """
+        generate a tuple of unique frames, each element of the tuple
+        represents a unique display condition including gap
+
+        frame structure:
+            0. is_display: if gap --> 0; if display --> 1
+            1. spatial frequency, cyc/deg
+            2. phase, deg
+            3. orientation, deg
+            4. contrast, [0., 1.]
+            5. radius, deg
+            6. indicator color, [-1., 1.]
+        """
+
+        all_conditions =  self._generate_all_conditions()
+        gap_frame = (0., None, None, None, None, None, None, None, -1.)
+        frames_unique = [gap_frame]
+
+        for condition in all_conditions:
+            frames_unique.append([1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 1.])
+            frames_unique.append([1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 0.])
+
+        return frames_unique
+
+    def _generate_display_index(self):
+
+        if self.indicator.is_sync:
+
+            display_frame_num = int(self.display_dur * self.monitor.refresh_rate)
+            if display_frame_num < 2:
+                raise ValueError('StaticGratingCircle: display_dur too short, should be '
+                                 'at least 2 display frames.')
+            indicator_on_frame_num = display_frame_num // 2
+            indicator_off_frame_num = display_frame_num - indicator_on_frame_num
+
+            frames_unique = self._generate_frames_for_index_display()
+            condition_num = len(frames_unique) - 1
+
+            index_to_display = [0] * self.pregap_frame_num
+
+            for iter in range(self.iteration):
+                display_sequence = random.shuffle(range(condition_num))
+                for cond_ind in display_sequence:
+                    index_to_display += [0] * self.midgap_frame_num
+                    index_to_display += [cond_ind * 2 + 1] * indicator_on_frame_num
+                    index_to_display += [cond_ind * 2 + 2] * indicator_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+
+            # remove the extra mid gap
+            index_to_display = index_to_display[self.midgap_frame_num:]
+
+            return frames_unique, index_to_display
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator."
+
+    def generate_movie_by_index(self):
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+
+        # print '\n'.join([str(f) for f in self.frames_unique])
+
+        mask_dict = self._generate_circle_mask_dict()
+
+        num_unique_frames = len(self.frames_unique)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        mov = self.background * np.ones((num_unique_frames,
+                                         num_pixels_width,
+                                         num_pixels_height),
+                                        dtype=np.float32)
+
+        background_frame = self.background * np.ones((num_pixels_width,
+                                                      num_pixels_height),
+                                                     dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+
+            if frame[0] == 1:  # not a gap
+
+                # curr_ori = self._get_ori(frame[3])
+
+                curr_grating = get_grating(alt_map=coord_alt,
+                                           azi_map=coord_azi,
+                                           dire=self._get_dire(frame[3]),
+                                           spatial_freq=frame[1],
+                                           center=self.center,
+                                           phase=frame[2],
+                                           contrast=frame[4])
+
+                curr_grating = curr_grating * 2. - 1.
+
+                curr_circle_mask = mask_dict[frame[5]]
+
+                mov[i] = ((curr_grating * curr_circle_mask) +
+                          (background_frame * (curr_circle_mask * -1. + 1.)))
+
+            # add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[-1]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
 
 
 class NaturalScene(Stim):
