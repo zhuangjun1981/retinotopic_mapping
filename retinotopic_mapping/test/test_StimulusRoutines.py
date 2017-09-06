@@ -87,8 +87,6 @@ class TestSimulation(unittest.TestCase):
                                           is_include_edge=True, is_plot=False)
         assert (len(grid_locs) == 14)
 
-    # UNIFORM CONTRAST TESTS
-    # ======================
     def test_UC_generate_movie_by_index(self):
         # Setup Uniform Contrast Objects
         uc = sr.UniformContrast(monitor=self.monitor, indicator=self.indicator, duration=0.1,
@@ -120,8 +118,6 @@ class TestSimulation(unittest.TestCase):
         for i in range(on_end, postgap_end):
             assert (all_frames[i] == (0., -1.))
 
-    # FLASHING CIRCLE TESTS #
-    # ===================== #
     def test_FC_generate_movie_by_index(self):
 
         fc = sr.FlashingCircle(monitor=self.monitor,
@@ -200,8 +196,6 @@ class TestSimulation(unittest.TestCase):
         # ax.imshow(fc_full_seq[6])
         # plt.show()
 
-    # SPARSE NOISE TESTS #
-    # ================== #
     def test_SN_generate_display_index(self):
         sn = sr.SparseNoise(monitor=self.monitor, indicator=self.indicator,
                             background=0., coordinate='degree', grid_space=(10.,10.),
@@ -284,8 +278,6 @@ class TestSimulation(unittest.TestCase):
         # plt.show()
         assert (np.min(mov, axis=0)[92, 38] == -1)
 
-    # DRIFTING GRATING CIRCLE TESTS #
-    # ============================= #
     def test_DGC_generate_frames(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
                                        coordinate='degree', center=(10., 90.), sf_list=(0.02, 0.04),
@@ -378,11 +370,6 @@ class TestSimulation(unittest.TestCase):
         assert (max(index_to_display) == len(frames_unique) - 1)
         # print len(index_to_display)
         assert (len(index_to_display) == 1044)
-
-    # def test_get_sparse_loc_num_per_frame(self):
-    #     ppf = sr.get_sparse_loc_num_per_frame(min_alt=-20., max_alt=40., min_azi=-10.,
-    #                                           max_azi=120., minimum_dis=20.)
-    #     print ppf
 
     def test_LSN_generate_all_probes(self):
         lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
@@ -517,6 +504,41 @@ class TestSimulation(unittest.TestCase):
         assert (index_to_display[-lsn.postgap_frame_num:] == [0] * lsn.postgap_frame_num)
         assert (len(index_to_display) == (len(frames_unique) - 1) * lsn.probe_frame_num / 2 +
                 lsn.pregap_frame_num + lsn.postgap_frame_num)
+
+    def test_SGC_generate_frames_for_index_display(self):
+        sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                     coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
+                                     ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
+                                     radius_list=(50.,), phase_list=(0., 90., 180., 270.),
+                                     display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2.,
+                                     postgap_dur=3.)
+        frames_unique = sgc._generate_frames_for_index_display()
+        # print len(frames_unique)
+        assert (len(frames_unique) == (3 * 4 * 3 * 4 * 2 + 1))
+
+        sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                     coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
+                                     ori_list=(0., 90., 180., 270.), con_list=(0.2, 0.5, 0.8),
+                                     radius_list=(50.,), phase_list=(0., 90., 180., 270.),
+                                     display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2.,
+                                     postgap_dur=3.)
+        frames_unique = sgc._generate_frames_for_index_display()
+        # print len(frames_unique)
+        assert (len(frames_unique) == (3 * 2 * 3 * 4 * 2 + 1))
+
+    def test_SGC_generate_generate_display_index(self):
+        sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                     coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
+                                     ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
+                                     radius_list=(50.,), phase_list=(0., 90., 180., 270.),
+                                     display_dur=0.25, midgap_dur=0.1, iteration=2, pregap_dur=2.,
+                                     postgap_dur=3.)
+        frames_unique, index_to_display = sgc._generate_display_index()
+        assert (max(index_to_display) == len(frames_unique) - 1)
+        # print len(index_to_display)
+        # print index_to_display
+        assert (len(index_to_display) == 6342)
+
 
 
 if __name__ == '__main__':

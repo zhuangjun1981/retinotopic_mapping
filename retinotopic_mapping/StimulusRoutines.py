@@ -195,45 +195,45 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
     return grating
 
 
-def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis):
-    """
-    given the subregion of visual space and the minmum distance between the probes
-    within a frame (definition of sparseness), return generously how many probes
-    will be presented of a given frame
-
-    Parameters
-    ----------
-    min_alt : float
-        minimum altitude of display region, in visual degrees
-    max_alt : float
-        maximum altitude of display region, in visual degrees
-    min_azi : float
-        minimum azimuth of display region, in visual degrees
-    max_azi : float
-        maximum azimuth of display region, in visual degrees
-    minimum_dis : float
-        minimum distance allowed among probes within a frame
-
-    returns
-    -------
-    probe_num_per_frame : uint
-        generously how many probes will be presented in a given frame
-    """
-    if min_alt >= max_alt:
-        raise ValueError('min_alt should be less than max_alt.')
-
-    if min_azi >= max_azi:
-        raise ValueError('min_azi should be less than max_azi.')
-
-    min_alt = float(min_alt)
-    max_alt = float(max_alt)
-    min_azi = float(min_azi)
-    max_azi = float(max_azi)
-
-    area_tot = (max_alt - min_alt) * (max_azi - min_azi)
-    area_circle = np.pi * (minimum_dis ** 2)
-    probe_num_per_frame = int(np.ceil((2.0 * (area_tot / area_circle))))
-    return probe_num_per_frame
+# def get_sparse_loc_num_per_frame(min_alt, max_alt, min_azi, max_azi, minimum_dis):
+#     """
+#     given the subregion of visual space and the minmum distance between the probes
+#     within a frame (definition of sparseness), return generously how many probes
+#     will be presented of a given frame
+#
+#     Parameters
+#     ----------
+#     min_alt : float
+#         minimum altitude of display region, in visual degrees
+#     max_alt : float
+#         maximum altitude of display region, in visual degrees
+#     min_azi : float
+#         minimum azimuth of display region, in visual degrees
+#     max_azi : float
+#         maximum azimuth of display region, in visual degrees
+#     minimum_dis : float
+#         minimum distance allowed among probes within a frame
+#
+#     returns
+#     -------
+#     probe_num_per_frame : uint
+#         generously how many probes will be presented in a given frame
+#     """
+#     if min_alt >= max_alt:
+#         raise ValueError('min_alt should be less than max_alt.')
+#
+#     if min_azi >= max_azi:
+#         raise ValueError('min_azi should be less than max_azi.')
+#
+#     min_alt = float(min_alt)
+#     max_alt = float(max_alt)
+#     min_azi = float(min_azi)
+#     max_azi = float(max_azi)
+#
+#     area_tot = (max_alt - min_alt) * (max_azi - min_azi)
+#     area_circle = np.pi * (minimum_dis ** 2)
+#     probe_num_per_frame = int(np.ceil((2.0 * (area_tot / area_circle))))
+#     return probe_num_per_frame
 
 
 def get_grid_locations(subregion, grid_space, monitor_azi, monitor_alt, is_include_edge=True,
@@ -2579,12 +2579,13 @@ class StaticGratingCircle(Stim):
             indicator_off_frame_num = display_frame_num - indicator_on_frame_num
 
             frames_unique = self._generate_frames_for_index_display()
-            condition_num = len(frames_unique) - 1
+            condition_num = (len(frames_unique) - 1) / 2
 
             index_to_display = [0] * self.pregap_frame_num
 
             for iter in range(self.iteration):
-                display_sequence = random.shuffle(range(condition_num))
+                display_sequence = range(condition_num)
+                random.shuffle(display_sequence)
                 for cond_ind in display_sequence:
                     index_to_display += [0] * self.midgap_frame_num
                     index_to_display += [cond_ind * 2 + 1] * indicator_on_frame_num
