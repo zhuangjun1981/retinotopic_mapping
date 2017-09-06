@@ -1,10 +1,6 @@
 retinotopic_mapping.StimulusRoutines
 ====================================
 
-test
-----
-.. autoclass:: retinotopic_mapping.StimulusRoutines.test
-
 
 Stim
 ----

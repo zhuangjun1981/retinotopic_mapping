@@ -1,19 +1,12 @@
-# -*- coding: utf-8 -*-
-"""
+
+'''
 Contains various stimulus routines
 
-"""
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
 from tools import ImageAnalysis as ia
-
-class test():
-    """
-    this is test.
-    """
-    pass
 
 
 def in_hull(p, hull):
