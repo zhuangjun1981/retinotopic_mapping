@@ -21,6 +21,50 @@ class TestSimulation(unittest.TestCase):
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
 
+    def test_blur_cos(self):
+        import numpy as np
+        dis = np.arange(10, 30, 0.1) - 20.
+        sigma = 10.
+        blurred = sr.blur_cos(dis=dis, sigma=sigma)
+
+        # import matplotlib.pyplot as plt
+        # plt.plot(dis, blurred)
+        # plt.show()
+
+        # print blurred[50]
+        # print blurred[100]
+
+        assert (np.array_equal(blurred[0:50], np.ones((50,))))
+        assert ((blurred[100] - 0.5) < 1E-10)
+        assert (np.array_equal(blurred[150:200], np.zeros((50,))))
+
+    def test_get_circle_mask(self):
+
+        mask = sr.get_circle_mask(map_alt=self.monitor.deg_coord_y, map_azi=self.monitor.deg_coord_x,
+                                  center=(10., 60.), radius=20., is_smooth_edge=True,
+                                  blur_ratio=0.5, blur_func=sr.blur_cos, is_plot=False)
+        # print mask[39, 100]
+        assert (mask[39, 100] - 0.404847 < 1E10)
+
+    def test_get_circle_mask2(self):
+        import numpy as np
+
+        alt = np.arange(-30., 30., 1.)[::-1]
+        azi = np.arange(-30., 30., 1.)
+        azi_map, alt_map = np.meshgrid(azi, alt)
+        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(0., 10.), radius=10.,
+                                is_smooth_edge=False)
+        # import matplotlib.pyplot as plt
+        # plt.imshow(cm)
+        # plt.show()
+        assert (cm[28, 49] == 1)
+        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(10., 0.), radius=10.,
+                                is_smooth_edge=False)
+        # import matplotlib.pyplot as plt
+        # plt.imshow(cm)
+        # plt.show()
+        assert (cm[10, 30] == 1)
+
     def test_get_warped_probes(self):
 
         import numpy as np
@@ -43,23 +87,6 @@ class TestSimulation(unittest.TestCase):
                                      height=1., ori=30., background_color=0.)
         assert (frame[76, 47] == 1)
         assert (frame[81, 53] == 1)
-
-    def test_get_circle_mask(self):
-        import numpy as np
-
-        alt = np.arange(-30., 30., 1.)[::-1]
-        azi = np.arange(-30., 30., 1.)
-        azi_map, alt_map = np.meshgrid(azi, alt)
-        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(0., 10.), radius=10.)
-        # import matplotlib.pyplot as plt
-        # plt.imshow(cm)
-        # plt.show()
-        assert (cm[28, 49] == 1)
-        cm = sr.get_circle_mask(map_alt=alt_map, map_azi=azi_map, center=(10., 0.), radius=10.)
-        # import matplotlib.pyplot as plt
-        # plt.imshow(cm)
-        # plt.show()
-        assert (cm[10, 30] == 1)
 
     def test_get_grating(self):
         import numpy as np

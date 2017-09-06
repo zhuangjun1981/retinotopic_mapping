@@ -102,7 +102,42 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
     return frame
 
 
-def get_circle_mask(map_alt, map_azi, center, radius):
+def blur_cos(dis, sigma):
+    """
+    return a smoothed value [0., 1.] given the distance to center (with sign)
+    and smooth width. this is using cosine curve to smooth edge
+
+    parameters
+    ----------
+    dis : ndarray
+        array that store the distance from the current pixel to blurred band center
+    sigma : float
+        definition of the width of blurred width, here is the length represent
+        half cycle of the cosin function
+
+    returns
+    -------
+    blurred : float
+        blurred value
+    """
+    dis_f = dis.astype(np.float32)
+    sigma_f = abs(float(sigma))
+
+    blur_band = (np.cos((dis_f - (sigma_f / -2.)) * np.pi / sigma_f) + 1.) / 2.
+
+    # plt.imshow(blur_band)
+    # plt.show()
+
+    blur_band[dis_f < (sigma_f / -2.)] = 1.
+    blur_band[dis_f > (sigma_f / 2.)] = 0.
+
+    # print blur_band.dtype
+
+    return blur_band
+
+
+def get_circle_mask(map_alt, map_azi, center, radius, is_smooth_edge=False,
+                    blur_ratio=0.2, blur_func=blur_cos, is_plot=False):
     """
     Generate a binary mask of a circle with given `center` and `radius`
 
@@ -119,11 +154,21 @@ def get_circle_mask(map_alt, map_azi, center, radius):
         coordinates (altitude, azimuth) of the center of the binary circle mask
     radius : float
         radius of the binary circle mask
+    is_smooth_edge : bool
+        if True, use 'blur_ratio' and 'blur_func' to smooth circle edge
+    blur_ratio : float, option, default 0.2
+        the ratio between blurred band width to radius, should be smaller than 1
+        the middle of blurred band is the circle edge
+    blur_func : function object to blur edge
+    is_plot : bool
 
     Returns
     -------
-    circle_mask :
-        binary circle mask, takes values in [0.,1.]
+    circle_mask : ndarray (dtype np.float32) with same shape as map_alt and map_azi
+        if is_smooth_edge is True
+            weighted circle mask, with smoothed edge
+        if is_smooth_edge is False
+            binary circle mask, takes values in [0.,1.]
     """
 
     if map_alt.shape != map_azi.shape:
@@ -132,14 +177,21 @@ def get_circle_mask(map_alt, map_azi, center, radius):
     if len(map_alt.shape) != 2:
          raise ValueError, 'map_alt and map_azi should be 2-d!!'
 
-    circle_mask = np.zeros(map_alt.shape, dtype = np.uint8)
-    for (i, j), value in  np.ndenumerate(circle_mask):
-        alt = map_alt[i, j]
-        azi = map_azi[i, j]
-        if ia.distance((alt, azi), center) <= radius:
-            circle_mask[i,j] = 1
-    # plt.imshow(circle_mask)
+    dis_mat = np.sqrt((map_alt - center[0]) ** 2 + (map_azi - center[1]) ** 2)
+    # plt.imshow(dis_mat)
     # plt.show()
+
+    if is_smooth_edge:
+        sigma = radius * blur_ratio
+        circle_mask = blur_func(dis=dis_mat - radius, sigma=sigma)
+    else:
+        circle_mask = np.zeros(map_alt.shape, dtype=np.float32)
+        circle_mask[dis_mat <= radius] = 1.
+
+    if is_plot:
+        plt.imshow(circle_mask)
+        plt.show()
+
     return circle_mask
 
 
@@ -657,6 +709,17 @@ class FlashingCircle(Stim):
         center coordinate (altitude, azimuth) of the circle in degrees, defaults to (0.,60.).
     radius : float, optional
         radius of the circle, defaults to `10.`
+    is_smooth_edge : bool
+        True, smooth circle edge with smooth_width_ratio and smooth_func
+        False, do not smooth edge
+    smooth_width_ratio : float, should be smaller than 1.
+        the ratio between smooth band width and radius, circle edge is the middle
+        of smooth band
+    smooth_func : function object
+        this function take to inputs
+            first, ndarray storing the distance from each pixel to smooth band center
+            second, smooth band width
+        returns smoothed mask with same shape as input ndarray
     color : float, optional
         color of the circle, takes values in [-1,1], defaults to `-1.`
     iteration : int, optional
@@ -666,8 +729,9 @@ class FlashingCircle(Stim):
         of the stimulus, defaults to `3`.
     """
     def __init__(self, monitor, indicator, coordinate='degree', center=(0., 60.),
-                 radius=10., color=-1., flash_frame_num=3, pregap_dur=2.,
-                 postgap_dur=3., background=0.):
+                 radius=10., is_smooth_edge=False, smooth_width_ratio=0.2,
+                 smooth_func=blur_cos, color=-1., flash_frame_num=3,
+                 pregap_dur=2., postgap_dur=3., background=0.):
 
         """
         Initialize `FlashingCircle` stimulus object.
@@ -686,6 +750,9 @@ class FlashingCircle(Stim):
         self.color = color
         self.flash_frame_num = flash_frame_num
         self.frame_config = ('is_display', 'indicator color [-1., 1.]')
+        self.is_smooth_edge = is_smooth_edge
+        self.smooth_width_ratio = smooth_width_ratio
+        self.smooth_func = smooth_func
 
         if self.pregap_frame_num + self.postgap_frame_num == 0:
             raise ValueError('pregap_frame_num + postgap_frame_num should be larger than 0.')
@@ -816,7 +883,10 @@ class FlashingCircle(Stim):
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
         circle_mask = get_circle_mask(map_alt=map_alt, map_azi=map_azi,
-                                      center=self.center, radius=self.radius).astype(np.float32)
+                                      center=self.center, radius=self.radius,
+                                      is_smooth_edge=self.is_smooth_edge,
+                                      blur_ratio=self.smooth_width_ratio,
+                                      blur_func=self.smooth_func).astype(np.float32)
         # plt.imshow(circle_mask)
         # plt.show()
 
@@ -833,6 +903,7 @@ class FlashingCircle(Stim):
         NFdict=dict(self.__dict__)
         NFdict.pop('monitor')
         NFdict.pop('indicator')
+        NFdict.pop('smooth_func')
         full_dict={'stimulation':NFdict,
                    'monitor':mondict,
                    'indicator':indicator_dict}
@@ -874,7 +945,10 @@ class FlashingCircle(Stim):
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
         circle_mask = get_circle_mask(map_alt=map_alt, map_azi=map_azi,
-                                      center=self.center, radius=self.radius).astype(np.float32)
+                                      center=self.center, radius=self.radius,
+                                      is_smooth_edge=self.is_smooth_edge,
+                                      blur_ratio=self.smooth_width_ratio,
+                                      blur_func=self.smooth_func).astype(np.float32)
 
         for i in range(len(self.frames)):
             curr_frame = self.frames[i]
@@ -900,6 +974,7 @@ class FlashingCircle(Stim):
         NFdict=dict(self.__dict__)
         NFdict.pop('monitor')
         NFdict.pop('indicator')
+        NFdict.pop('smooth_func')
         full_dict={'stimulation':NFdict,
                    'monitor':mondict,
                    'indicator':indicator_dict}
@@ -1839,6 +1914,10 @@ class LocallySparseNoise(Stim):
         elif self.coordinate == 'linear':
             coord_azi = self.monitor.lin_coord_x
             coord_alt = self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
 
         indicator_width_min = (self.indicator.center_width_pixel
                                - self.indicator.width_pixel / 2)
@@ -1921,12 +2000,24 @@ class DriftingGratingCircle(Stim):
         duration of gap between conditions, defaults to `0.5`
     iteration : int, optional
         number of times the stimulus is displayed, defaults to `1`
+    is_smooth_edge : bool
+        True, smooth circle edge with smooth_width_ratio and smooth_func
+        False, do not smooth edge
+    smooth_width_ratio : float, should be smaller than 1.
+        the ratio between smooth band width and radius, circle edge is the middle
+        of smooth band
+    smooth_func : function object
+        this function take to inputs
+            first, ndarray storing the distance from each pixel to smooth band center
+            second, smooth band width
+        returns smoothed mask with same shape as input ndarray
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
                  con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
-                 iteration=1, pregap_dur=2., postgap_dur=3.):
+                 iteration=1, pregap_dur=2., postgap_dur=3., is_smooth_edge=False,
+                 smooth_width_ratio=0.2, smooth_func=blur_cos):
 
         super(DriftingGratingCircle,self).__init__(monitor=monitor,
                                                    indicator=indicator,
@@ -1946,6 +2037,9 @@ class DriftingGratingCircle(Stim):
         self.dire_list = list(set(dire_list))
         self.con_list = list(set(con_list))
         self.radius_list = list(set(radius_list))
+        self.is_smooth_edge = is_smooth_edge
+        self.smooth_width_ratio = smooth_width_ratio
+        self.smooth_func = smooth_func
 
         if block_dur > 0.:
             self.block_dur = float(block_dur)
@@ -2302,6 +2396,7 @@ class DriftingGratingCircle(Stim):
         self_dict=dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
+        self_dict.pop('smooth_func')
         log={'stimulation':self_dict,
              'monitor':mondict,
              'indicator':indicator_dict}
@@ -2320,9 +2415,17 @@ class DriftingGratingCircle(Stim):
         elif self.coordinate=='linear':
              coord_azi=self.monitor.lin_coord_x
              coord_alt=self.monitor.lin_coord_y
+        else:
+            raise ValueError('Do not understand coordinate system: {}. '
+                             'Should be either "linear" or "degree".'.
+                             format(self.coordinate))
 
         for radius in self.radius_list:
-            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi, center=self.center, radius=radius)
+            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi,
+                                        center=self.center, radius=radius,
+                                        is_smooth_edge=self.is_smooth_edge,
+                                        blur_ratio=self.smooth_width_ratio,
+                                        blur_func=self.smooth_func)
             masks.update({radius: curr_mask})
 
         return masks
@@ -2395,6 +2498,7 @@ class DriftingGratingCircle(Stim):
         self_dict=dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
+        self_dict.pop('smooth_func')
         log={'stimulation':self_dict,
              'monitor':mondict,
              'indicator':indicator_dict}
@@ -2443,12 +2547,24 @@ class StaticGratingCircle(Stim):
             duration of gap between conditions, defaults to `0.`
         iteration, int, optional
             number of times the stimulus is displayed, defaults to `1`
+        is_smooth_edge : bool
+            True, smooth circle edge with smooth_width_ratio and smooth_func
+            False, do not smooth edge
+        smooth_width_ratio : float, should be smaller than 1.
+            the ratio between smooth band width and radius, circle edge is the middle
+            of smooth band
+        smooth_func : function object
+            this function take to inputs
+                first, ndarray storing the distance from each pixel to smooth band center
+                second, smooth band width
+            returns smoothed mask with same shape as input ndarray
         """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
                  radius_list=(10.,), phase_list=(0., 90., 180., 270.), display_dur=0.25,
-                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.,
+                 is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos):
 
         super(StaticGratingCircle, self).__init__(monitor=monitor,
                                                   indicator=indicator,
@@ -2468,6 +2584,9 @@ class StaticGratingCircle(Stim):
         self.ori_list = list(set([o % 180. for o in ori_list]))
         self.con_list = list(set(con_list))
         self.radius_list = list(set(radius_list))
+        self.is_smooth_edge = is_smooth_edge
+        self.smooth_width_ratio = smooth_width_ratio
+        self.smooth_func = smooth_func
 
         if display_dur > 0.:
             self.display_dur = float(display_dur)
@@ -2513,7 +2632,11 @@ class StaticGratingCircle(Stim):
                              format(self.coordinate))
 
         for radius in self.radius_list:
-            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi, center=self.center, radius=radius)
+            curr_mask = get_circle_mask(map_alt=coord_alt, map_azi=coord_azi,
+                                        center=self.center, radius=radius,
+                                        is_smooth_edge=self.is_smooth_edge,
+                                        blur_ratio=self.smooth_width_ratio,
+                                        blur_func=self.smooth_func)
             masks.update({radius: curr_mask})
 
         return masks
@@ -2670,6 +2793,7 @@ class StaticGratingCircle(Stim):
         self_dict = dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
+        self_dict.pop('smooth_func')
         log = {'stimulation': self_dict,
                'monitor': mondict,
                'indicator': indicator_dict}
