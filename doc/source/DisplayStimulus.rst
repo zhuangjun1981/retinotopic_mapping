@@ -1,6 +1,8 @@
 retinotopic_mapping.DisplayStimulus
 ===================================
 
-DisplayStimulus
+
+DisplaySequence
 ---------------
 .. autoclass:: retinotopic_mapping.DisplayStimulus.DisplaySequence
+

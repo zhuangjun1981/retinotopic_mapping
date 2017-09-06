@@ -79,12 +79,14 @@ you might need to start debugging!
 
 #======================= Flashing Circle Stimulus =============================
 # flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
-#                                       center=(10., 60.), radius=20., color=-1.,
-#                                       flash_frame_num=10, pregap_dur=2.,
-#                                       postgap_dur=3., background=0.)
+#                                       center=(20., 30.), radius=30., color=-1.,
+#                                       flash_frame_num=30, pregap_dur=2.,
+#                                       postgap_dur=3., background=0.,
+#                                       is_smooth_edge=True, smooth_width_ratio=0.2,
+#                                       smooth_func=stim.blur_cos)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-#                      is_sync_pulse=False, by_index=True, display_iter=2,
-#                      display_screen=1)
+#                      is_sync_pulse=False, by_index=False, display_iter=2,
+#                      display_screen=0)
 # ds.set_stim(flashing_circle)
 # ds.trigger_display()
 #==============================================================================
@@ -142,10 +144,11 @@ you might need to start debugging!
 
 #======================= Drifting Grating Circle Stimulus =====================
 # dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
-#                                 center=(10., 90.), sf_list=(0.02, 0.04), tf_list=(1.0,),
-#                                 dire_list=(45., 270.), con_list=(0.8,), radius_list=(10., 20.),
-#                                 block_dur=4., midgap_dur=1., iteration=10, pregap_dur=2.,
-#                                 postgap_dur=3.)
+#                                 center=(10., 90.), sf_list=(0.02,), tf_list=(1.0,),
+#                                 dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
+#                                 block_dur=10., midgap_dur=1., iteration=1, pregap_dur=2.,
+#                                 postgap_dur=3., is_smooth_edge=True, smooth_width_ratio=0.2,
+#                                 smooth_func=stim.blur_cos)
 #
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
 #                      is_sync_pulse=False, is_interpolate=False, display_screen=0,
@@ -153,30 +156,22 @@ you might need to start debugging!
 #
 # ds.set_stim(dg)
 # ds.trigger_display()
+#==============================================================================
 
 #======================== Drifting Grating pt 2 ===============================
-#drifting_grating2 = stim.DriftingGratingCircle(mon,
-#                                               ind,
-#                                               center=(60.,0.),
-#                                               sf_list=[0.08, 0.16],
-#                                               tf_list=[4.,2.],
-#                                               dire_list=[np.pi/6],
-#                                               con_list=[1.,0.5],
-#                                               size_list=[40.],
-#                                               block_dur=2.,
-#                                               pregap_dur=2.,
-#                                               postgap_dur=3.,
-#                                               midgap_dur=1.)
+# dg = stim.DriftingGratingCircle(mon, ind, background=0., coordinate='degree',
+#                                 center=(-10., 70.), sf_list=[0.02, 0.08],
+#                                 tf_list=[4., 1.], dire_list=[30.,], con_list=[1.,0.5],
+#                                 radius_list=[10., 30.], block_dur=2., pregap_dur=2.,
+#                                 postgap_dur=3., midgap_dur=1., iteration=2,
+#                                 is_smooth_edge=True, smooth_width_ratio=0.2,
+#                                 smooth_func=stim.blur_cos)
 #
-#ds=DisplaySequence(log_dir=r'C:\data',
-#                   backupdir=None,
-#                   display_iter = 2,
-#                   is_triggered=False,
-#                   is_sync_pulse=False,
-#                   is_interpolate=False,
-#                   display_screen=1)
-#ds.set_stim(drifting_grating2)
-#ds.trigger_display()
+# ds=DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1,
+#                    is_triggered=False, is_sync_pulse=False, is_interpolate=False,
+#                    display_screen=0, by_index=True)
+# ds.set_stim(dg)
+# ds.trigger_display()
 #==============================================================================
 
 
@@ -212,9 +207,11 @@ you might need to start debugging!
 #======================= static grating cricle ================================
 # sgc = stim.StaticGratingCircle(monitor=mon, indicator=ind, background=0.,
 #                                coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
-#                                ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
-#                                radius_list=(50.,), phase_list=(0., 90., 180., 270.),
-#                                display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2., postgap_dur=3.)
+#                                ori_list=(0., 45., 90., 135.), con_list=(0.5, 0.8),
+#                                radius_list=(30., 50.), phase_list=(0., 90., 180., 270.),
+#                                display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2.,
+#                                postgap_dur=3., is_smooth_edge=True, smooth_width_ratio=0.2,
+#                                smooth_func=stim.blur_cos)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
 #                      by_index=True)
@@ -227,7 +224,10 @@ you might need to start debugging!
 #                                coordinate='degree', center=(0., 30.), sf_list=(0.02,),
 #                                ori_list=(0.,), con_list=(0.5,),
 #                                radius_list=(20., 50.,), phase_list=(0.,),
-#                                display_dur=0.25, midgap_dur=0., iteration=50, pregap_dur=2., postgap_dur=3.)
+#                                display_dur=0.25, midgap_dur=0., iteration=50,
+#                                pregap_dur=2., postgap_dur=3.,
+#                                is_smooth_edge=True, smooth_width_ratio=0.2,
+#                                smooth_func=stim.blur_cos)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
 #                      by_index=True, identifier='test')
