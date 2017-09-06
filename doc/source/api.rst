@@ -18,6 +18,8 @@ synchronising the indicator with the triggering of specific stimulus events.
 The module will most definitely be used in conjunction with the `DisplayStimulus`
 and `StimulusRoutines` modules.
 
+.. toctree::
+    MonitorSetup
 
 
 StimulusRoutines
