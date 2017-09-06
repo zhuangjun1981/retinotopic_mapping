@@ -5,7 +5,7 @@ for display visual stimuli in visual physiology experiments and
 for data analysis on the results of those experiments.
 
 The visual stimuli generation and display is implemented in the modules
-:mod:`MonitorSetup.py`, :mod:`StimulusRoutines.py` and :mod:`DisplayStimulus`.
+:mod:`MonitorSetup.py`, :mod:`StimulusRoutines.py` and :mod:`DisplayStimulus.py`.
 These modules allow you to display flashing circle, sparse noise,
 locally sparse noise, drifting grading circle, static grading circle
 and others with spherical correction. The method for spherical
