@@ -9,6 +9,12 @@ import random
 
 from tools import ImageAnalysis as ia
 
+class test():
+    """
+    this is test.
+    """
+    pass
+
 
 def in_hull(p, hull):
     """
