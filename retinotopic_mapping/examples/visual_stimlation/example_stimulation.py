@@ -234,3 +234,15 @@ you might need to start debugging!
 # ds.set_stim(sgc)
 # ds.trigger_display()
 #==============================================================================
+
+#======================= stimulus separator ================================
+ss = stim.StimulusSeparator(monitor=mon, indicator=ind, coordinate='degree',
+                            background=0., indicator_on_frame_num=4,
+                            indicator_off_frame_num=4, cycle_num=10,
+                            pregap_dur=0., postgap_dur=0.)
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+                     is_sync_pulse=False, display_iter=1, display_screen=0,
+                     by_index=True, identifier='test')
+ds.set_stim(ss)
+ds.trigger_display()
+#==============================================================================
