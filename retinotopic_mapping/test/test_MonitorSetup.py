@@ -29,16 +29,16 @@ class TestSimulation(unittest.TestCase):
         # f.colorbar(fig1, ax=ax1)
         # plt.show()
 
-    def test_Monitor_warp_image(self):
+    def test_Monitor_warp_images(self):
         mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
                          mon_width_cm=40., mon_height_cm=30.,
                          C2T_cm=15., C2A_cm=20., mon_tilt=30.,
-                         downsample_rate=5)
+                         downsample_rate=10)
         import numpy as np
-        nsw = mon.warp_image(imgs=np.array([self.natural_scene]),
-                             center_coor=[0., 60.], deg_per_pixel=0.2,
-                             is_luminance_correction=True)
+        nsw = mon.warp_images(imgs=np.array([self.natural_scene]),
+                              center_coor=[0., 60.], deg_per_pixel=0.2,
+                              is_luminance_correction=True)
 
-        import matplotlib.pyplot as plt
-        plt.imshow(nsw[0], cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.imshow(nsw[0], cmap='gray', vmin=0, vmax=255)
+        # plt.show()

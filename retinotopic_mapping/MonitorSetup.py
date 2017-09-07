@@ -6,6 +6,7 @@ Notes
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import retinotopic_mapping.tools.ImageAnalysis as ia
 
 class Monitor(object):
     """
@@ -279,9 +280,22 @@ class Monitor(object):
 
         return lookupI, lookupJ
 
-    def warp_image(self, imgs, center_coor, deg_per_pixel=0.1, is_luminance_correction=True):
+    def warp_images(self, imgs, center_coor, deg_per_pixel=0.1, is_luminance_correction=True):
+        """
+        warp a image stack into visual degree coordinate system
 
-        # todo: finish this
+        parameters
+        ----------
+        imgs :
+        center_coor :
+        deg_per_pixel :
+        is_luminance_correction :
+
+        returns
+        -------
+        imgs_wrapped :
+
+        """
 
         try:
             deg_per_pixel_alt = abs(float(deg_per_pixel[0]))
@@ -309,6 +323,9 @@ class Monitor(object):
                                 self.deg_coord_x.shape[1]), dtype=np.float32)
         imgs_wrapped[:] = np.nan
 
+        # for testing
+        # img_count = np.zeros((imgs_raw.shape[1], imgs_raw.shape[2]), dtype=np.uint32)
+
         # loop through every display (wrapped) pixel
         for ii in range(self.deg_coord_x.shape[0]):
             for jj in range(self.deg_coord_x.shape[1]):
@@ -321,20 +338,37 @@ class Monitor(object):
                 if alt_axis[0] >= coord_w[0] >= alt_axis[-1] and \
                     azi_axis[0] <= coord_w[1] <= azi_axis[-1]:
 
-                    # get wrapped coordinates of neighbouring display pixels
-                    # coord_w_l = [self.deg_coord_y[ii, jj - 1], self.deg_coord_x[ii, jj - 1]]
-                    # coord_w_r = [self.deg_coord_y[ii, jj + 1], self.deg_coord_x[ii, jj + 1]]
-                    # coord_w_t = [self.deg_coord_y[ii - 1, jj], self.deg_coord_x[ii - 1, jj]]
-                    # coord_w_b = [self.deg_coord_y[ii + 1, jj], self.deg_coord_x[ii + 1, jj]]
+                    # get raw pixels arround the wrapped coordinates of current display pixel
+                    u = (alt_axis[0] - coord_w[0]) / deg_per_pixel_alt
+                    l = (coord_w[1] - azi_axis[0]) / deg_per_pixel_azi
 
-                    coord_raw_alt = int(round(alt_axis[0] - coord_w[0]) / deg_per_pixel_alt)
-                    coord_raw_azi = int(round(coord_w[1] - azi_axis[0]) / deg_per_pixel_azi)
+                    #for testing:
+                    # img_count[int(u), int(l)] += 1
 
-                    # print ii, jj
-                    # print coord_raw_alt, coord_raw_azi
-                    # print imgs_wrapped.shape
-                    # print imgs_raw.shape
-                    imgs_wrapped[:, ii, jj] = imgs_raw[:, coord_raw_alt, coord_raw_azi]
+                    if (u == round(u) and l == round(l)): # right hit on one raw pixel
+                        imgs_wrapped[:, ii, jj] = imgs_raw[:, int(u), int(l)]
+                    else:
+                        u = int(u); b = u + 1; l = int(l); r = l + 1
+                        w_ul = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[l]])
+                        w_bl = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[l]])
+                        w_ur = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[r]])
+                        w_br = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[r]])
+
+                        w_sum = w_ul + w_bl + w_ur + w_br
+
+                        imgs_wrapped[:, ii, jj] = (imgs_raw[:, u, l] * w_ul +
+                                                   imgs_raw[:, b, l] * w_bl +
+                                                   imgs_raw[:, u, r] * w_ur +
+                                                   imgs_raw[:, b, r] * w_br) / w_sum
+
+        # for testing
+        # plt.imshow(img_count, interpolation='bicubic')
+        # plt.colorbar()
+        # plt.show()
+
+        if is_luminance_correction:
+            # todo: finish this
+            pass
 
         return imgs_wrapped
 
