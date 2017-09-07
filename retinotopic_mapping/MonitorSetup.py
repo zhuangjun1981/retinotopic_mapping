@@ -243,7 +243,7 @@ class Monitor(object):
         f1.colorbar(currfig, ticks=levels4)
         plt.gca().set_axis_off()
 
-    def generate_Lookup_table(self):
+    def generate_lookup_table(self):
         """
         generate lookup talbe between degree corrdinates and linear corrdinates
         return two matrix:
@@ -259,7 +259,7 @@ class Monitor(object):
         degNoWarpCorY = self.lin_coord_y / degDis
 
         #deg coordinates
-        degCorX = self.deg_coord_x+self.mon_tilt-90
+        degCorX = self.deg_coord_x + self.mon_tilt-90
         degCorY = self.deg_coord_y
 
         lookupI = np.zeros(degCorX.shape).astype(np.int32)
@@ -278,6 +278,65 @@ class Monitor(object):
                 lookupI[i,j] = indI
 
         return lookupI, lookupJ
+
+    def warp_image(self, imgs, center_coor, deg_per_pixel=0.1, is_luminance_correction=True):
+
+        # todo: finish this
+
+        try:
+            deg_per_pixel_alt = abs(float(deg_per_pixel[0]))
+            deg_per_pixel_azi = abs(float(deg_per_pixel[1]))
+        except TypeError:
+            deg_per_pixel_alt = deg_per_pixel_azi = deg_per_pixel
+
+        if len(imgs.shape) == 2:
+            imgs_raw = np.array([imgs])
+        elif len(imgs.shape) == 3:
+            imgs_raw = imgs
+        else:
+            raise ValueError ('input "imgs" should be 2d or 3d array.')
+
+        # generate raw image pixel coordinates in visual degrees
+        alt_start = center_coor[0] + (imgs_raw.shape[1] / 2) * deg_per_pixel_alt
+        alt_axis = alt_start - np.arange(imgs_raw.shape[1]) * deg_per_pixel_alt
+        azi_start = center_coor[1] - (imgs_raw.shape[2] / 2) * deg_per_pixel_azi
+        azi_axis = np.arange(imgs_raw.shape[2]) * deg_per_pixel_azi + azi_start
+        # img_coord_azi, img_coord_alt = np.meshgrid(azi_axis, alt_axis)
+
+        # initialize output array
+        imgs_wrapped = np.zeros((imgs_raw.shape[0],
+                                self.deg_coord_x.shape[0],
+                                self.deg_coord_x.shape[1]), dtype=np.float32)
+        imgs_wrapped[:] = np.nan
+
+        # loop through every display (wrapped) pixel
+        for ii in range(self.deg_coord_x.shape[0]):
+            for jj in range(self.deg_coord_x.shape[1]):
+
+                # the wrapped coordinate of current display pixel [alt, azi]
+                coord_w = [self.deg_coord_y[ii, jj], self.deg_coord_x[ii, jj]]
+
+                # if the wrapped coordinates of current display pixel is covered
+                # by the raw image
+                if alt_axis[0] >= coord_w[0] >= alt_axis[-1] and \
+                    azi_axis[0] <= coord_w[1] <= azi_axis[-1]:
+
+                    # get wrapped coordinates of neighbouring display pixels
+                    # coord_w_l = [self.deg_coord_y[ii, jj - 1], self.deg_coord_x[ii, jj - 1]]
+                    # coord_w_r = [self.deg_coord_y[ii, jj + 1], self.deg_coord_x[ii, jj + 1]]
+                    # coord_w_t = [self.deg_coord_y[ii - 1, jj], self.deg_coord_x[ii - 1, jj]]
+                    # coord_w_b = [self.deg_coord_y[ii + 1, jj], self.deg_coord_x[ii + 1, jj]]
+
+                    coord_raw_alt = int(round(alt_axis[0] - coord_w[0]) / deg_per_pixel_alt)
+                    coord_raw_azi = int(round(coord_w[1] - azi_axis[0]) / deg_per_pixel_azi)
+
+                    # print ii, jj
+                    # print coord_raw_alt, coord_raw_azi
+                    # print imgs_wrapped.shape
+                    # print imgs_raw.shape
+                    imgs_wrapped[:, ii, jj] = imgs_raw[:, coord_raw_alt, coord_raw_azi]
+
+        return imgs_wrapped
 
 
 class Indicator(object):
