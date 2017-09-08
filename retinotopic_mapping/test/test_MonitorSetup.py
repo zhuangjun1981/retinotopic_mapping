@@ -33,14 +33,23 @@ class TestSimulation(unittest.TestCase):
         mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
                          mon_width_cm=40., mon_height_cm=30.,
                          C2T_cm=15., C2A_cm=20., mon_tilt=30.,
-                         downsample_rate=10)
+                         downsample_rate=2)
         import numpy as np
-        nsw = mon.warp_images(imgs=np.array([self.natural_scene]),
-                              center_coor=[0., 60.], deg_per_pixel=0.2,
+        nsw, nsr = mon.warp_images(imgs=np.array([self.natural_scene]),
+                              center_coor=[0., 90.], deg_per_pixel=0.2,
                               is_luminance_correction=True)
 
         # import matplotlib.pyplot as plt
-        # plt.imshow(nsw[0], cmap='gray', vmin=-1., vmax=1.)
+        # f, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))
+        # fig1 = ax1.imshow(nsw[0], cmap='gray', vmin=-1., vmax=1.)
+        # ax1.set_axis_off()
+        # ax1.set_title('wrapped')
+        # f.colorbar(fig1, ax=ax1)
+        # fig2 = ax2.imshow(nsr[0], cmap='gray', vmin=-1., vmax=1.)
+        # ax2.set_axis_off()
+        # ax2.set_title('unwrapped')
+        # f.colorbar(fig2, ax=ax2)
         # plt.show()
 
-        assert (np.mean(nsw.flat) < 1E6)
+        # print np.nanmean(nsw.flat)
+        assert (np.nanmean(nsw.flat) < 1E6)

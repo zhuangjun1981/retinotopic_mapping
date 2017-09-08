@@ -2035,6 +2035,9 @@ class DriftingGratingCircle(Stim):
         """
 
         self.stim_name = 'DriftingGratingCircle'
+        if len(center) != 2:
+            raise ValueError ("DriftingGragingCircle: input 'center' should have "
+                              "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.tf_list = list(set(tf_list))
@@ -2512,57 +2515,57 @@ class DriftingGratingCircle(Stim):
 
 class StaticGratingCircle(Stim):
     """
-        Generate static grating circle stimulus
+    Generate static grating circle stimulus
 
-        Stimulus routine presents flashing static grating stimulus inside
-        of a circle centered at `center`. The static gratings are determined by
-        spatial frequencies, orientation, contrast, radius and phase. The
-        routine can generate several different gratings within
-        one presentation by specifying multiple values of the parameters which
-        characterize the stimulus.
+    Stimulus routine presents flashing static grating stimulus inside
+    of a circle centered at `center`. The static gratings are determined by
+    spatial frequencies, orientation, contrast, radius and phase. The
+    routine can generate several different gratings within
+    one presentation by specifying multiple values of the parameters which
+    characterize the stimulus.
 
-        Parameters
-        ----------
-        monitor : monitor object
-            contains display monitor information
-        indicator : indicator object
-            contains indicator information
-        coordinate : str from {'degree','linear'}, optional
-            specifies coordinates, defaults to 'degree'
-        background : float, optional
-            color of background. Takes values in [-1,1] where -1 is black and 1
-            is white
-        center : 2-tuple of floats, optional
-            coordintes for center of the stimulus (altitude, azimuth)
-        sf_list : n-tuple, optional
-            list of spatial frequencies in cycles/unit, defaults to `(0.08)`
-        ori_list : n-tuple, optional
-            list of directions in degrees, defaults to `(0., 90.)`
-        con_list : n-tuple, optional
-            list of contrasts taking values in [0.,1.], defaults to `(0.5)`
-        radius_list : n-tuple, optional
-           list of radii of circles, unit defined by `self.coordinate`, defaults
-           to `(10.)`
-        phase_list : n-tuple, optional
-           list of phase of gratings in degrees, default (0., 90., 180., 270.)
-        display_dur : float, optional
-            duration of each condition in seconds, defaults to `0.25`
-        midgap_dur, float, optional
-            duration of gap between conditions, defaults to `0.`
-        iteration, int, optional
-            number of times the stimulus is displayed, defaults to `1`
-        is_smooth_edge : bool
-            True, smooth circle edge with smooth_width_ratio and smooth_func
-            False, do not smooth edge
-        smooth_width_ratio : float, should be smaller than 1.
-            the ratio between smooth band width and radius, circle edge is the middle
-            of smooth band
-        smooth_func : function object
-            this function take to inputs
-                first, ndarray storing the distance from each pixel to smooth band center
-                second, smooth band width
-            returns smoothed mask with same shape as input ndarray
-        """
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    center : 2-tuple of floats, optional
+        coordintes for center of the stimulus (altitude, azimuth)
+    sf_list : n-tuple, optional
+        list of spatial frequencies in cycles/unit, defaults to `(0.08)`
+    ori_list : n-tuple, optional
+        list of directions in degrees, defaults to `(0., 90.)`
+    con_list : n-tuple, optional
+        list of contrasts taking values in [0.,1.], defaults to `(0.5)`
+    radius_list : n-tuple, optional
+       list of radii of circles, unit defined by `self.coordinate`, defaults
+       to `(10.)`
+    phase_list : n-tuple, optional
+       list of phase of gratings in degrees, default (0., 90., 180., 270.)
+    display_dur : float, optional
+        duration of each condition in seconds, defaults to `0.25`
+    midgap_dur, float, optional
+        duration of gap between conditions, defaults to `0.`
+    iteration, int, optional
+        number of times the stimulus is displayed, defaults to `1`
+    is_smooth_edge : bool
+        True, smooth circle edge with smooth_width_ratio and smooth_func
+        False, do not smooth edge
+    smooth_width_ratio : float, should be smaller than 1.
+        the ratio between smooth band width and radius, circle edge is the middle
+        of smooth band
+    smooth_func : function object
+        this function take to inputs
+            first, ndarray storing the distance from each pixel to smooth band center
+            second, smooth band width
+        returns smoothed mask with same shape as input ndarray
+    """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
@@ -2582,6 +2585,10 @@ class StaticGratingCircle(Stim):
         """
 
         self.stim_name = 'StaticGratingCircle'
+
+        if len(center) != 2:
+            raise ValueError ("StaticGragingCircle: input 'center' should have "
+                              "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.phase_list = list(set([p % 360. for p in phase_list]))
@@ -2805,9 +2812,82 @@ class StaticGratingCircle(Stim):
         return mov, log
 
 
-class NaturalScene(Stim):
-    #todo: finish this class
-    pass
+class StaticImages(Stim):
+    """
+    Generate static images stimulus
+
+    Stimulus routine presents a sequence of static images in a random order.
+    Currently the input image stack should be a tif file. The size of the
+    image should be exactly same as the pixel dimension of downsized monitor
+    pixel resolution. For example if self.monitor.resolution = (1200,1920)
+    and self.monitor.downsample_rate = 10. The shape of input image stack
+    should be n x 120 x 192. Value of the input image stack should be within
+    the range of [-1., 1.]. The values out of this range will be handled
+    by psychopy.visual.ImageStim() function. The reason of this seemingly
+    stringent requirement is that, for visual physiological experiments,
+    the parameters of visual stimuli should be very well controlled. Any
+    imaging cropping, zooming, transformating etc. will affect luminance,
+    contrast, spatial resolution etc. and produce unexpected effects.
+
+    This stimulus routing provides a method to generate such image stacks.
+    StaticImages.wrap_images() takes a list of image files transform them
+    into a desired spherically corrected and luminance normalized image
+    stack into visual degree coordinates and save it as a tif file.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    img_center : 2-tuple of floats, optional
+        coordintes for center of the images (altitude, azimuth)
+    deg_per_pixel: float, or list/tuple of two floats
+        pixel size in visual degrees of unwrapped image (altitude, azimuth),
+        if float, assume sizes in altitude and azimuth are the same
+    display_dur : float, optional
+        duration of each condition in seconds, defaults to `0.25`
+    midgap_dur, float, optional
+        duration of gap between conditions, defaults to `0.`
+    iteration, int, optional
+        number of times the stimulus is displayed, defaults to `1`
+    """
+
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+
+        super(StaticImages, self).__init__(monitor=monitor, indicator=indicator,
+                                           background=background, coordinate=coordinate,
+                                           pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+
+        if len(img_center) != 2:
+            raise ValueError ("StaticImages: input 'img_center' should have "
+                              "two elements: (altitude, azimuth).")
+        self.img_center = img_center
+
+        try:
+            self.deg_per_pixel_alt = float(deg_per_pixel[0])
+            self.deg_per_pixel_azi = float(deg_per_pixel[1])
+        except TypeError:
+            self.deg_per_pixel_alt = self.deg_per_pixel_azi = float(deg_per_pixel)
+
+        self.display_dur = float(display_dur)
+        self.midgap_dur = float(midgap_dur)
+        self.iteration = int(iteration)
+
+    @property
+    def display_frame_num(self):
+        return int(self.display_dur * self.monitor.refresh_rate)
+
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
 
 
 class StimulusSeparator(Stim):

@@ -286,7 +286,7 @@ class Monitor(object):
 
         parameters
         ----------
-        imgs :
+        imgs : ndarray
         center_coor :
         deg_per_pixel :
         is_luminance_correction :
@@ -294,6 +294,7 @@ class Monitor(object):
         returns
         -------
         imgs_wrapped :
+        imgs_unwrapped :
 
         """
 
@@ -310,6 +311,8 @@ class Monitor(object):
         else:
             raise ValueError ('input "imgs" should be 2d or 3d array.')
 
+        imgs_raw = ia.array_nor(imgs_raw) * 2. - 1.
+
         # generate raw image pixel coordinates in visual degrees
         alt_start = center_coor[0] + (imgs_raw.shape[1] / 2) * deg_per_pixel_alt
         alt_axis = alt_start - np.arange(imgs_raw.shape[1]) * deg_per_pixel_alt
@@ -322,6 +325,9 @@ class Monitor(object):
                                 self.deg_coord_x.shape[0],
                                 self.deg_coord_x.shape[1]), dtype=np.float32)
         imgs_wrapped[:] = np.nan
+
+        # for cropping imgs_raw
+        x_min = None; x_max=None; y_min=None; y_max=None
 
         # for testing
         # img_count = np.zeros((imgs_raw.shape[1], imgs_raw.shape[2]), dtype=np.uint32)
@@ -347,6 +353,17 @@ class Monitor(object):
 
                     if (u == round(u) and l == round(l)): # right hit on one raw pixel
                         imgs_wrapped[:, ii, jj] = imgs_raw[:, int(u), int(l)]
+
+                        # for cropping
+                        if x_min is None:
+                            x_min = x_max = l
+                            y_min = y_max = u
+                        else:
+                            x_min = min(x_min, l)
+                            x_max = max(x_max, l)
+                            y_min = min(y_min, u)
+                            y_max = max(y_max, u)
+
                     else:
                         u = int(u); b = u + 1; l = int(l); r = l + 1
                         w_ul = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[l]])
@@ -360,6 +377,13 @@ class Monitor(object):
                                                    imgs_raw[:, b, l] * w_bl +
                                                    imgs_raw[:, u, r] * w_ur +
                                                    imgs_raw[:, b, r] * w_br) / w_sum
+
+                        # for cropping
+                        if x_min is None:
+                            x_min = l; x_max = l + 1; y_min = u; y_max = u + 1
+                        else:
+                            x_min = min(x_min, l); x_max = max(x_max, l + 1)
+                            y_min = min(y_min, u); y_max = max(y_max, u + 1)
 
         # for testing
         # plt.imshow(img_count, interpolation='bicubic')
@@ -375,7 +399,13 @@ class Monitor(object):
                 curr_frame = curr_frame / curr_amp
                 imgs_wrapped[frame_ind] = curr_frame
 
-        return imgs_wrapped
+        # crop image
+        imgs_raw[:, np.arange(imgs_raw.shape[1]) < y_min, :] = 0.
+        imgs_raw[:, np.arange(imgs_raw.shape[1]) > y_max, :] = 0.
+        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) < x_min] = 0.
+        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) > x_max] = 0.
+
+        return imgs_wrapped, imgs_raw
 
 
 class Indicator(object):
