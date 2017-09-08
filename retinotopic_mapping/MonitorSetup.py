@@ -367,8 +367,13 @@ class Monitor(object):
         # plt.show()
 
         if is_luminance_correction:
-            # todo: finish this
-            pass
+            for frame_ind in range(imgs_wrapped.shape[0]):
+                curr_frame = imgs_wrapped[frame_ind]
+                curr_mean = np.nanmean(curr_frame.flat)
+                curr_frame = curr_frame - curr_mean
+                curr_amp = np.max([np.nanmax(curr_frame.flat), abs(np.nanmin(curr_frame.flat))])
+                curr_frame = curr_frame / curr_amp
+                imgs_wrapped[frame_ind] = curr_frame
 
         return imgs_wrapped
 

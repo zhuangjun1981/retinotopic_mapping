@@ -40,5 +40,7 @@ class TestSimulation(unittest.TestCase):
                               is_luminance_correction=True)
 
         # import matplotlib.pyplot as plt
-        # plt.imshow(nsw[0], cmap='gray', vmin=0, vmax=255)
+        # plt.imshow(nsw[0], cmap='gray', vmin=-1., vmax=1.)
         # plt.show()
+
+        assert (np.mean(nsw.flat) < 1E6)
