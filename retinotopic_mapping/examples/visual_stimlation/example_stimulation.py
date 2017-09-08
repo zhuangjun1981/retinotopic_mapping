@@ -246,3 +246,8 @@ ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 ds.set_stim(ss)
 ds.trigger_display()
 #==============================================================================
+
+#=============================== static images ================================
+si = stim.StaticImages(monitor=mon, indicator=ind, background=0., coordinate='degree',
+                       img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
+                       midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.)

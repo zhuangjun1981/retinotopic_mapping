@@ -3,9 +3,11 @@
 Contains various stimulus routines
 
 '''
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import tifffile as tf
 from tools import ImageAnalysis as ia
 
 
@@ -2713,6 +2715,9 @@ class StaticGratingCircle(Stim):
             indicator_off_frame_num = display_frame_num - indicator_on_frame_num
 
             frames_unique = self._generate_frames_for_index_display()
+
+            if len(frames_unique) % 2 != 1:
+                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
             condition_num = (len(frames_unique) - 1) / 2
 
             index_to_display = [0] * self.pregap_frame_num
@@ -2869,7 +2874,9 @@ class StaticImages(Stim):
         if len(img_center) != 2:
             raise ValueError ("StaticImages: input 'img_center' should have "
                               "two elements: (altitude, azimuth).")
+        self.stim_name = 'StaticImages'
         self.img_center = img_center
+        self.frame_config = ('is_display', 'image_index', 'indicator color [-1., 1.]')
 
         try:
             self.deg_per_pixel_alt = float(deg_per_pixel[0])
@@ -2888,6 +2895,144 @@ class StaticImages(Stim):
     @property
     def midgap_frame_num(self):
         return int(self.midgap_dur * self.monitor.refresh_rate)
+
+    def wrap_images(self, work_dir):
+        """
+        look for the 'images_original.tif' in the work_dir, load the images,
+        warp and luminance correct images, save warpped images as 'imageds_wrapped.tif'
+        and dewarpped images as 'images_dewrapped.tif' in the work_dir.
+        """
+
+        imgs = tf.imread(os.path.join(work_dir, 'images_original.tif'))
+
+        deg_per_pixel = [self.deg_per_pixel_alt, self.deg_per_pixel_azi]
+        imgs_w, imgs_uw = self.monitor.warp_images(imgs=imgs, center_coor=self.img_center,
+                                                   deg_per_pixel=deg_per_pixel,
+                                                   is_luminance_correction=True)
+        tf.imsave(os.path.join(work_dir, 'images_wrapped.tif'), imgs_w)
+        tf.imsave(os.path.join(work_dir, 'images_dewrapped.tif'), imgs_uw)
+
+    def _generate_frames_for_index_display(self, img_path):
+        """
+        generate a tuple of unique frames, each element of the tuple
+        represents a unique display condition including gap
+
+        frame structure:
+            0. is_display: if gap --> 0; if display --> 1
+            1. image index, non-negative integer
+            2. indicator color, [-1., 1.]
+        """
+        imgs = tf.imread(img_path)
+
+        if len(imgs.shape) != 3:
+            raise ValueError ('StaticImages: the data stored in {} should be'
+                              'a 3d array.'.format(img_path))
+
+        if (imgs.shape[1], imgs.shap[2]) != self.monitor.deg_coord_x.shape:
+            raise ValueError ('StaticImages: the data stored in {} have different '
+                              'dimension of the pixel resolution of downsampled'
+                              'monitor.')
+
+        img_num = imgs.shape[0]
+        frames_unique = [(0, None, -1.)]
+
+        for i in range(img_num):
+            frames_unique.append((1, i, 1.))
+            frames_unique.append((1, i, 0.))
+        return frames_unique
+
+    def _generate_display_index(self, img_path):
+
+        if self.indicator.is_sync:
+
+            display_frame_num = int(self.display_dur * self.monitor.refresh_rate)
+            if display_frame_num < 2:
+                raise ValueError('StaticGratingCircle: display_dur too short, should be '
+                                 'at least 2 display frames.')
+            indicator_on_frame_num = display_frame_num // 2
+            indicator_off_frame_num = display_frame_num - indicator_on_frame_num
+
+            frames_unique, imgs = self._generate_frames_for_index_display(img_path=img_path)
+
+            if len(frames_unique) % 2 != 1:
+                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
+            img_num = (len(frames_unique) - 1) / 2
+
+            index_to_display = [0] * self.pregap_frame_num
+
+            for iter in range(self.iteration):
+                display_sequence = range(img_num)
+                random.shuffle(display_sequence)
+                for cond_ind in display_sequence:
+                    index_to_display += [0] * self.midgap_frame_num
+                    index_to_display += [cond_ind * 2 + 1] * indicator_on_frame_num
+                    index_to_display += [cond_ind * 2 + 2] * indicator_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+
+            # remove the extra mid gap
+            index_to_display = index_to_display[self.midgap_frame_num:]
+
+            return frames_unique, index_to_display
+
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator."
+
+
+    def generate_movie_by_index(self, img_path):
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames_unique, self.index_to_display = self._generate_display_index(img_path=img_path)
+        imgs = tf.imread(img_path)
+
+        # print '\n'.join([str(f) for f in self.frames_unique])
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        mov = self.background * np.ones((len(self.frames_unique),
+                                         imgs.shape[1],
+                                         imgs.shape[2]),
+                                        dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+
+            if frame[0] == 1:  # not a gap
+
+                curr_img = imgs[frame[1]]
+                curr_img[np.isnan(curr_img)] = self.background
+
+                mov[i] = curr_img
+
+            # add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[-1]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
 
 
 class StimulusSeparator(Stim):

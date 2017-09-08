@@ -33,10 +33,10 @@ class TestSimulation(unittest.TestCase):
         mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
                          mon_width_cm=40., mon_height_cm=30.,
                          C2T_cm=15., C2A_cm=20., mon_tilt=30.,
-                         downsample_rate=2)
+                         downsample_rate=10)
         import numpy as np
         nsw, nsr = mon.warp_images(imgs=np.array([self.natural_scene]),
-                              center_coor=[0., 90.], deg_per_pixel=0.2,
+                              center_coor=[0., 60.], deg_per_pixel=0.2,
                               is_luminance_correction=True)
 
         # import matplotlib.pyplot as plt

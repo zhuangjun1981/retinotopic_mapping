@@ -287,15 +287,26 @@ class Monitor(object):
         parameters
         ----------
         imgs : ndarray
-        center_coor :
-        deg_per_pixel :
-        is_luminance_correction :
+            should be 2d or 3d, if 3d, axis will be considered as frame x rows x width
+        center_coor : list or tuple of two floats
+            the visual degree coordinates of the center of the image (altitude, azimuth)
+        deg_per_pixel : float or list/tuple of two floats
+            size of original pixel in visual degrees, (altitude, azimuth), if float, assume
+            sizes in both dimension are the same
+        is_luminance_correction : bool
+            if True, wrapped images will have mean intensity equal 0, and values will be
+            scaled up to reach minimum equal -1. or maximum equal 1.
 
         returns
         -------
-        imgs_wrapped :
-        imgs_unwrapped :
-
+        imgs_wrapped : 3d array, np.float32
+            wrapped images, each frame should have exact same size of down sampled monitor
+            resolution. the region on the monitor not covered by the image will have value
+            of np.nan. value range [-1., 1.]
+        imgs_unwrapped : 3d array, np.float32
+            unwrapped images, same dimension as input image stack. the region of original
+            image that was not got displayed (outside of the monitor) will have value of
+            np.nan. value range [-1., 1.]
         """
 
         try:
@@ -311,7 +322,7 @@ class Monitor(object):
         else:
             raise ValueError ('input "imgs" should be 2d or 3d array.')
 
-        imgs_raw = ia.array_nor(imgs_raw) * 2. - 1.
+        imgs_raw = (ia.array_nor(imgs_raw) * 2. - 1.).astype(np.float32)
 
         # generate raw image pixel coordinates in visual degrees
         alt_start = center_coor[0] + (imgs_raw.shape[1] / 2) * deg_per_pixel_alt
@@ -400,10 +411,10 @@ class Monitor(object):
                 imgs_wrapped[frame_ind] = curr_frame
 
         # crop image
-        imgs_raw[:, np.arange(imgs_raw.shape[1]) < y_min, :] = 0.
-        imgs_raw[:, np.arange(imgs_raw.shape[1]) > y_max, :] = 0.
-        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) < x_min] = 0.
-        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) > x_max] = 0.
+        imgs_raw[:, np.arange(imgs_raw.shape[1]) < y_min, :] = np.nan
+        imgs_raw[:, np.arange(imgs_raw.shape[1]) > y_max, :] = np.nan
+        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) < x_min] = np.nan
+        imgs_raw[:, :, np.arange(imgs_raw.shape[2]) > x_max] = np.nan
 
         return imgs_wrapped, imgs_raw
 
