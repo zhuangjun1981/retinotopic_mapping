@@ -2919,7 +2919,7 @@ class StaticImages(Stim):
         if len(imgs_wrapped.shape) != 3:
             raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
 
-        if (imgs_wrapped.shape[1], imgs_wrapped.shap[2]) != self.monitor.deg_coord_x.shape:
+        if (imgs_wrapped.shape[1], imgs_wrapped.shape[2]) != self.monitor.deg_coord_x.shape:
             raise ValueError ('StaticImages: the input wrapped images should have '
                               'the same dimensions of the pixel resolution of '
                               'downsampled monitor.')
@@ -2979,7 +2979,7 @@ class StaticImages(Stim):
             indicator_on_frame_num = display_frame_num // 2
             indicator_off_frame_num = display_frame_num - indicator_on_frame_num
 
-            frames_unique, imgs = self._generate_frames_for_index_display()
+            frames_unique = self._generate_frames_for_index_display()
 
             if len(frames_unique) % 2 != 1:
                 raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
