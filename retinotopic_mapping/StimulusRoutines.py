@@ -2912,7 +2912,41 @@ class StaticImages(Stim):
         tf.imsave(os.path.join(work_dir, 'images_wrapped.tif'), imgs_w)
         tf.imsave(os.path.join(work_dir, 'images_dewrapped.tif'), imgs_uw)
 
-    def _generate_frames_for_index_display(self, img_path):
+    def set_imgs(self, imgs_path_wrapped, imgs_path_dewrapped=None):
+
+        imgs_wrapped = tf.imread(imgs_path_wrapped)
+
+        if len(imgs_wrapped.shape) != 3:
+            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+
+        if (imgs_wrapped.shape[1], imgs_wrapped.shap[2]) != self.monitor.deg_coord_x.shape:
+            raise ValueError ('StaticImages: the input wrapped images should have '
+                              'the same dimensions of the pixel resolution of '
+                              'downsampled monitor.')
+
+        self.imgs_wrapped = imgs_wrapped
+
+        if imgs_path_dewrapped is not None:
+
+            imgs_dewrapped = tf.imread(imgs_path_dewrapped)
+
+            if imgs_dewrapped.shape[0] != imgs_wrapped.shape[0]:
+                print ('The input dewrapped images have different dimensions from the '
+                       'input wrapped images. Set self.imgs_dewrapped to None.')
+                self.imgs_dewrapped = None
+            else:
+                self.imgs_dewrapped = tf.imread(imgs_path_dewrapped)
+        else:
+            self.imgs_dewrapped = None
+
+    def clear(self):
+        super(StaticImages, self).clear()
+        if hasattr(self, 'imgs_wrapped'):
+            del self.imgs_wrapped
+        if hasattr(self, 'imgs_dewrapped'):
+            del self.imgs_dewrapped
+
+    def _generate_frames_for_index_display(self):
         """
         generate a tuple of unique frames, each element of the tuple
         represents a unique display condition including gap
@@ -2922,18 +2956,11 @@ class StaticImages(Stim):
             1. image index, non-negative integer
             2. indicator color, [-1., 1.]
         """
-        imgs = tf.imread(img_path)
+        if not hasattr(self, 'imgs_wrapped'):
+            raise LookupError ('StaticImages: cannot find attribute: "imgs_wrapped".'
+                               'Please use self.set_imgs')
 
-        if len(imgs.shape) != 3:
-            raise ValueError ('StaticImages: the data stored in {} should be'
-                              'a 3d array.'.format(img_path))
-
-        if (imgs.shape[1], imgs.shap[2]) != self.monitor.deg_coord_x.shape:
-            raise ValueError ('StaticImages: the data stored in {} have different '
-                              'dimension of the pixel resolution of downsampled'
-                              'monitor.')
-
-        img_num = imgs.shape[0]
+        img_num = self.imgs_wrapped.shape[0]
         frames_unique = [(0, None, -1.)]
 
         for i in range(img_num):
@@ -2941,7 +2968,7 @@ class StaticImages(Stim):
             frames_unique.append((1, i, 0.))
         return frames_unique
 
-    def _generate_display_index(self, img_path):
+    def _generate_display_index(self):
 
         if self.indicator.is_sync:
 
@@ -2952,7 +2979,7 @@ class StaticImages(Stim):
             indicator_on_frame_num = display_frame_num // 2
             indicator_off_frame_num = display_frame_num - indicator_on_frame_num
 
-            frames_unique, imgs = self._generate_frames_for_index_display(img_path=img_path)
+            frames_unique, imgs = self._generate_frames_for_index_display()
 
             if len(frames_unique) % 2 != 1:
                 raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
@@ -2979,10 +3006,9 @@ class StaticImages(Stim):
             raise NotImplementedError, "method not available for non-sync indicator."
 
 
-    def generate_movie_by_index(self, img_path):
+    def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
-        self.frames_unique, self.index_to_display = self._generate_display_index(img_path=img_path)
-        imgs = tf.imread(img_path)
+        self.frames_unique, self.index_to_display = self._generate_display_index()
 
         # print '\n'.join([str(f) for f in self.frames_unique])
 
@@ -3005,15 +3031,15 @@ class StaticImages(Stim):
                                 + self.indicator.height_pixel / 2)
 
         mov = self.background * np.ones((len(self.frames_unique),
-                                         imgs.shape[1],
-                                         imgs.shape[2]),
+                                         self.imgs_wrapped.shape[1],
+                                         self.imgs_wrapped.shape[2]),
                                         dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
 
             if frame[0] == 1:  # not a gap
 
-                curr_img = imgs[frame[1]]
+                curr_img = self.imgs_wrapped[frame[1]]
                 curr_img[np.isnan(curr_img)] = self.background
 
                 mov[i] = curr_img
