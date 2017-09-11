@@ -3,9 +3,12 @@
 Contains various stimulus routines
 
 '''
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import tifffile as tf
+import h5py
 from tools import ImageAnalysis as ia
 
 
@@ -2035,6 +2038,9 @@ class DriftingGratingCircle(Stim):
         """
 
         self.stim_name = 'DriftingGratingCircle'
+        if len(center) != 2:
+            raise ValueError ("DriftingGragingCircle: input 'center' should have "
+                              "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.tf_list = list(set(tf_list))
@@ -2512,57 +2518,57 @@ class DriftingGratingCircle(Stim):
 
 class StaticGratingCircle(Stim):
     """
-        Generate static grating circle stimulus
+    Generate static grating circle stimulus
 
-        Stimulus routine presents flashing static grating stimulus inside
-        of a circle centered at `center`. The static gratings are determined by
-        spatial frequencies, orientation, contrast, radius and phase. The
-        routine can generate several different gratings within
-        one presentation by specifying multiple values of the parameters which
-        characterize the stimulus.
+    Stimulus routine presents flashing static grating stimulus inside
+    of a circle centered at `center`. The static gratings are determined by
+    spatial frequencies, orientation, contrast, radius and phase. The
+    routine can generate several different gratings within
+    one presentation by specifying multiple values of the parameters which
+    characterize the stimulus.
 
-        Parameters
-        ----------
-        monitor : monitor object
-            contains display monitor information
-        indicator : indicator object
-            contains indicator information
-        coordinate : str from {'degree','linear'}, optional
-            specifies coordinates, defaults to 'degree'
-        background : float, optional
-            color of background. Takes values in [-1,1] where -1 is black and 1
-            is white
-        center : 2-tuple of floats, optional
-            coordintes for center of the stimulus (altitude, azimuth)
-        sf_list : n-tuple, optional
-            list of spatial frequencies in cycles/unit, defaults to `(0.08)`
-        ori_list : n-tuple, optional
-            list of directions in degrees, defaults to `(0., 90.)`
-        con_list : n-tuple, optional
-            list of contrasts taking values in [0.,1.], defaults to `(0.5)`
-        radius_list : n-tuple, optional
-           list of radii of circles, unit defined by `self.coordinate`, defaults
-           to `(10.)`
-        phase_list : n-tuple, optional
-           list of phase of gratings in degrees, default (0., 90., 180., 270.)
-        display_dur : float, optional
-            duration of each condition in seconds, defaults to `0.25`
-        midgap_dur, float, optional
-            duration of gap between conditions, defaults to `0.`
-        iteration, int, optional
-            number of times the stimulus is displayed, defaults to `1`
-        is_smooth_edge : bool
-            True, smooth circle edge with smooth_width_ratio and smooth_func
-            False, do not smooth edge
-        smooth_width_ratio : float, should be smaller than 1.
-            the ratio between smooth band width and radius, circle edge is the middle
-            of smooth band
-        smooth_func : function object
-            this function take to inputs
-                first, ndarray storing the distance from each pixel to smooth band center
-                second, smooth band width
-            returns smoothed mask with same shape as input ndarray
-        """
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    center : 2-tuple of floats, optional
+        coordintes for center of the stimulus (altitude, azimuth)
+    sf_list : n-tuple, optional
+        list of spatial frequencies in cycles/unit, defaults to `(0.08)`
+    ori_list : n-tuple, optional
+        list of directions in degrees, defaults to `(0., 90.)`
+    con_list : n-tuple, optional
+        list of contrasts taking values in [0.,1.], defaults to `(0.5)`
+    radius_list : n-tuple, optional
+       list of radii of circles, unit defined by `self.coordinate`, defaults
+       to `(10.)`
+    phase_list : n-tuple, optional
+       list of phase of gratings in degrees, default (0., 90., 180., 270.)
+    display_dur : float, optional
+        duration of each condition in seconds, defaults to `0.25`
+    midgap_dur, float, optional
+        duration of gap between conditions, defaults to `0.`
+    iteration, int, optional
+        number of times the stimulus is displayed, defaults to `1`
+    is_smooth_edge : bool
+        True, smooth circle edge with smooth_width_ratio and smooth_func
+        False, do not smooth edge
+    smooth_width_ratio : float, should be smaller than 1.
+        the ratio between smooth band width and radius, circle edge is the middle
+        of smooth band
+    smooth_func : function object
+        this function take to inputs
+            first, ndarray storing the distance from each pixel to smooth band center
+            second, smooth band width
+        returns smoothed mask with same shape as input ndarray
+    """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
@@ -2582,6 +2588,10 @@ class StaticGratingCircle(Stim):
         """
 
         self.stim_name = 'StaticGratingCircle'
+
+        if len(center) != 2:
+            raise ValueError ("StaticGragingCircle: input 'center' should have "
+                              "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.phase_list = list(set([p % 360. for p in phase_list]))
@@ -2706,6 +2716,9 @@ class StaticGratingCircle(Stim):
             indicator_off_frame_num = display_frame_num - indicator_on_frame_num
 
             frames_unique = self._generate_frames_for_index_display()
+
+            if len(frames_unique) % 2 != 1:
+                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
             condition_num = (len(frames_unique) - 1) / 2
 
             index_to_display = [0] * self.pregap_frame_num
@@ -2805,9 +2818,398 @@ class StaticGratingCircle(Stim):
         return mov, log
 
 
-class NaturalScene(Stim):
-    #todo: finish this class
-    pass
+class StaticImages(Stim):
+    """
+    Generate static images stimulus
+
+    Stimulus routine presents a sequence of static images in a random order.
+    Currently the input image stack should be a tif file. The size of the
+    image should be exactly same as the pixel dimension of downsized monitor
+    pixel resolution. For example if self.monitor.resolution = (1200,1920)
+    and self.monitor.downsample_rate = 10. The shape of input image stack
+    should be n x 120 x 192. Value of the input image stack should be within
+    the range of [-1., 1.]. The values out of this range will be handled
+    by psychopy.visual.ImageStim() function. The reason of this seemingly
+    stringent requirement is that, for visual physiological experiments,
+    the parameters of visual stimuli should be very well controlled. Any
+    imaging cropping, zooming, transformating etc. will affect luminance,
+    contrast, spatial resolution etc. and produce unexpected effects.
+
+    This stimulus routing provides a method to generate such image stacks.
+    StaticImages.wrap_images() takes a list of image files transform them
+    into a desired spherically corrected and luminance normalized image
+    stack into visual degree coordinates and save it as a tif file.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    img_center : 2-tuple of floats, optional
+        coordintes for center of the images (altitude, azimuth)
+    deg_per_pixel: float, or list/tuple of two floats
+        pixel size in visual degrees of unwrapped image (altitude, azimuth),
+        if float, assume sizes in altitude and azimuth are the same
+    display_dur : float, optional
+        duration of each condition in seconds, defaults to `0.25`
+    midgap_dur, float, optional
+        duration of gap between conditions, defaults to `0.`
+    iteration, int, optional
+        number of times the stimulus is displayed, defaults to `1`
+    """
+
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+
+        super(StaticImages, self).__init__(monitor=monitor, indicator=indicator,
+                                           background=background, coordinate=coordinate,
+                                           pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+
+        if len(img_center) != 2:
+            raise ValueError ("StaticImages: input 'img_center' should have "
+                              "two elements: (altitude, azimuth).")
+        self.stim_name = 'StaticImages'
+        self.img_center = img_center
+        self.frame_config = ('is_display', 'image_index', 'indicator color [-1., 1.]')
+
+        try:
+            self.deg_per_pixel_alt = float(deg_per_pixel[0])
+            self.deg_per_pixel_azi = float(deg_per_pixel[1])
+        except TypeError:
+            self.deg_per_pixel_alt = self.deg_per_pixel_azi = float(deg_per_pixel)
+
+        self.display_dur = float(display_dur)
+        self.midgap_dur = float(midgap_dur)
+        self.iteration = int(iteration)
+
+    @property
+    def display_frame_num(self):
+        return int(self.display_dur * self.monitor.refresh_rate)
+
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
+
+    def wrap_images(self, work_dir):
+        """
+        look for the 'images_original.tif' in the work_dir, load the images,
+        warp and luminance correct images, save wrapping results in an HDF5 file
+        with name "wrapped_images_for_display.hdf5" in the work_dir
+
+        datasets
+        --------
+        images_wrapped : 3d array, frame x altitude x azimuth,
+            each frame will have  same shape as the pixel resolution of down
+            sampled self.monitor
+
+            attrs
+            +++++
+            altitude : 2d array, altitude x azimuth
+                altitude coordinates of wrapped images in visual degrees,
+                same shape as each frame of images_wrapped
+            azimuth : 2d array, altitude x azimuth
+                azimuth coordinates of wrapped images in visual degrees,
+                same shape as each frame of images_wrapped
+
+        images_dewrapped : 3d array, frame x altitude x azimuth
+            dewrapped images, please note there is no pixel to pixel relationship
+            between images_wrapped and images_dewrapped. Different regions in
+            images_dewrapped have different sampling density to generate
+            images_wrapped. Some pixels in image_dewrapped (especially on the edge)
+            may not get presented by image_wrapped. images_dewrapped represent the
+            minimum rectangle region in the original image that cover the entire
+            images_wrapped.
+
+            attrs
+            +++++
+            altitude : 2d array, altitude x azimuth
+                altitude coordinates of dewrapped images in visual degrees,
+                same shape as each frame in images_dewrapped
+            azimuth : 2d array, altitude x azimuth
+                azimuth coordinates of dewrapped images in visual degrees,
+                same shape as each frame in images_dewrapped
+        """
+
+        if os.path.isfile(os.path.join(work_dir, 'wrapped_images_for_display.hdf5')):
+            raise IOError ('"wrapped_images_for_display.hdf5" already exists in the '
+                           '"work_dir" : {}. Please choose another folder or delete '
+                           'the file.'.format(os.path.realpath(work_dir)))
+
+        imgs = tf.imread(os.path.join(work_dir, 'images_original.tif'))
+
+        deg_per_pixel = [self.deg_per_pixel_alt, self.deg_per_pixel_azi]
+        wrapping_results = self.monitor.warp_images(imgs=imgs, center_coor=self.img_center,
+                                                    deg_per_pixel=deg_per_pixel,
+                                                    is_luminance_correction=True)
+        imgs_w, alt_w, azi_w, imgs_dw, alt_dw, azi_dw = wrapping_results
+        results_f = h5py.File(os.path.join(work_dir, 'wrapped_images_for_display.hdf5'))
+        grp_w = results_f.create_group('images_wrapped')
+        _ = grp_w.create_dataset('images', data=imgs_w)
+        _ = grp_w.create_dataset('altitude', data=alt_w)
+        _ = grp_w.create_dataset('azimuth', data=azi_w)
+        grp_dw = results_f.create_group('images_dewrapped')
+        _ = grp_dw.create_dataset('images', data=imgs_dw)
+        _ = grp_dw.create_dataset('altitude', data=alt_dw)
+        _ = grp_dw.create_dataset('azimuth', data=azi_dw)
+        results_f.close()
+
+    def set_imgs_from_tif(self, imgs_path_wrapped, imgs_path_dewrapped=None):
+
+        imgs_wrapped = tf.imread(imgs_path_wrapped)
+
+        if len(imgs_wrapped.shape) != 3:
+            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+
+        if (imgs_wrapped.shape[1], imgs_wrapped.shape[2]) != self.monitor.deg_coord_x.shape:
+            raise ValueError ('StaticImages: the input wrapped images should have '
+                              'the same dimensions of the pixel resolution of '
+                              'downsampled monitor.')
+
+        self.images_wrapped = imgs_wrapped
+
+        if imgs_path_dewrapped is not None:
+
+            imgs_dewrapped = tf.imread(imgs_path_dewrapped)
+
+            if imgs_dewrapped.shape[0] != imgs_wrapped.shape[0]:
+                print ('The input dewrapped images have different dimensions from the '
+                       'input wrapped images. Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
+            else:
+                self.images_dewrapped = tf.imread(imgs_path_dewrapped)
+        else:
+            self.images_dewrapped = None
+
+    def set_imgs_from_hdf5(self, imgs_file_path):
+        """
+        set 3d arrays from a hdf5 file for display. Ideally the hdf5 file should be
+        the result from self.wrap_images() method. Only designed to work with wrapped
+        images
+
+        parameters
+        ----------
+        imgs_file_path : str
+            system path ot the hdf5 file. It should have at least one dataset named
+            'images_wrapped' containing a 3d array of wrapped images to display
+        """
+        img_f = h5py.File(imgs_file_path, 'r')
+
+        if len(img_f['images_wrapped/images'].shape) != 3:
+            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+
+        if (img_f['images_wrapped/images'].shape[1],
+            img_f['images_wrapped/images'].shape[2]) != self.monitor.deg_coord_x.shape:
+            raise ValueError ('StaticImages: the input wrapped images should have '
+                              'the same dimensions of the pixel resolution of '
+                              'downsampled monitor.')
+
+        try:
+            alt_w = img_f['images_wrapped/altitude'].value
+        except:
+            alt_w = None
+
+        try:
+            azi_w = img_f['images_wrapped/azimuth'].value
+        except:
+            azi_w = None
+
+        if alt_w is not None:
+            if not np.array_equal(alt_w, self.monitor.deg_coord_y):
+                raise ValueError ('the altitude coordinates of input wrapped images do not '
+                                  'match the wrapped monitor pixel altitude coordinates.')
+        if azi_w is not None:
+            if not np.array_equal(azi_w, self.monitor.deg_coord_x):
+                raise ValueError('the azimuth coordinates of input wrapped images do not '
+                                 'match the wrapped monitor pixel azimuth coordinates.')
+
+        self.images_wrapped = img_f['images_wrapped/images'].value
+
+        if 'images_dewrapped' in img_f:
+            if img_f['images_dewrapped/images'].shape != 3:
+                print ('The images_dewrapped in the input file is not 3d. '
+                       'Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
+                self.altitude_dewrapped = None
+                self.azimuth_dewrapped = None
+
+            elif img_f['images_dwrapped/images'].shape[0] != self.images_wrapped.shape[0]:
+                print ('The number of frames of images_dewrapped in the input file is different'
+                       'from the number of frames of self.images. Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
+                self.altitude_dewrapped = None
+                self.azimuth_dewrapped = None
+            else:
+                self.images_dewrapped = img_f['images_dewrapped/images'].value
+                try:
+                    alt_d = img_f['images_dewrapped/altitude'].value
+                    if alt_d.shape[0] != self.images_dewrapped.shape[1] or \
+                        alt_d.shape[1] != self.images_dewrapped.shape[2]:
+                        print ('altitude coordinates of images_dewrapped in the input file have '
+                               'different shape as frames in self.images_dewrapped. Set'
+                               'self.altitude_dewrapped to None.')
+                        self.altitude_dewrapped = None
+                    else:
+                        self.altitude_dewrapped = alt_d
+                except:
+                    self.altitude_dewrapped = None
+
+                try:
+                    azi_d = img_f['images_dewrapped/azimuth'].value
+                    if azi_d.shape[0] != self.images_dewrapped.shape[1] or \
+                        azi_d.shape[1] != self.images_dewrapped.shape[2]:
+                        print ('azimuth coordinates of images_dewrapped in the input file have '
+                               'different shape as frames in self.images_dewrapped. Set'
+                               'self.azimuth_dewrapped to None.')
+                        self.azimuth_dewrapped = None
+                    else:
+                        self.azimuth_dewrapped = azi_d
+                except:
+                    self.azimuth_dewrapped = None
+
+        else:
+            print ('Cannot find "images_dewrapped" dataset in the input file. '
+                   'Set self.images_dewrapped to None.')
+            self.images_dewrapped = None
+            self.altitude_dewrapped = None
+            self.azimuth_dewrapped = None
+
+        img_f.close()
+
+    def clear(self):
+        super(StaticImages, self).clear()
+        if hasattr(self, 'images_wrapped'):
+            del self.images_wrapped
+        if hasattr(self, 'images_dewrapped'):
+            del self.images_dewrapped
+        if hasattr(self, 'altitude_wrapped'):
+            del self.altitude_wrapped
+        if hasattr(self, 'azimuth_wrapped'):
+            del self.azimuth_wrapped
+        if hasattr(self, 'altitude_dewrapped'):
+            del self.altitude_dewrapped
+        if hasattr(self, 'azimuth_dewrapped'):
+            del self.azimuth_dewrapped
+
+    def _generate_frames_for_index_display(self):
+        """
+        generate a tuple of unique frames, each element of the tuple
+        represents a unique display condition including gap
+
+        frame structure:
+            0. is_display: if gap --> 0; if display --> 1
+            1. image index, non-negative integer
+            2. indicator color, [-1., 1.]
+        """
+        if not hasattr(self, 'images_wrapped'):
+            raise LookupError ('StaticImages: cannot find attribute: "imgs_wrapped".'
+                               'Please use self.set_imgs_from_tif() or '
+                               'self.set_imgs_from_hdf5() to set the images.')
+
+        img_num = self.images_wrapped.shape[0]
+        frames_unique = [(0, None, -1.)]
+
+        for i in range(img_num):
+            frames_unique.append((1, i, 1.))
+            frames_unique.append((1, i, 0.))
+        return frames_unique
+
+    def _generate_display_index(self):
+
+        if self.indicator.is_sync:
+
+            display_frame_num = int(self.display_dur * self.monitor.refresh_rate)
+            if display_frame_num < 2:
+                raise ValueError('StaticGratingCircle: display_dur too short, should be '
+                                 'at least 2 display frames.')
+            indicator_on_frame_num = display_frame_num // 2
+            indicator_off_frame_num = display_frame_num - indicator_on_frame_num
+
+            frames_unique = self._generate_frames_for_index_display()
+
+            if len(frames_unique) % 2 != 1:
+                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
+            img_num = (len(frames_unique) - 1) / 2
+
+            index_to_display = [0] * self.pregap_frame_num
+
+            for iter in range(self.iteration):
+                display_sequence = range(img_num)
+                random.shuffle(display_sequence)
+                for cond_ind in display_sequence:
+                    index_to_display += [0] * self.midgap_frame_num
+                    index_to_display += [cond_ind * 2 + 1] * indicator_on_frame_num
+                    index_to_display += [cond_ind * 2 + 2] * indicator_off_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+
+            # remove the extra mid gap
+            index_to_display = index_to_display[self.midgap_frame_num:]
+
+            return frames_unique, index_to_display
+
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator."
+
+    def generate_movie_by_index(self):
+        """ compute the stimulus movie to be displayed by index. """
+        self.frames_unique, self.index_to_display = self._generate_display_index()
+
+        # print '\n'.join([str(f) for f in self.frames_unique])
+
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
+        else:
+            raise LookupError, "`coordinate` not in {'linear','degree'}"
+
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        mov = self.background * np.ones((len(self.frames_unique),
+                                         self.images_wrapped.shape[1],
+                                         self.images_wrapped.shape[2]),
+                                        dtype=np.float32)
+
+        for i, frame in enumerate(self.frames_unique):
+
+            if frame[0] == 1:  # not a gap
+
+                curr_img = self.images_wrapped[frame[1]]
+                curr_img[np.isnan(curr_img)] = self.background
+
+                mov[i] = curr_img
+
+            # add sync square for photodiode
+            mov[i, indicator_height_min:indicator_height_max,
+            indicator_width_min:indicator_width_max] = frame[-1]
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
 
 
 class StimulusSeparator(Stim):

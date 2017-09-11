@@ -38,8 +38,14 @@ DriftingGratingCircle
 
 
 StaticGratingCircle
----------------------
+-------------------
 .. autoclass:: retinotopic_mapping.StimulusRoutines.StaticGratingCircle
+   :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
+
+
+StimulusSeparator
+-----------------
+.. autoclass:: retinotopic_mapping.StimulusRoutines.StimulusSeparator
    :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
 
 

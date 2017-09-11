@@ -6,6 +6,7 @@ Notes
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import retinotopic_mapping.tools.ImageAnalysis as ia
 
 class Monitor(object):
     """
@@ -243,7 +244,7 @@ class Monitor(object):
         f1.colorbar(currfig, ticks=levels4)
         plt.gca().set_axis_off()
 
-    def generate_Lookup_table(self):
+    def generate_lookup_table(self):
         """
         generate lookup talbe between degree corrdinates and linear corrdinates
         return two matrix:
@@ -259,7 +260,7 @@ class Monitor(object):
         degNoWarpCorY = self.lin_coord_y / degDis
 
         #deg coordinates
-        degCorX = self.deg_coord_x+self.mon_tilt-90
+        degCorX = self.deg_coord_x + self.mon_tilt-90
         degCorY = self.deg_coord_y
 
         lookupI = np.zeros(degCorX.shape).astype(np.int32)
@@ -278,6 +279,172 @@ class Monitor(object):
                 lookupI[i,j] = indI
 
         return lookupI, lookupJ
+
+    def warp_images(self, imgs, center_coor, deg_per_pixel=0.1, is_luminance_correction=True):
+        """
+        warp a image stack into visual degree coordinate system
+
+        parameters
+        ----------
+        imgs : ndarray
+            should be 2d or 3d, if 3d, axis will be considered as frame x rows x width
+        center_coor : list or tuple of two floats
+            the visual degree coordinates of the center of the image (altitude, azimuth)
+        deg_per_pixel : float or list/tuple of two floats
+            size of original pixel in visual degrees, (altitude, azimuth), if float, assume
+            sizes in both dimension are the same
+        is_luminance_correction : bool
+            if True, wrapped images will have mean intensity equal 0, and values will be
+            scaled up to reach minimum equal -1. or maximum equal 1.
+
+        returns
+        -------
+        imgs_wrapped : 3d array, np.float32
+            wrapped images, each frame should have exact same size of down sampled monitor
+            resolution. the region on the monitor not covered by the image will have value
+            of np.nan. value range [-1., 1.]
+        coord_alt_wrapped : 2d array, np.float32
+            the altitude coordinates of all pixels in the wrapped images in visual degrees.
+            should have the same shape as each frame in 'imgs_wrapped'.
+        coord_azi_wrapped : 2d array, np.float32
+            the azimuth coordinates of all pixels in the wrapped images in visual degrees.
+            should have the same shape as each frame in 'imgs_wrapped'.
+        imgs_dewrapped : 3d array, dtype same as imgs
+            unwrapped images, same dimension as input image stack. the region of original
+            image that was not got displayed (outside of the monitor) will have value of
+            np.nan. value range [-1., 1.]
+        coord_alt_dewrapped : 2d array, np.float32
+            the altitude coordinates of all pixels in the dewrapped images in visual degrees.
+            should have the same shape as each frame in 'imgs_dewrapped'.
+        coord_azi_dewrapped : 2d array, np.float32
+            the azimuth coordinates of all pixels in the dewrapped images in visual degrees.
+            should have the same shape as each frame in 'imgs_dewrapped'.
+        """
+
+        try:
+            deg_per_pixel_alt = abs(float(deg_per_pixel[0]))
+            deg_per_pixel_azi = abs(float(deg_per_pixel[1]))
+        except TypeError:
+            deg_per_pixel_alt = deg_per_pixel_azi = deg_per_pixel
+
+        if len(imgs.shape) == 2:
+            imgs_raw = np.array([imgs])
+        elif len(imgs.shape) == 3:
+            imgs_raw = imgs
+        else:
+            raise ValueError ('input "imgs" should be 2d or 3d array.')
+
+        # generate raw image pixel coordinates in visual degrees
+        alt_start = center_coor[0] + (imgs_raw.shape[1] / 2) * deg_per_pixel_alt
+        alt_axis = alt_start - np.arange(imgs_raw.shape[1]) * deg_per_pixel_alt
+        azi_start = center_coor[1] - (imgs_raw.shape[2] / 2) * deg_per_pixel_azi
+        azi_axis = np.arange(imgs_raw.shape[2]) * deg_per_pixel_azi + azi_start
+        # img_coord_azi, img_coord_alt = np.meshgrid(azi_axis, alt_axis)
+
+        # initialize output array
+        imgs_wrapped = np.zeros((imgs_raw.shape[0],
+                                self.deg_coord_x.shape[0],
+                                self.deg_coord_x.shape[1]), dtype=np.float32)
+        imgs_wrapped[:] = np.nan
+
+        # for cropping imgs_raw
+        x_min = None; x_max=None; y_min=None; y_max=None
+
+        # for testing
+        # img_count = np.zeros((imgs_raw.shape[1], imgs_raw.shape[2]), dtype=np.uint32)
+
+        # loop through every display (wrapped) pixel
+        for ii in range(self.deg_coord_x.shape[0]):
+            for jj in range(self.deg_coord_x.shape[1]):
+
+                # the wrapped coordinate of current display pixel [alt, azi]
+                coord_w = [self.deg_coord_y[ii, jj], self.deg_coord_x[ii, jj]]
+
+                # if the wrapped coordinates of current display pixel is covered
+                # by the raw image
+                if alt_axis[0] >= coord_w[0] >= alt_axis[-1] and \
+                    azi_axis[0] <= coord_w[1] <= azi_axis[-1]:
+
+                    # get raw pixels arround the wrapped coordinates of current display pixel
+                    u = (alt_axis[0] - coord_w[0]) / deg_per_pixel_alt
+                    l = (coord_w[1] - azi_axis[0]) / deg_per_pixel_azi
+
+                    #for testing:
+                    # img_count[int(u), int(l)] += 1
+
+                    if (u == round(u) and l == round(l)): # right hit on one raw pixel
+                        imgs_wrapped[:, ii, jj] = imgs_raw[:, int(u), int(l)]
+
+                        # for cropping
+                        if x_min is None:
+                            x_min = x_max = l
+                            y_min = y_max = u
+                        else:
+                            x_min = min(x_min, l)
+                            x_max = max(x_max, l)
+                            y_min = min(y_min, u)
+                            y_max = max(y_max, u)
+
+                    else:
+                        u = int(u); b = u + 1; l = int(l); r = l + 1
+                        w_ul = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[l]])
+                        w_bl = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[l]])
+                        w_ur = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[r]])
+                        w_br = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[r]])
+
+                        w_sum = w_ul + w_bl + w_ur + w_br
+
+                        imgs_wrapped[:, ii, jj] = (imgs_raw[:, u, l] * w_ul +
+                                                   imgs_raw[:, b, l] * w_bl +
+                                                   imgs_raw[:, u, r] * w_ur +
+                                                   imgs_raw[:, b, r] * w_br) / w_sum
+
+                        # for cropping
+                        if x_min is None:
+                            x_min = l; x_max = l + 1; y_min = u; y_max = u + 1
+                        else:
+                            x_min = min(x_min, l); x_max = max(x_max, l + 1)
+                            y_min = min(y_min, u); y_max = max(y_max, u + 1)
+
+        # for testing
+        # plt.imshow(img_count, interpolation='bicubic')
+        # plt.colorbar()
+        # plt.show()
+
+        if is_luminance_correction:
+            for frame_ind in range(imgs_wrapped.shape[0]):
+                curr_frame = imgs_wrapped[frame_ind]
+                curr_mean = np.nanmean(curr_frame.flat)
+                curr_frame = curr_frame - curr_mean
+                curr_amp = np.max([np.nanmax(curr_frame.flat), abs(np.nanmin(curr_frame.flat))])
+                curr_frame = curr_frame / curr_amp
+                imgs_wrapped[frame_ind] = curr_frame
+
+        # crop image
+        alt_range = np.logical_and(np.arange(imgs_raw.shape[1]) >= y_min,
+                                   np.arange(imgs_raw.shape[1]) <= y_max)
+        azi_range = np.logical_and(np.arange(imgs_raw.shape[2]) >= x_min,
+                                   np.arange(imgs_raw.shape[2]) <= x_max)
+
+        # print imgs_raw.shape
+        # print imgs_raw.shape
+        # print alt_range.shape
+        # print azi_range.shape
+        # print np.sum(alt_range)
+        # print np.sum(azi_range)
+
+        imgs_dewrapped=imgs_raw[:, alt_range, :]
+        imgs_dewrapped=imgs_dewrapped[:, :, azi_range]
+
+        # get degree coordinats of dewrapped images
+        deg_coord_alt_ax_dewrapped = alt_axis[alt_range]
+        deg_coord_azi_ax_dewrapped = azi_axis[azi_range]
+        deg_coord_azi_dewrapped, deg_coord_alt_dewrapped = np.meshgrid(deg_coord_azi_ax_dewrapped,
+                                                                       deg_coord_alt_ax_dewrapped)
+
+
+        return imgs_wrapped, self.deg_coord_y, self.deg_coord_x, imgs_dewrapped, deg_coord_alt_dewrapped,\
+               deg_coord_azi_dewrapped
 
 
 class Indicator(object):

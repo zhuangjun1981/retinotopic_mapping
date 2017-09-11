@@ -236,13 +236,26 @@ you might need to start debugging!
 #==============================================================================
 
 #======================= stimulus separator ================================
-ss = stim.StimulusSeparator(monitor=mon, indicator=ind, coordinate='degree',
-                            background=0., indicator_on_frame_num=4,
-                            indicator_off_frame_num=4, cycle_num=10,
-                            pregap_dur=0., postgap_dur=0.)
+# ss = stim.StimulusSeparator(monitor=mon, indicator=ind, coordinate='degree',
+#                             background=0., indicator_on_frame_num=4,
+#                             indicator_off_frame_num=4, cycle_num=10,
+#                             pregap_dur=0., postgap_dur=0.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      by_index=True, identifier='test')
+# ds.set_stim(ss)
+# ds.trigger_display()
+#==============================================================================
+
+#=============================== static images ================================
+si = stim.StaticImages(monitor=mon, indicator=ind, background=0., coordinate='degree',
+                       img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
+                       midgap_dur=0.1, iteration=2, pregap_dur=2., postgap_dur=3.)
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
                      is_sync_pulse=False, display_iter=1, display_screen=0,
                      by_index=True, identifier='test')
-ds.set_stim(ss)
+si.set_imgs_from_hdf5(imgs_file_path=r"D:\data2\rabies_tracing_project\method_development"
+                                     r"\2017-09-06-natural-scenes\wrapped_images_for_display.hdf5")
+ds.set_stim(si)
 ds.trigger_display()
 #==============================================================================
