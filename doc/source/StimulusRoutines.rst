@@ -43,6 +43,12 @@ StaticGratingCircle
    :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
 
 
+StaticImages
+------------
+.. autoclass:: retinotopic_mapping.StimulusRoutines.StaticImages
+   :inherited-members: retinotopic_mapping.StimulusRoutines.Stim
+
+
 StimulusSeparator
 -----------------
 .. autoclass:: retinotopic_mapping.StimulusRoutines.StimulusSeparator
