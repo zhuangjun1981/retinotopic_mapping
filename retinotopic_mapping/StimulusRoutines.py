@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import tifffile as tf
+import h5py
 from tools import ImageAnalysis as ia
 
 
@@ -2899,20 +2900,67 @@ class StaticImages(Stim):
     def wrap_images(self, work_dir):
         """
         look for the 'images_original.tif' in the work_dir, load the images,
-        warp and luminance correct images, save warpped images as 'imageds_wrapped.tif'
-        and dewarpped images as 'images_dewrapped.tif' in the work_dir.
+        warp and luminance correct images, save wrapping results in an HDF5 file
+        with name "wrapped_images_for_display.hdf5" in the work_dir
+
+        datasets
+        --------
+        images_wrapped : 3d array, frame x altitude x azimuth,
+            each frame will have  same shape as the pixel resolution of down
+            sampled self.monitor
+
+            attrs
+            +++++
+            altitude : 2d array, altitude x azimuth
+                altitude coordinates of wrapped images in visual degrees,
+                same shape as each frame of images_wrapped
+            azimuth : 2d array, altitude x azimuth
+                azimuth coordinates of wrapped images in visual degrees,
+                same shape as each frame of images_wrapped
+
+        images_dewrapped : 3d array, frame x altitude x azimuth
+            dewrapped images, please note there is no pixel to pixel relationship
+            between images_wrapped and images_dewrapped. Different regions in
+            images_dewrapped have different sampling density to generate
+            images_wrapped. Some pixels in image_dewrapped (especially on the edge)
+            may not get presented by image_wrapped. images_dewrapped represent the
+            minimum rectangle region in the original image that cover the entire
+            images_wrapped.
+
+            attrs
+            +++++
+            altitude : 2d array, altitude x azimuth
+                altitude coordinates of dewrapped images in visual degrees,
+                same shape as each frame in images_dewrapped
+            azimuth : 2d array, altitude x azimuth
+                azimuth coordinates of dewrapped images in visual degrees,
+                same shape as each frame in images_dewrapped
         """
+
+        if os.path.isfile(os.path.join(work_dir, 'wrapped_images_for_display.hdf5')):
+            raise IOError ('"wrapped_images_for_display.hdf5" already exists in the '
+                           '"work_dir" : {}. Please choose another folder or delete '
+                           'the file.'.format(os.path.realpath(work_dir)))
 
         imgs = tf.imread(os.path.join(work_dir, 'images_original.tif'))
 
         deg_per_pixel = [self.deg_per_pixel_alt, self.deg_per_pixel_azi]
-        imgs_w, imgs_uw = self.monitor.warp_images(imgs=imgs, center_coor=self.img_center,
-                                                   deg_per_pixel=deg_per_pixel,
-                                                   is_luminance_correction=True)
-        tf.imsave(os.path.join(work_dir, 'images_wrapped.tif'), imgs_w)
-        tf.imsave(os.path.join(work_dir, 'images_dewrapped.tif'), imgs_uw)
+        wrapping_results = self.monitor.warp_images(imgs=imgs, center_coor=self.img_center,
+                                                    deg_per_pixel=deg_per_pixel,
+                                                    is_luminance_correction=True)
+        imgs_w, alt_w, azi_w, imgs_dw, alt_dw, azi_dw = wrapping_results
+        results_f = h5py.File(os.path.join(work_dir, 'wrapped_images_for_display.hdf5'))
+        grp_w = results_f.create_group('images_wrapped')
+        _ = grp_w.create_dataset('images', data=imgs_w)
+        _ = grp_w.create_dataset('altitude', data=alt_w)
+        _ = grp_w.create_dataset('azimuth', data=azi_w)
+        grp_dw = results_f.create_group('images_dewrapped')
+        _ = grp_dw.create_dataset('images', data=imgs_dw)
+        _ = grp_dw.create_dataset('altitude', data=alt_dw)
+        _ = grp_dw.create_dataset('azimuth', data=azi_dw)
+        results_f.close()
 
-    def set_imgs(self, imgs_path_wrapped, imgs_path_dewrapped=None):
+    def set_imgs_from_tif(self, imgs_path_wrapped, imgs_path_dewrapped=None):
 
         imgs_wrapped = tf.imread(imgs_path_wrapped)
 
@@ -2924,7 +2972,7 @@ class StaticImages(Stim):
                               'the same dimensions of the pixel resolution of '
                               'downsampled monitor.')
 
-        self.imgs_wrapped = imgs_wrapped
+        self.images_wrapped = imgs_wrapped
 
         if imgs_path_dewrapped is not None:
 
@@ -2932,19 +2980,122 @@ class StaticImages(Stim):
 
             if imgs_dewrapped.shape[0] != imgs_wrapped.shape[0]:
                 print ('The input dewrapped images have different dimensions from the '
-                       'input wrapped images. Set self.imgs_dewrapped to None.')
-                self.imgs_dewrapped = None
+                       'input wrapped images. Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
             else:
-                self.imgs_dewrapped = tf.imread(imgs_path_dewrapped)
+                self.images_dewrapped = tf.imread(imgs_path_dewrapped)
         else:
-            self.imgs_dewrapped = None
+            self.images_dewrapped = None
+
+    def set_imgs_from_hdf5(self, imgs_file_path):
+        """
+        set 3d arrays from a hdf5 file for display. Ideally the hdf5 file should be
+        the result from self.wrap_images() method. Only designed to work with wrapped
+        images
+
+        parameters
+        ----------
+        imgs_file_path : str
+            system path ot the hdf5 file. It should have at least one dataset named
+            'images_wrapped' containing a 3d array of wrapped images to display
+        """
+        img_f = h5py.File(imgs_file_path, 'r')
+
+        if len(img_f['images_wrapped/images'].shape) != 3:
+            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+
+        if (img_f['images_wrapped/images'].shape[1],
+            img_f['images_wrapped/images'].shape[2]) != self.monitor.deg_coord_x.shape:
+            raise ValueError ('StaticImages: the input wrapped images should have '
+                              'the same dimensions of the pixel resolution of '
+                              'downsampled monitor.')
+
+        try:
+            alt_w = img_f['images_wrapped/altitude'].value
+        except:
+            alt_w = None
+
+        try:
+            azi_w = img_f['images_wrapped/azimuth'].value
+        except:
+            azi_w = None
+
+        if alt_w is not None:
+            if not np.array_equal(alt_w, self.monitor.deg_coord_y):
+                raise ValueError ('the altitude coordinates of input wrapped images do not '
+                                  'match the wrapped monitor pixel altitude coordinates.')
+        if azi_w is not None:
+            if not np.array_equal(azi_w, self.monitor.deg_coord_x):
+                raise ValueError('the azimuth coordinates of input wrapped images do not '
+                                 'match the wrapped monitor pixel azimuth coordinates.')
+
+        self.images_wrapped = img_f['images_wrapped/images'].value
+
+        if 'images_dewrapped' in img_f:
+            if img_f['images_dewrapped/images'].shape != 3:
+                print ('The images_dewrapped in the input file is not 3d. '
+                       'Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
+                self.altitude_dewrapped = None
+                self.azimuth_dewrapped = None
+
+            elif img_f['images_dwrapped/images'].shape[0] != self.images_wrapped.shape[0]:
+                print ('The number of frames of images_dewrapped in the input file is different'
+                       'from the number of frames of self.images. Set self.images_dewrapped to None.')
+                self.images_dewrapped = None
+                self.altitude_dewrapped = None
+                self.azimuth_dewrapped = None
+            else:
+                self.images_dewrapped = img_f['images_dewrapped/images'].value
+                try:
+                    alt_d = img_f['images_dewrapped/altitude'].value
+                    if alt_d.shape[0] != self.images_dewrapped.shape[1] or \
+                        alt_d.shape[1] != self.images_dewrapped.shape[2]:
+                        print ('altitude coordinates of images_dewrapped in the input file have '
+                               'different shape as frames in self.images_dewrapped. Set'
+                               'self.altitude_dewrapped to None.')
+                        self.altitude_dewrapped = None
+                    else:
+                        self.altitude_dewrapped = alt_d
+                except:
+                    self.altitude_dewrapped = None
+
+                try:
+                    azi_d = img_f['images_dewrapped/azimuth'].value
+                    if azi_d.shape[0] != self.images_dewrapped.shape[1] or \
+                        azi_d.shape[1] != self.images_dewrapped.shape[2]:
+                        print ('azimuth coordinates of images_dewrapped in the input file have '
+                               'different shape as frames in self.images_dewrapped. Set'
+                               'self.azimuth_dewrapped to None.')
+                        self.azimuth_dewrapped = None
+                    else:
+                        self.azimuth_dewrapped = azi_d
+                except:
+                    self.azimuth_dewrapped = None
+
+        else:
+            print ('Cannot find "images_dewrapped" dataset in the input file. '
+                   'Set self.images_dewrapped to None.')
+            self.images_dewrapped = None
+            self.altitude_dewrapped = None
+            self.azimuth_dewrapped = None
+
+        img_f.close()
 
     def clear(self):
         super(StaticImages, self).clear()
-        if hasattr(self, 'imgs_wrapped'):
-            del self.imgs_wrapped
-        if hasattr(self, 'imgs_dewrapped'):
-            del self.imgs_dewrapped
+        if hasattr(self, 'images_wrapped'):
+            del self.images_wrapped
+        if hasattr(self, 'images_dewrapped'):
+            del self.images_dewrapped
+        if hasattr(self, 'altitude_wrapped'):
+            del self.altitude_wrapped
+        if hasattr(self, 'azimuth_wrapped'):
+            del self.azimuth_wrapped
+        if hasattr(self, 'altitude_dewrapped'):
+            del self.altitude_dewrapped
+        if hasattr(self, 'azimuth_dewrapped'):
+            del self.azimuth_dewrapped
 
     def _generate_frames_for_index_display(self):
         """
@@ -2956,11 +3107,12 @@ class StaticImages(Stim):
             1. image index, non-negative integer
             2. indicator color, [-1., 1.]
         """
-        if not hasattr(self, 'imgs_wrapped'):
+        if not hasattr(self, 'images_wrapped'):
             raise LookupError ('StaticImages: cannot find attribute: "imgs_wrapped".'
-                               'Please use self.set_imgs')
+                               'Please use self.set_imgs_from_tif() or '
+                               'self.set_imgs_from_hdf5() to set the images.')
 
-        img_num = self.imgs_wrapped.shape[0]
+        img_num = self.images_wrapped.shape[0]
         frames_unique = [(0, None, -1.)]
 
         for i in range(img_num):
@@ -3005,7 +3157,6 @@ class StaticImages(Stim):
         else:
             raise NotImplementedError, "method not available for non-sync indicator."
 
-
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
         self.frames_unique, self.index_to_display = self._generate_display_index()
@@ -3031,15 +3182,15 @@ class StaticImages(Stim):
                                 + self.indicator.height_pixel / 2)
 
         mov = self.background * np.ones((len(self.frames_unique),
-                                         self.imgs_wrapped.shape[1],
-                                         self.imgs_wrapped.shape[2]),
+                                         self.images_wrapped.shape[1],
+                                         self.images_wrapped.shape[2]),
                                         dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
 
             if frame[0] == 1:  # not a gap
 
-                curr_img = self.imgs_wrapped[frame[1]]
+                curr_img = self.images_wrapped[frame[1]]
                 curr_img[np.isnan(curr_img)] = self.background
 
                 mov[i] = curr_img

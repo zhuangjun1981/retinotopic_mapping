@@ -11,7 +11,7 @@ class TestSimulation(unittest.TestCase):
         import tifffile as tf
         self.natural_scene = tf.imread(os.path.join(curr_folder,
                                                     'test_data',
-                                                    'natural_scene.tif'))
+                                                    'images_original.tif'))
 
     def test_Monitor_generate_lookup_table(self):
         mon = ms.Monitor(resolution=(1200,1600), dis=15.,

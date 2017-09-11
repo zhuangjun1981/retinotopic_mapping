@@ -2,9 +2,6 @@ import os
 import unittest
 import retinotopic_mapping.StimulusRoutines as sr
 
-curr_folder = os.path.dirname(os.path.realpath(__file__))
-os.chdir(curr_folder)
-
 class TestSimulation(unittest.TestCase):
 
     def setUp(self):
@@ -20,6 +17,8 @@ class TestSimulation(unittest.TestCase):
 
         self.indicator = ms.Indicator(self.monitor, width_cm = 3., height_cm = 3., position = 'northeast',
                                       is_sync = True, freq = 1.)
+
+        self.curr_folder = os.path.dirname(os.path.realpath(__file__))
 
     def test_blur_cos(self):
         import numpy as np
@@ -575,6 +574,53 @@ class TestSimulation(unittest.TestCase):
         frames_unique, index_to_display = ss._generate_display_index()
         assert (frames_unique == ((0, -1), (1, 1.), (1, -1.)))
         assert (len(index_to_display) == 80)
+
+    def test_SI_wrap_images(self):
+        si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
+                             coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
+                             display_dur=0.25, midgap_dur=0., iteration=1, pregap_dur=2.,
+                             postgap_dur=3.)
+        si.wrap_images(work_dir=os.path.join(self.curr_folder, 'test_data'))
+
+        img_w_path = os.path.join(self.curr_folder, 'test_data', 'wrapped_images_for_display.hdf5')
+
+        import h5py
+        img_w_f = h5py.File(img_w_path, 'r')
+
+        assert (img_w_f['images_wrapped/images'].shape == (1, 120, 160))
+        assert (img_w_f['images_wrapped/altitude'].shape == (120, 160))
+        assert (img_w_f['images_wrapped/azimuth'].shape == (120, 160))
+        import numpy as np
+        assert (np.array_equal(img_w_f['images_wrapped/altitude'].value, self.monitor.deg_coord_y))
+        assert (np.array_equal(img_w_f['images_wrapped/azimuth'].value, self.monitor.deg_coord_x))
+
+        assert (img_w_f['images_dewrapped/images'].shape == (1, 512, 761))
+        assert (img_w_f['images_dewrapped/altitude'].shape == (512, 761))
+        assert (img_w_f['images_dewrapped/azimuth'].shape == (512, 761))
+
+        img_w_f.close()
+
+        os.remove(img_w_path)
+
+    def test_SI_generate_frames_for_index_display(self):
+        si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
+                             coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
+                             display_dur=0.25, midgap_dur=0., iteration=1, pregap_dur=2.,
+                             postgap_dur=3.)
+        import numpy as np
+        si.images_wrapped = np.random.rand(27, 120, 160)
+        frames_unique = si._generate_frames_for_index_display()
+        assert (len(frames_unique) == 55)
+
+    def test_SI_generate_display_index(self):
+        si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
+                             coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
+                             display_dur=0.25, midgap_dur=0.1, iteration=2, pregap_dur=2.,
+                             postgap_dur=3.)
+        import numpy as np
+        si.images_wrapped = np.random.rand(15, 120, 160)
+        frames_unique, index_to_display = si._generate_display_index()
+        assert (len(index_to_display) == 924)
 
 
 if __name__ == '__main__':

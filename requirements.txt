@@ -9,3 +9,4 @@ pyglet >= 1.2.4
 PyDAQmx >= 1.3.2
 sphinx == 1.6.3
 configobj >= 5.0.6
+h5py >= 2.7.0
