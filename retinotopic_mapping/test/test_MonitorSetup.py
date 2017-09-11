@@ -35,21 +35,35 @@ class TestSimulation(unittest.TestCase):
                          C2T_cm=15., C2A_cm=20., mon_tilt=30.,
                          downsample_rate=10)
         import numpy as np
-        nsw, nsr = mon.warp_images(imgs=np.array([self.natural_scene]),
-                              center_coor=[0., 60.], deg_per_pixel=0.2,
-                              is_luminance_correction=True)
+        nsw, altw, aziw, nsd, altd, azid = mon.warp_images(imgs=np.array([self.natural_scene]),
+                                                           center_coor=[0., 60.], deg_per_pixel=0.2,
+                                                           is_luminance_correction=True)
 
         # import matplotlib.pyplot as plt
-        # f, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))
-        # fig1 = ax1.imshow(nsw[0], cmap='gray', vmin=-1., vmax=1.)
+        # f, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(6, 10))
+        # fig1 = ax1.imshow(self.natural_scene, cmap='gray', vmin=0., vmax=255.)
         # ax1.set_axis_off()
-        # ax1.set_title('wrapped')
+        # ax1.set_title('original')
         # f.colorbar(fig1, ax=ax1)
-        # fig2 = ax2.imshow(nsr[0], cmap='gray', vmin=-1., vmax=1.)
+        # fig2 = ax2.imshow(nsw[0], cmap='gray', vmin=-1., vmax=1.)
         # ax2.set_axis_off()
-        # ax2.set_title('unwrapped')
+        # ax2.set_title('wrapped')
         # f.colorbar(fig2, ax=ax2)
+        # fig3 = ax3.imshow(nsd[0], cmap='gray', vmin=0, vmax=255)
+        # ax3.set_axis_off()
+        # ax3.set_title('dewrapped')
+        # f.colorbar(fig3, ax=ax3)
         # plt.show()
 
-        # print np.nanmean(nsw.flat)
+        # print altd.shape
+        # print azid.shape
+
+        assert (altw.shape[0] == nsw.shape[1])
+        assert (altw.shape[1] == nsw.shape[2])
+        assert (aziw.shape[0] == nsw.shape[1])
+        assert (aziw.shape[1] == nsw.shape[2])
+        assert (altd.shape[0] == nsd.shape[1])
+        assert (altd.shape[1] == nsd.shape[2])
+        assert (azid.shape[0] == nsd.shape[1])
+        assert (azid.shape[1] == nsd.shape[2])
         assert (np.nanmean(nsw.flat) < 1E6)
