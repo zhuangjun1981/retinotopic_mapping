@@ -8,7 +8,7 @@ For a more thorough introduction and explanation of the module please
 see our [documentation](http://retinotopic-mapping.readthedocs.io/).
 If the online version of documentation looks incomplete. Please refer
 to the locally built html version in `/doc/build/html/` folder under
-`dev` branch.
+`doc` branch.
 
 The retinotopic mapping package is a self-contained module
 for display visual stimuli in visual physiology experiments and
