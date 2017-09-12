@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Example script to test that everything is working. Running this script is a
-good first step for trying to debug your experimental setup and is also a
-great tool to familiarize yourself with the parameters that are used to
-generate each specific stimulus.
-
-!!!IMPORTANT!!!
-Note that once you are displaying stimulus, if you want to stop the code from
-running all you need to do is press either one of the 'Esc' or 'q' buttons.
+Example script to test StimulusRoutines.CombinedStimuli class
 """
 
 import numpy as np
@@ -16,79 +9,138 @@ import retinotopic_mapping.StimulusRoutines as stim
 from retinotopic_mapping.MonitorSetup import Monitor, Indicator
 from retinotopic_mapping.DisplayStimulus import DisplaySequence
 
-"""
-To get up and running quickly before performing any experiments it is 
-sufficient to setup two monitors -- one for display and one for your python 
-environment. If you don't have two monitors at the moment it is doable with
-only one. 
-
-Edit the following block of code with your own monitors respective parameters.
-Since this script is for general debugging and playing around with the code, 
-we will arbitrarily populate variables that describe the geometry of where 
-the mouse will be located during an experiment. All we are interested in 
-here is just making sure that we can display stimulus on a monitor and learning
-how to work with the different stimulus routines.
-"""
-#==============================================================================
-resolution = (1200,1920) #enter your monitors resolution
+#============================ monitor setup ======================================
+mon_resolution = (1200,1920) #enter your monitors resolution
 mon_width_cm = 52 #enter your monitors width in cm
 mon_height_cm = 32 #enter your monitors height in cm
-refresh_rate = 60  #enter your monitors height in Hz
-#==============================================================================
-# The following variables correspond to the geometry of the mouse with
-# respect to the monitor, don't worry about them for now we just need them
-# for all of the functions to work
-
-C2T_cm = mon_height_cm / 2.
-C2A_cm = mon_width_cm / 2.
+mon_refresh_rate = 60  #enter your monitors height in Hz
+mon_C2T_cm = mon_height_cm / 2.
+mon_C2A_cm = mon_width_cm / 2.
 mon_tilt = 30.
-dis = 15.
+mon_dis = 15.
+mon_downsample_rate = 5
+#=================================================================================
 
-# Set the downsample rate; needs to be an integer `n` such that each resolution
-# number is divisble by `n`,
-downsample_rate = 5
+#============================ indicator setup ====================================
+ind_width_cm = 3.
+ind_height_cm = 3.
+ind_position = 'northeast'
+ind_is_sync = 'True'
+ind_freq = 2.
+#=================================================================================
 
-# Initialize the monitor and ind objects
-mon = Monitor(resolution=resolution, dis=dis, mon_width_cm=mon_width_cm, mon_height_cm=mon_height_cm,
-              C2T_cm=C2T_cm, C2A_cm=C2A_cm, mon_tilt=mon_tilt, downsample_rate=downsample_rate)
+#============================ DisplaySequence ====================================
+ds_log_dir = r'C:\data'
+ds_backupdir = None
+ds_identifier = 'TEST'
+ds_display_iter = 1
+ds_mouse_id = 'MOUSE'
+ds_user_id = 'USER'
+ds_psychopy_mon = 'testMonitor'
+ds_is_by_index = True
+ds_is_interpolate = False
+ds_is_triggered=False
+ds_trigger_event="negative_edge"
+ds_trigger_NI_dev='Dev1'
+ds_trigger_NI_port=1
+ds_trigger_NI_line=0
+ds_is_sync_pulse=False
+ds_sync_pulse_NI_dev='Dev1'
+ds_sync_pulse_NI_port=1
+ds_sync_pulse_NI_line=1
+ds_display_screen=0
+ds_initial_background_color=0.
+#=================================================================================
+
+#============================ generic stimulus parameters ========================
+pregap_dur = 2.
+postgap_dur = 3.
+background = 0.
+coordinate = 'degree'
+#=================================================================================
+
+#============================ UniformContrast ====================================
+uc_duration = 10.
+uc_color = -1
+#=================================================================================
+
+#============================ FlashingCircle =====================================
+fc_center = (20., 30.)
+fc_radius = 30.
+fc_color = -1.
+fc_flash_frame_num = 30
+fc_is_smooth_edge = True
+fc_smooth_width_ratio = 0.2
+fc_smooth_func = stim.blur_cos
+#=================================================================================
+
+#============================ SparseNoise ========================================
+#=================================================================================
+
+#============================ LocallySparseNoise =================================
+#=================================================================================
+
+#============================ DriftingGratingCircle ==============================
+#=================================================================================
+
+#============================ StaticGratingCirlce ================================
+#=================================================================================
+
+#============================ StaticImages =======================================
+#=================================================================================
+
+#============================ StimulusSeparator ==================================
+#=================================================================================
+
+
+
+
+
+#================ Initialize the monitor object ==================================
+mon = Monitor(resolution=mon_resolution, dis=mon_dis, mon_width_cm=mon_width_cm,
+              mon_height_cm=mon_height_cm, C2T_cm=mon_C2T_cm, C2A_cm=mon_C2A_cm,
+              mon_tilt=mon_tilt, downsample_rate=mon_downsample_rate)
 # mon.plot_map()
 # plt.show()
-ind = Indicator(mon, width_cm = 3., height_cm = 3., position = 'northeast', is_sync = True, freq = 2.)
+#=================================================================================
 
-""" Now for the fun stuff! Each block of code below shows an example of
-the stimulus routines that are currently implemented in the codebase. Uncomment
-each block and run the script to view the stimulus presentations. This is where
-you might need to start debugging!
-"""
+#================ Initialize the indicator object ================================
+ind = Indicator(mon, width_cm=ind_width_cm, height_cm=ind_height_cm,
+                position=ind_position, is_sync=ind_is_sync, freq=ind_freq)
+#=================================================================================
+
+#================ Initialize the DisplaySequence object ==========================
+ds = DisplaySequence(log_dir=ds_log_dir, backupdir=ds_backupdir,
+                     identifier=ds_identifier, display_iter=ds_display_iter,
+                     mouse_id=ds_mouse_id, user_id=ds_user_id,
+                     psychopy_mon=ds_psychopy_mon, is_by_index=ds_is_by_index,
+                     is_interpolate=ds_is_interpolate, is_triggered=ds_is_triggered,
+                     trigger_event=ds_trigger_event, trigger_NI_dev=ds_trigger_NI_dev,
+                     trigger_NI_port=ds_trigger_NI_port, trigger_NI_line=ds_trigger_NI_line,
+                     is_sync_pulse=ds_is_sync_pulse, sync_pulse_NI_dev=ds_sync_pulse_NI_dev,
+                     sync_pulse_NI_port=ds_sync_pulse_NI_port,
+                     sync_pulse_NI_line=ds_sync_pulse_NI_line,
+                     display_screen=ds_display_screen,
+                     initial_background_color=ds_initial_background_color)
+#=================================================================================
+
+
 #========================== Uniform Contrast Stimulus =========================
-# uniform_contrast = stim.UniformContrast(monitor=mon, indicator=ind, duration=10.,
-#                                         color=-1., background=0., pregap_dur=2.,
-#                                         postgap_dur=3., coordinate='degree')
-# ds = DisplaySequence(log_dir=r'C:\data',
-#                      backupdir=None,
-#                      display_iter=2,
-#                      is_triggered=False,
-#                      is_sync_pulse=False,
-#                      display_screen=1,
-#                      is_by_index=True)
-#
-# ds.set_stim(uniform_contrast)
-# ds.trigger_display()
+uc = stim.UniformContrast(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
+                          postgap_dur=postgap_dur, coordinate=coordinate,
+                          background=background, duration=uc_duration,
+                          color=uc_color)
 #==============================================================================
 
 
 #======================= Flashing Circle Stimulus =============================
-# flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
-#                                       center=(20., 30.), radius=30., color=-1.,
-#                                       flash_frame_num=30, pregap_dur=2.,
-#                                       postgap_dur=3., background=0.,
-#                                       is_smooth_edge=True, smooth_width_ratio=0.2,
-#                                       smooth_func=stim.blur_cos)
-# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-#                      is_sync_pulse=False, is_by_index=False, display_iter=2,
-#                      display_screen=0)
-# ds.set_stim(flashing_circle)
-# ds.trigger_display()
+fc = stim.FlashingCircle(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
+                         postgap_dur=postgap_dur, coordinate=coordinate,
+                         background=background, center=fc_center, radius=fc_radius,
+                         color=fc_color, flash_frame_num=fc_flash_frame_num,
+                         is_smooth_edge=fc_is_smooth_edge,
+                         smooth_width_ratio=fc_smooth_width_ratio,
+                         smooth_func=fc_smooth_func)
 #==============================================================================
 
 
@@ -253,7 +305,7 @@ si = stim.StaticImages(monitor=mon, indicator=ind, background=0., coordinate='de
                        midgap_dur=0.1, iteration=2, pregap_dur=2., postgap_dur=3.)
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
                      is_sync_pulse=False, display_iter=1, display_screen=0,
-                     is_by_index=True, identifier='test', is_interpolate=True)
+                     is_by_index=True, identifier='test')
 si.set_imgs_from_hdf5(imgs_file_path=r"D:\data2\rabies_tracing_project\method_development"
                                      r"\2017-09-06-natural-scenes\wrapped_images_for_display.hdf5")
 ds.set_stim(si)
