@@ -441,7 +441,8 @@ class Monitor(object):
         deg_coord_azi_ax_dewrapped = azi_axis[azi_range]
         deg_coord_azi_dewrapped, deg_coord_alt_dewrapped = np.meshgrid(deg_coord_azi_ax_dewrapped,
                                                                        deg_coord_alt_ax_dewrapped)
-
+        deg_coord_alt_dewrapped = deg_coord_alt_dewrapped.astype(np.float32)
+        deg_coord_azi_dewrapped = deg_coord_azi_dewrapped.astype(np.float32)
 
         return imgs_wrapped, self.deg_coord_y, self.deg_coord_x, imgs_dewrapped, deg_coord_alt_dewrapped,\
                deg_coord_azi_dewrapped

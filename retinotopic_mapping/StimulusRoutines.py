@@ -3023,8 +3023,8 @@ class StaticImages(Stim):
         _ = grp_w.create_dataset('azimuth', data=azi_w)
         grp_dw = results_f.create_group('images_dewrapped')
         _ = grp_dw.create_dataset('images', data=imgs_dw)
-        _ = grp_dw.create_dataset('altitude', data=alt_dw)
-        _ = grp_dw.create_dataset('azimuth', data=azi_dw)
+        _ = grp_dw.create_dataset('altitude', data=alt_dw.astype(np.float32))
+        _ = grp_dw.create_dataset('azimuth', data=azi_dw.astype(np.float32))
         results_f.close()
 
     def set_imgs_from_tif(self, imgs_path_wrapped, imgs_path_dewrapped=None):
@@ -3421,7 +3421,7 @@ class CombinedStimuli(Stim):
             curr_log.pop('monitor')
             curr_log.pop('indicator')
 
-            self.individual_logs.update({curr_stim_id : curr_log})
+            self.individual_logs.update({curr_stim_id : curr_log['stimulation']})
 
             curr_frames_unique = [[curr_stim_id] + list(f) for f in curr_log['stimulation']['frames_unique']]
             curr_index_to_display = np.array(curr_log['stimulation']['index_to_display'], dtype=np.uint64)
@@ -3445,6 +3445,7 @@ class CombinedStimuli(Stim):
         self_dict = dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
+        self_dict.pop('stimuli')
         log = {'stimulation': self_dict,
                'monitor': mondict,
                'indicator': indicator_dict}
