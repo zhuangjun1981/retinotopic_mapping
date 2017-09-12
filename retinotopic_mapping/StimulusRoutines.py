@@ -3357,6 +3357,108 @@ class StimulusSeparator(Stim):
         return mov, log
 
 
+class CombinedStimuli(Stim):
+
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 pregap_dur=2., postgap_dur=3.):
+
+        super(CombinedStimuli, self).__init__(monitor=monitor, indicator=indicator,
+                                              background=background, coordinate=coordinate,
+                                              pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+
+        self.stim_name = 'CombinedStimuli'
+
+    def set_stimuli(self, stimuli, static_images_path=None):
+        """
+
+        parameters
+        ----------
+        stimuli : list of above stimulus object
+        static_images_path : str
+            system path to the hdf5 file storing the wrapped images for display. If there
+            is StaticImages stimulus in the stimuli list, it will try to load images and
+            display
+        """
+
+        for stimulus in stimuli:
+            if not stimulus.stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise',
+                                          'LocallySparseNoise', 'DriftingGratingCircle',
+                                          'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
+                raise LookupError ('Stimulus type "{}" is not currently supported.'
+                                   .format(stimulus.stim_name))
+
+        self.stimuli = stimuli
+        self.static_images_path = static_images_path
+
+    def generate_movie_by_index(self):
+
+        print ('\nCombinedStimulus: generation stimuli ...')
+
+        self.frames_unique = []
+        self.index_to_display = []
+        self.individual_logs = {}
+        mov = []
+
+        curr_start_frame_ind = 0
+
+        for stim_ind, stimulus in enumerate(self.stimuli):
+
+            curr_stim_name = stimulus.stim_name
+            curr_stim_id = ft.int2str(stim_ind, 3) + '_' + curr_stim_name
+
+            stimulus.set_monitor(self.monitor)
+            stimulus.set_indicator(self.indicator)
+            stimulus.set_pregap_dur(self.pregap_dur)
+            stimulus.set_postgap_dur(self.postgap_dur)
+            stimulus.set_background(self.background)
+            stimulus.set_coordinate(self.coordinate)
+
+            # load the images if the stimulus is StaticImages
+            if curr_stim_name == 'StaticImages':
+                stimulus.set_imgs_from_hdf5(imgs_file_path=self.static_images_path)
+
+            curr_mov, curr_log = stimulus.generate_movie_by_index()
+            curr_log.pop('monitor')
+            curr_log.pop('indicator')
+
+            self.individual_logs.update({curr_stim_id : curr_log})
+
+            curr_frames_unique = [[curr_stim_id] + list(f) for f in curr_log['stimulation']['frames_unique']]
+            curr_index_to_display = np.array(curr_log['stimulation']['index_to_display'], dtype=np.uint64)
+
+            self.frames_unique += curr_frames_unique
+            self.index_to_display.append(curr_index_to_display + curr_start_frame_ind)
+            mov.append(curr_mov)
+
+            curr_start_frame_ind += len(curr_frames_unique)
+
+            print ('stimulus: {}; estimated display duration: {:4.1f} minute(s).'
+                   .format(curr_stim_id, len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
+
+        self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
+        self.index_to_display = list(np.concatenate(self.index_to_display, axis=0))
+        mov = np.concatenate(mov, axis=0)
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
+
+    def clear(self):
+        super(CombinedStimuli, self).clear()
+        if hasattr(self, 'stimuli'):
+            del self.stimuli
+        if hasattr(self, 'static_images_path'):
+            del self.static_images_path
+
+
 class KSstim(Stim):
     """
     generate Kalatsky & Stryker stimulus
@@ -3889,106 +3991,3 @@ class KSstimAllDir(object):
                                               'sweepEndCoordinate')
 
         return mov, log
-
-
-class CombinedStimuli(Stim):
-
-    def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 pregap_dur=2., postgap_dur=3.):
-
-        super(CombinedStimuli, self).__init__(monitor=monitor, indicator=indicator,
-                                              background=background, coordinate=coordinate,
-                                              pregap_dur=pregap_dur, postgap_dur=postgap_dur)
-
-        self.stim_name = 'CombinedStimuli'
-
-    def set_stimuli(self, stimuli, static_images_path=None):
-        """
-
-        parameters
-        ----------
-        stimuli : list of above stimulus object
-        static_images_path : str
-            system path to the hdf5 file storing the wrapped images for display. If there
-            is StaticImages stimulus in the stimuli list, it will try to load images and
-            display
-        """
-
-        for stimulus in stimuli:
-            if not stimulus.stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise',
-                                          'LocallySparseNoise', 'DriftingGratingCircle',
-                                          'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
-                raise LookupError ('Stimulus type "{}" is not currently supported.'
-                                   .format(stimulus.stim_name))
-
-        self.stimuli = stimuli
-        self.static_images_path = static_images_path
-
-    def generate_movie_by_index(self):
-
-        print ('\nCombinedStimulus: generation stimuli ...')
-
-        self.frames_unique = []
-        self.index_to_display = []
-        self.individual_logs = {}
-        mov = []
-
-        curr_start_frame_ind = 0
-
-        for stim_ind, stimulus in enumerate(self.stimuli):
-
-            curr_stim_name = stimulus.stim_name
-            curr_stim_id = ft.int2str(stim_ind, 3) + '_' + curr_stim_name
-
-            stimulus.set_monitor(self.monitor)
-            stimulus.set_indicator(self.indicator)
-            stimulus.set_pregap_dur(self.pregap_dur)
-            stimulus.set_postgap_dur(self.postgap_dur)
-            stimulus.set_background(self.background)
-            stimulus.set_coordinate(self.coordinate)
-
-            # load the images if the stimulus is StaticImages
-            if curr_stim_name == 'StaticImages':
-                stimulus.set_imgs_from_hdf5(imgs_file_path=self.static_images_path)
-
-            curr_mov, curr_log = stimulus.generate_movie_by_index()
-            curr_log.pop('monitor')
-            curr_log.pop('indicator')
-
-            self.individual_logs.update({curr_stim_id : curr_log})
-
-            curr_frames_unique = [[curr_stim_id] + list(f) for f in curr_log['stimulation']['frames_unique']]
-            curr_index_to_display = np.array(curr_log['stimulation']['index_to_display'], dtype=np.uint64)
-
-            self.frames_unique += curr_frames_unique
-            self.index_to_display.append(curr_index_to_display + curr_start_frame_ind)
-            mov.append(curr_mov)
-
-            curr_start_frame_ind += len(curr_frames_unique)
-
-            print ('stimulus: {}; estimated display duration: {:4.1f} minute(s).'
-                   .format(curr_stim_id, len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
-
-        self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
-        self.index_to_display = list(np.concatenate(self.index_to_display, axis=0))
-        mov = np.concatenate(mov, axis=0)
-
-        mondict = dict(self.monitor.__dict__)
-        indicator_dict = dict(self.indicator.__dict__)
-        indicator_dict.pop('monitor')
-        self_dict = dict(self.__dict__)
-        self_dict.pop('monitor')
-        self_dict.pop('indicator')
-        log = {'stimulation': self_dict,
-               'monitor': mondict,
-               'indicator': indicator_dict}
-
-        return mov, log
-
-    def clear(self):
-        super(CombinedStimuli, self).clear()
-        if hasattr(self, 'stimuli'):
-            del self.stimuli
-        if hasattr(self, 'static_images_path'):
-            del self.static_images_path
-
