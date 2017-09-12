@@ -10,6 +10,7 @@ import random
 import tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
+from tools import FileTools as ft
 
 
 def in_hull(p, hull):
@@ -400,24 +401,32 @@ class Stim(object):
         duration of gap period after stimulus, measured in seconds, defaults
         to `3.`
     """
-    def __init__(self, monitor, indicator, background = 0., coordinate = 'degree',
-                 pregap_dur = 2., postgap_dur = 3.):
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 pregap_dur=2., postgap_dur=3.):
         """
         Initialize visual stimulus object
         """
 
         self.monitor = monitor
         self.indicator = indicator
-        self.background = background
-        self.coordinate = coordinate
+
+        if background < -1. or background > 1.:
+            raise ValueError ('parameter "background" should be a float within [-1., 1.].')
+        else:
+            self.background = float(background)
+
+        if coordinate not in ['degree', 'linear']:
+            raise ValueError ('parameter "coordinate" should be either "degree" or "linear".')
+        else:
+            self.coordinate = coordinate
 
         if pregap_dur >= 0.:
-            self.pregap_dur = pregap_dur
+            self.pregap_dur = float(pregap_dur)
         else:
             raise ValueError('pregap_dur should be no less than 0.')
 
         if postgap_dur >= 0.:
-            self.postgap_dur = postgap_dur
+            self.postgap_dur = float(postgap_dur)
         else:
             raise ValueError('postgap_dur should be no less than 0.')
 
@@ -467,7 +476,7 @@ class Stim(object):
 
     def generate_movie_by_index(self):
         """
-        place holder of function _generate_movie_by_index()
+        place holder of function generate_movie_by_index()
         for each specific stimulus
         """
         print 'Nothing executed! This is a place holder function'
@@ -483,13 +492,52 @@ class Stim(object):
         if hasattr(self, 'frame_config'):
             del self.frame_config
 
-    def set_pre_gap_dur(self,pregap_dur):
-        self.pregap_frame_num = int(self.pregap_dur*self.monitor.refresh_rate)
+        # for StaticImages
+        if hasattr(self, 'images_wrapped'):
+            del self.images_wrapped
+        if hasattr(self, 'images_dewrapped'):
+            del self.images_dewrapped
+        if hasattr(self, 'altitude_wrapped'):
+            del self.altitude_wrapped
+        if hasattr(self, 'azimuth_wrapped'):
+            del self.azimuth_wrapped
+        if hasattr(self, 'altitude_dewrapped'):
+            del self.altitude_dewrapped
+        if hasattr(self, 'azimuth_dewrapped'):
+            del self.azimuth_dewrapped
+
+    def set_monitor(self, monitor):
+        self.monitor = monitor
         self.clear()
 
-    def set_post_gap_dur(self,postgap_dur):
-        self.postgap_frame_num = int(self.postgap_dur*self.monitor.refresh_rate)
+    def set_indicator(self, indicator):
+        self.indicator = indicator
         self.clear()
+
+    def set_pregap_dur(self, pregap_dur):
+        if pregap_dur >= 0.:
+            self.pregap_dur = float(pregap_dur)
+        else:
+            raise ValueError('pregap_dur should be no less than 0.')
+        self.clear()
+
+    def set_postgap_dur(self, postgap_dur):
+        if postgap_dur >= 0.:
+            self.postgap_dur = float(postgap_dur)
+        else:
+            raise ValueError('postgap_dur should be no less than 0.')
+
+    def set_background(self, background):
+        if background < -1. or background > 1.:
+            raise ValueError ('parameter "background" should be a float within [-1., 1.].')
+        else:
+            self.background = float(background)
+        self.clear()
+
+    def set_coordinate(self, coordinate):
+        if coordinate not in ['degree', 'linear']:
+            raise ValueError ('parameter "coordinate" should be either "degree" or "linear".')
+        self.coordinate = coordinate
 
 
 class UniformContrast(Stim):
@@ -738,7 +786,8 @@ class FlashingCircle(Stim):
     def __init__(self, monitor, indicator, coordinate='degree', center=(0., 60.),
                  radius=10., is_smooth_edge=False, smooth_width_ratio=0.2,
                  smooth_func=blur_cos, color=-1., flash_frame_num=3,
-                 pregap_dur=2., postgap_dur=3., background=0.):
+                 pregap_dur=2., postgap_dur=3., background=0., midgap_dur=1.,
+                 iteration=1):
 
         """
         Initialize `FlashingCircle` stimulus object.
@@ -753,13 +802,15 @@ class FlashingCircle(Stim):
 
         self.stim_name = 'FlashingCircle'
         self.center = center
-        self.radius = radius
-        self.color = color
-        self.flash_frame_num = flash_frame_num
+        self.radius = float(radius)
+        self.color = float(color)
+        self.flash_frame_num = int(flash_frame_num)
         self.frame_config = ('is_display', 'indicator color [-1., 1.]')
         self.is_smooth_edge = is_smooth_edge
-        self.smooth_width_ratio = smooth_width_ratio
+        self.smooth_width_ratio = float(smooth_width_ratio)
         self.smooth_func = smooth_func
+        self.midgap_dur = float(midgap_dur)
+        self.iteration = int(iteration)
 
         if self.pregap_frame_num + self.postgap_frame_num == 0:
             raise ValueError('pregap_frame_num + postgap_frame_num should be larger than 0.')
@@ -782,6 +833,10 @@ class FlashingCircle(Stim):
         self.radius = radius
         self.clear()
 
+    @property
+    def midgap_frame_num(self):
+        return int(self.midgap_dur * self.monitor.refresh_rate)
+
     def generate_frames(self):
         """
         function to generate all the frames needed for the stimulation.
@@ -803,29 +858,28 @@ class FlashingCircle(Stim):
             list of information defining each frame.
         """
 
-        # number of frames for one round of stimulus
-        iteration_frame_num = (self.pregap_frame_num +
-                               self.flash_frame_num + self.postgap_frame_num)
+        frames = [[0, -1.]] * self.pregap_frame_num
 
-        frames = np.zeros((iteration_frame_num,2)).astype(np.int16)
-
-        #initilize indicator color
-        frames[:,1] = -1
-
-        for i in xrange(frames.shape[0]):
-
-            # mark display frame and synchronized indicator
-            frames[self.pregap_frame_num: self.pregap_frame_num + self.flash_frame_num, 0] = 1
+        for iter in range(self.iteration):
 
             if self.indicator.is_sync:
-                frames[self.pregap_frame_num: self.pregap_frame_num + self.flash_frame_num, 1] = 1
+                frames += [[0, -1.]] * self.midgap_frame_num
+                frames += [[1, 1.]] * self.flash_frame_num
+            else:
+                frames += [[0, -1.]] * self.midgap_frame_num
+                frames += [[1, -1.]] * self.flash_frame_num
 
-            # mark unsynchronized indicator
-            if not(self.indicator.is_sync):
-                if np.floor(i // self.indicator.frame_num) % 2 == 0:
-                    frames[i, 1] = 1
+        frames += [[0, -1.]] * self.postgap_frame_num
+
+        frames = frames[self.midgap_frame_num:]
+
+        if not self.indicator.is_sync:
+            for frame_ind in xrange(frames.shape[0]):
+                # mark unsynchronized indicator
+                if np.floor(frame_ind // self.indicator.frame_num) % 2 == 0:
+                    frames[frame_ind, 1] = 1.
                 else:
-                    frames[i, 1] = -1
+                    frames[frame_ind, 1] = -1.
 
         frames = [tuple(x) for x in frames]
 
@@ -846,9 +900,20 @@ class FlashingCircle(Stim):
 
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
-        index_to_display = [0] * self.pregap_frame_num + [1] * self.flash_frame_num + \
-                           [0] * self.postgap_frame_num
-        return index_to_display
+        if self.indicator.is_sync:
+
+            index_to_display = [0] * self.pregap_frame_num
+
+            for iter in range(self.iteration):
+                index_to_display += [0] * self.midgap_frame_num
+                index_to_display += [1] * self.flash_frame_num
+
+            index_to_display += [0] * self.postgap_frame_num
+            index_to_display = index_to_display[self.midgap_frame_num:]
+
+            return index_to_display
+        else:
+            raise NotImplementedError, "method not available for non-sync indicator"
 
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
@@ -1191,10 +1256,9 @@ class SparseNoise(Stim):
 
         indicator_off_frame = self.probe_frame_num - indicator_on_frame
 
-        for i in range(self.iteration):
+        frames += [[0., None, None, -1.]] * self.pregap_frame_num
 
-            if self.pregap_frame_num>0:
-                 frames += [[0., None, None, -1.]] * self.pregap_frame_num
+        for i in range(self.iteration):
 
             iter_grid_points = self._generate_grid_points_sequence()
 
@@ -1202,10 +1266,9 @@ class SparseNoise(Stim):
                 frames += [[1., grid_point[0], grid_point[1], 1.]] * indicator_on_frame
                 frames += [[1., grid_point[0], grid_point[1], -1.]] * indicator_off_frame
 
-            if self.postgap_frame_num>0:
-                 frames += [[0., None, None, -1.]] * self.postgap_frame_num
+        frames += [[0., None, None, -1.]] * self.postgap_frame_num
 
-        if self.indicator.is_sync == False:
+        if not self.indicator.is_sync:
             indicator_frame = self.indicator.frame_num
             for m in range(len(frames)):
                 if np.floor(m // indicator_frame) % 2 == 0:
@@ -1281,8 +1344,8 @@ class SparseNoise(Stim):
                 probe_loc_0 = probe_locations[probe_ind[i]]
                 probe_loc_1 = probe_locations[probe_ind[i + 1]]
                 if np.array_equal(probe_loc_0, probe_loc_1):
-                    print('overlapping probes detected. ind_{}:loc{}; ind_{}:loc{}'
-                          .format(i, probe_loc_0, i + 1, probe_loc_1))
+                    # print('overlapping probes detected. ind_{}:loc{}; ind_{}:loc{}'
+                    #       .format(i, probe_loc_0, i + 1, probe_loc_1))
                     # print ('ind_{}:loc{}'.format((i + 2) % probe_num,
                     #                              probe_locations[(i + 2) % probe_num]))
                     ind_temp = probe_ind[i + 1]
@@ -1308,33 +1371,35 @@ class SparseNoise(Stim):
 
             index_to_display = []
 
+            index_to_display += [0] * self.pregap_frame_num
+
             for iter in range(self.iteration):
 
                 probe_sequence = np.arange(probe_num)
                 np.random.shuffle(probe_sequence)
-                index_to_display += [0] * self.pregap_frame_num
 
                 for probe_ind in probe_sequence:
                     index_to_display += [probe_ind * 2 + 1] * probe_on_frame_num
                     index_to_display += [probe_ind * 2 + 2] * probe_off_frame_num
 
-                index_to_display += [0] * self.postgap_frame_num
+            index_to_display += [0] * self.postgap_frame_num
 
         elif self.sign == 'ON-OFF':
             if len(frames_unique) % 4 != 1:
                 raise ValueError('number of frames_unique should be 4x + 1')
 
             index_to_display = []
+
+            index_to_display += [0] * self.pregap_frame_num
+
             for iter in range(self.iteration):
                 probe_inds = self._get_probe_index_for_one_iter_on_off(frames_unique)
-
-                index_to_display += [0] * self.pregap_frame_num
 
                 for probe_ind in probe_inds:
                     index_to_display += [probe_ind * 2 + 1] * probe_on_frame_num
                     index_to_display += [probe_ind * 2 + 2] * probe_off_frame_num
 
-                index_to_display += [0] * self.postgap_frame_num
+            index_to_display += [0] * self.postgap_frame_num
 
         else:
             raise ValueError('SparseNoise: Do not understand "sign", should '
@@ -1840,9 +1905,11 @@ class LocallySparseNoise(Stim):
             probe_diff = probe_nums[-1] - probe_nums[0]
         else:
             if not is_moved:
-                print ('redistributing probes among frames: no more probes can be moved.')
+                # print ('redistributing probes among frames: no more probes can be moved.')
+                pass
             if probe_diff <= 1:
-                print ('redistributing probes among frames: probes already well distributed.')
+                # print ('redistributing probes among frames: probes already well distributed.')
+                pass
 
         return new_frames
 
@@ -3032,14 +3099,14 @@ class StaticImages(Stim):
         self.images_wrapped = img_f['images_wrapped/images'].value
 
         if 'images_dewrapped' in img_f:
-            if img_f['images_dewrapped/images'].shape != 3:
+            if not img_f['images_dewrapped/images'].shape != 3:
                 print ('The images_dewrapped in the input file is not 3d. '
                        'Set self.images_dewrapped to None.')
                 self.images_dewrapped = None
                 self.altitude_dewrapped = None
                 self.azimuth_dewrapped = None
 
-            elif img_f['images_dwrapped/images'].shape[0] != self.images_wrapped.shape[0]:
+            elif img_f['images_dewrapped/images'].shape[0] != self.images_wrapped.shape[0]:
                 print ('The number of frames of images_dewrapped in the input file is different'
                        'from the number of frames of self.images. Set self.images_dewrapped to None.')
                 self.images_dewrapped = None
@@ -3081,21 +3148,6 @@ class StaticImages(Stim):
             self.azimuth_dewrapped = None
 
         img_f.close()
-
-    def clear(self):
-        super(StaticImages, self).clear()
-        if hasattr(self, 'images_wrapped'):
-            del self.images_wrapped
-        if hasattr(self, 'images_dewrapped'):
-            del self.images_dewrapped
-        if hasattr(self, 'altitude_wrapped'):
-            del self.altitude_wrapped
-        if hasattr(self, 'azimuth_wrapped'):
-            del self.azimuth_wrapped
-        if hasattr(self, 'altitude_dewrapped'):
-            del self.altitude_dewrapped
-        if hasattr(self, 'azimuth_dewrapped'):
-            del self.azimuth_dewrapped
 
     def _generate_frames_for_index_display(self):
         """
@@ -3837,3 +3889,106 @@ class KSstimAllDir(object):
                                               'sweepEndCoordinate')
 
         return mov, log
+
+
+class CombinedStimuli(Stim):
+
+    def __init__(self, monitor, indicator, background=0., coordinate='degree',
+                 pregap_dur=2., postgap_dur=3.):
+
+        super(CombinedStimuli, self).__init__(monitor=monitor, indicator=indicator,
+                                              background=background, coordinate=coordinate,
+                                              pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+
+        self.stim_name = 'CombinedStimuli'
+
+    def set_stimuli(self, stimuli, static_images_path=None):
+        """
+
+        parameters
+        ----------
+        stimuli : list of above stimulus object
+        static_images_path : str
+            system path to the hdf5 file storing the wrapped images for display. If there
+            is StaticImages stimulus in the stimuli list, it will try to load images and
+            display
+        """
+
+        for stimulus in stimuli:
+            if not stimulus.stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise',
+                                          'LocallySparseNoise', 'DriftingGratingCircle',
+                                          'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
+                raise LookupError ('Stimulus type "{}" is not currently supported.'
+                                   .format(stimulus.stim_name))
+
+        self.stimuli = stimuli
+        self.static_images_path = static_images_path
+
+    def generate_movie_by_index(self):
+
+        print ('\nCombinedStimulus: generation stimuli ...')
+
+        self.frames_unique = []
+        self.index_to_display = []
+        self.individual_logs = {}
+        mov = []
+
+        curr_start_frame_ind = 0
+
+        for stim_ind, stimulus in enumerate(self.stimuli):
+
+            curr_stim_name = stimulus.stim_name
+            curr_stim_id = ft.int2str(stim_ind, 3) + '_' + curr_stim_name
+
+            stimulus.set_monitor(self.monitor)
+            stimulus.set_indicator(self.indicator)
+            stimulus.set_pregap_dur(self.pregap_dur)
+            stimulus.set_postgap_dur(self.postgap_dur)
+            stimulus.set_background(self.background)
+            stimulus.set_coordinate(self.coordinate)
+
+            # load the images if the stimulus is StaticImages
+            if curr_stim_name == 'StaticImages':
+                stimulus.set_imgs_from_hdf5(imgs_file_path=self.static_images_path)
+
+            curr_mov, curr_log = stimulus.generate_movie_by_index()
+            curr_log.pop('monitor')
+            curr_log.pop('indicator')
+
+            self.individual_logs.update({curr_stim_id : curr_log})
+
+            curr_frames_unique = [[curr_stim_id] + list(f) for f in curr_log['stimulation']['frames_unique']]
+            curr_index_to_display = np.array(curr_log['stimulation']['index_to_display'], dtype=np.uint64)
+
+            self.frames_unique += curr_frames_unique
+            self.index_to_display.append(curr_index_to_display + curr_start_frame_ind)
+            mov.append(curr_mov)
+
+            curr_start_frame_ind += len(curr_frames_unique)
+
+            print ('stimulus: {}; estimated display duration: {:4.1f} minute(s).'
+                   .format(curr_stim_id, len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
+
+        self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
+        self.index_to_display = list(np.concatenate(self.index_to_display, axis=0))
+        mov = np.concatenate(mov, axis=0)
+
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        indicator_dict.pop('monitor')
+        self_dict = dict(self.__dict__)
+        self_dict.pop('monitor')
+        self_dict.pop('indicator')
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
+
+        return mov, log
+
+    def clear(self):
+        super(CombinedStimuli, self).clear()
+        if hasattr(self, 'stimuli'):
+            del self.stimuli
+        if hasattr(self, 'static_images_path'):
+            del self.static_images_path
+

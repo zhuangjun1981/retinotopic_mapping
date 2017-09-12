@@ -147,16 +147,18 @@ class TestSimulation(unittest.TestCase):
     def test_FC_generate_movie_by_index(self):
 
         fc = sr.FlashingCircle(monitor=self.monitor,
-                                    indicator=self.indicator,
-                                    center=(10., 90.), flash_frame_num=30,
-                                    color=-1., pregap_dur=0.5, postgap_dur=1.2,
-                                    background=1., coordinate='degree')
+                               indicator=self.indicator,
+                               center=(10., 90.), flash_frame_num=30,
+                               color=-1., pregap_dur=0.5, postgap_dur=1.2,
+                               background=1., coordinate='degree',
+                               midgap_dur=1., iteration=3)
 
         fc_full_seq, fc_full_dict = fc.generate_movie_by_index()
 
         assert (fc_full_seq.shape == (2, 120, 160))
 
-        assert (len(fc_full_dict['stimulation']['index_to_display']) == 132)
+        # print len(fc_full_dict['stimulation']['index_to_display'])
+        assert (len(fc_full_dict['stimulation']['index_to_display']) == 312)
 
         frames_unique = fc_full_dict['stimulation']['frames_unique']
         frames = []
@@ -164,19 +166,21 @@ class TestSimulation(unittest.TestCase):
             frames.append(frames_unique[ind])
 
         # Parameters defining where the frame blocks should start and end
-        pregap_end = fc.pregap_frame_num
-        flash_frames= fc.flash_frame_num
-        flashing_end = pregap_end + flash_frames
-        postgap_end = flashing_end + fc.postgap_frame_num
+        flashing_end = fc.pregap_frame_num + fc.flash_frame_num
+        midgap_end = flashing_end + fc.midgap_frame_num
+        next_flash_end = midgap_end + fc.flash_frame_num
 
-        for i in range(pregap_end):
+        for i in range(fc.pregap_frame_num):
+            assert (frames[i] == (0, -1.))
+
+        for i in range(fc.pregap_frame_num, flashing_end):
+            assert (frames[i] == (1, 1.))
+
+        for i in range(flashing_end, midgap_end):
             assert (frames[i] == (0., -1.))
 
-        for i in range(pregap_end, flashing_end):
-            assert (frames[i] == (1., 1.))
-
-        for i in range(flashing_end, postgap_end):
-            assert (frames[i] == (0., -1.))
+        for i in range(midgap_end, next_flash_end):
+            assert (frames[i] == (1, 1.))
 
         assert (fc_full_seq[1, 39, 124] == -1)
         # import matplotlib.pyplot as plt
@@ -187,33 +191,36 @@ class TestSimulation(unittest.TestCase):
     def test_FC_generate_movie(self):
 
         fc = sr.FlashingCircle(monitor=self.monitor,
-                                    indicator=self.indicator,
-                                    center=(10., 90.), flash_frame_num=30,
-                                    color=-1., pregap_dur=0.1, postgap_dur=1.0,
-                                    background=1., coordinate='degree')
+                               indicator=self.indicator,
+                               center=(10., 90.), flash_frame_num=30,
+                               color=-1., pregap_dur=0.1, postgap_dur=1.0,
+                               background=1., coordinate='degree',
+                               midgap_dur=0.5, iteration=10)
 
         fc_full_seq, fc_full_dict = fc.generate_movie()
 
-        assert (fc_full_seq.shape == (96, 120, 160))
-        assert (len(fc_full_dict['stimulation']['frames']) == 96)
+        assert (fc_full_seq.shape == (636, 120, 160))
+        assert (len(fc_full_dict['stimulation']['frames']) == 636)
 
         frames = fc_full_dict['stimulation']['frames']
         # print frames
 
         # Parameters defining where the frame blocks should start and end
-        pregap_end = fc.pregap_frame_num
-        flash_frames = fc.flash_frame_num
-        flashing_end = pregap_end + flash_frames
-        postgap_end = flashing_end + fc.postgap_frame_num
+        flashing_end = fc.pregap_frame_num + fc.flash_frame_num
+        midgap_end = flashing_end + fc.midgap_frame_num
+        next_flash_end = midgap_end + fc.flash_frame_num
 
-        for i in range(pregap_end):
+        for i in range(fc.pregap_frame_num):
+            assert (frames[i] == (0, -1.))
+
+        for i in range(fc.pregap_frame_num, flashing_end):
+            assert (frames[i] == (1, 1.))
+
+        for i in range(flashing_end, midgap_end):
             assert (frames[i] == (0., -1.))
 
-        for i in range(pregap_end, flashing_end):
-            assert (frames[i] == (1., 1.))
-
-        for i in range(flashing_end, postgap_end):
-            assert (frames[i] == (0., -1.))
+        for i in range(midgap_end, next_flash_end):
+            assert (frames[i] == (1, 1.))
 
         assert (fc_full_seq[6, 39, 124] == -1.)
 
@@ -269,9 +276,9 @@ class TestSimulation(unittest.TestCase):
         assert (index_to_display[-18:] == [0] * 18)
         assert (max(index_to_display) == len(frames_unique) - 1)
 
-        frame_num_iter = len(index_to_display) / 2
-        assert (index_to_display[frame_num_iter - 18: frame_num_iter + 30] == [0] * 48)
-        probe_num = (len(index_to_display[:frame_num_iter]) - 30) / 6
+        # frame_num_iter = (len(index_to_display) - 18 - 30) / 2
+        assert ((len(index_to_display) - 48) % (8 * 2) == 0)
+        probe_num = (len(index_to_display) - 48) / (8 * 2)
         for probe_ind in range(probe_num):
             assert (len(set(index_to_display[30 + probe_ind * 8: 34 + probe_ind * 8])) == 1)
             assert (len(set(index_to_display[34 + probe_ind * 8: 38 + probe_ind * 8])) == 1)

@@ -100,13 +100,13 @@ class DisplaySequence(object):
                  backupdir=None,
                  identifier='000',
                  display_iter=1,
-                 display_order=1,
                  mouse_id='Test',
                  user_id='Name',
                  psychopy_mon='testMonitor',
+                 is_by_index=False,
                  is_interpolate=False,
                  is_triggered=False,
-                 by_index=False,
+                 trigger_event="negative_edge",
                  trigger_NI_dev='Dev1',
                  trigger_NI_port=1,
                  trigger_NI_line=0,
@@ -114,12 +114,8 @@ class DisplaySequence(object):
                  sync_pulse_NI_dev='Dev1',
                  sync_pulse_NI_port=1,
                  sync_pulse_NI_line=1,
-                 display_trigger_event="negative_edge",
                  display_screen=0,
-                 initial_background_color=0,
-                 file_num_NI_dev='Dev1',
-                 file_num_NI_port='0',
-                 file_num_NI_lines='0:7'):
+                 initial_background_color=0.):
         """
         initialize `DisplaySequence` object
 
@@ -134,10 +130,6 @@ class DisplaySequence(object):
             show up in the name of log file when display is done.
         display_iter : int, optional
             defaults to `1`
-        display_order : int, optional
-            determines whether the stimulus is presented forward or backwards.
-            If `1`, stimulus is presented forward, whereas if `-1`, stimulus is
-            presented backwards. Defaults to `1`.
         mouse_id : str, optional
             label for mouse, defaults to 'Test'.
         user_id : str, optional
@@ -150,7 +142,7 @@ class DisplaySequence(object):
         is_triggered : bool, optional
             if `True`, stimulus will not display until triggered. if `False`,
             stimulus will display automatically. defaults to `False`.
-        by_index : bool, optional
+        is_by_index : bool, optional
             determines if stimulus is displayed by index which saves memory
             and should speed up routines. Note that not every stimulus can be
             displayed by index and hence the default value is `False`.
@@ -168,19 +160,13 @@ class DisplaySequence(object):
             defaults to 1.
         sync_pulse_NI_line : int, optional
             defaults to 1.
-        display_trigger_event :
+        trigger_event :
             should be one of "negative_edge", "positive_edge", "high_level",
             or "low_level". defaults to "negative_edge".
         display_screen :
             determines which monitor to display stimulus on. defaults to `0`.
         initial_background_color :
             defaults to `0`.
-        file_num_NI_dev : obsolete functionality
-            defaults to 'Dev1',
-        file_num_NI_port :
-            defaults to `0`,
-        file_num_NI_lines :
-            defaults to '0:7'.
         """
 
         self.sequence = None
@@ -189,28 +175,24 @@ class DisplaySequence(object):
         self.psychopy_mon = psychopy_mon
         self.is_interpolate = is_interpolate
         self.is_triggered = is_triggered
-        self.by_index = by_index
+        self.is_by_index = is_by_index
         self.trigger_NI_dev = trigger_NI_dev
         self.trigger_NI_port = trigger_NI_port
         self.trigger_NI_line = trigger_NI_line
-        self.display_trigger_event = display_trigger_event
+        self.trigger_event = trigger_event
         self.is_sync_pulse = is_sync_pulse
         self.sync_pulse_NI_dev = sync_pulse_NI_dev
         self.sync_pulse_NI_port = sync_pulse_NI_port
         self.sync_pulse_NI_line = sync_pulse_NI_line
         self.display_screen = display_screen
-        self.initial_background_color = initial_background_color
+        self.initial_background_color = float(initial_background_color)
         self.keep_display = None
-        self.file_num_NI_dev = file_num_NI_dev
-        self.file_num_NI_port = file_num_NI_port
-        self.file_num_NI_lines = file_num_NI_lines
 
         if display_iter % 1 == 0:
             self.display_iter = display_iter
         else:
             raise ArithmeticError, "`display_iter` should be a whole number."
 
-        self.display_order = display_order
         self.log_dir = log_dir
         self.backupdir = backupdir
         self.mouse_id = mouse_id
@@ -251,7 +233,7 @@ class DisplaySequence(object):
         stim : Stim object
             the type of stimulus to be presented in the experiment
         """
-        if self.by_index:
+        if self.is_by_index:
             if stim.stim_name in ['KSstim', 'KSstimAllDir']:
                 raise LookupError('Stimulus {} does not support indexed display.'.format(stim.name))
 
@@ -261,7 +243,7 @@ class DisplaySequence(object):
         else:
             if stim.stim_name in ['LocallySparseNoise', 'StaticGratingCircle', 'NaturalScene']:
                 raise LookupError('Stimulus {} does not support full sequence display. Please use '
-                                  'indexed display instead (set self.by_index = True).')
+                                  'indexed display instead (set self.is_by_index = True).')
 
             self.sequence, self.seq_log = stim.generate_movie()
             self.clear()
@@ -307,7 +289,7 @@ class DisplaySequence(object):
 
         # if display by index, check frame indices were not larger than the number of frames in
         # self.sequence
-        if self.by_index:
+        if self.is_by_index:
             max_index = max(self.seq_log['stimulation']['index_to_display'])
             min_index = min(self.seq_log['stimulation']['index_to_display'])
             if  max_index >= self.sequence.shape[0] or  min_index < 0:
@@ -322,7 +304,7 @@ class DisplaySequence(object):
                                    'is required when display by full sequence.')
 
         # calculate expected display time
-        if self.by_index:
+        if self.is_by_index:
             index_to_display = self.seq_log['stimulation']['index_to_display']
             display_time = (float(len(index_to_display)) *
                             self.display_iter/ refresh_rate)
@@ -350,7 +332,7 @@ class DisplaySequence(object):
 
         # handle display trigger
         if self.is_triggered:
-            display_wait = self._wait_for_trigger(event=self.display_trigger_event)
+            display_wait = self._wait_for_trigger(event=self.trigger_event)
             if not display_wait:
                 window.close()
                 self.clear()
@@ -360,7 +342,7 @@ class DisplaySequence(object):
 
         # display sequence either frame by frame or by index
         self.displayed_frames = []
-        if self.by_index:
+        if self.is_by_index:
             # display by index
             self._display_by_index(window, stim)
         else:
@@ -512,13 +494,16 @@ class DisplaySequence(object):
 
         while self.keep_display and i < (num_iters*self.display_iter):
 
-            if self.display_order == 1:
-                # Then display sequence in order
-                 frame_num = i % num_iters
+            frame_num = i % num_iters
 
-            if self.display_order == -1:
-                # Then display sequence backwards
-                 frame_num = num_iters - (i % num_iters) -1
+            # obsolete
+            # if self.display_order == 1:
+            #     # Then display sequence in order
+            #      frame_num = i % num_iters
+            #
+            # if self.display_order == -1:
+            #     # Then display sequence backwards
+            #      frame_num = num_iters - (i % num_iters) -1
 
             frame_index = index_to_display[frame_num]
 
@@ -573,13 +558,16 @@ class DisplaySequence(object):
 
         while self.keep_display and i < (singleRunFrames * self.display_iter):
 
-            if self.display_order == 1:
-                # Then display sequence in order
-                 frame_num = i % singleRunFrames
+            frame_num = i % singleRunFrames
 
-            if self.display_order == -1:
-                # then display sequence backwards
-                 frame_num = singleRunFrames - (i % singleRunFrames) -1
+            # obsolete
+            # if self.display_order == 1:
+            #     # Then display sequence in order
+            #      frame_num = i % singleRunFrames
+            #
+            # if self.display_order == -1:
+            #     # then display sequence backwards
+            #      frame_num = singleRunFrames - (i % singleRunFrames) -1
 
             stim.setImage(self.sequence[frame_num][::-1])
             stim.draw()
@@ -625,11 +613,6 @@ class DisplaySequence(object):
         if len(keyList) > 0:
             self.keep_display = False
             print "Keyboard stop signal detected. Stop displaying. \n"
-
-    def set_display_order(self, display_order):
-
-        self.display_order = display_order
-        self.clear()
 
     def set_display_iteration(self, display_iter):
 

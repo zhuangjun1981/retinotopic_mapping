@@ -53,7 +53,7 @@ mon = Monitor(resolution=resolution, dis=dis, mon_width_cm=mon_width_cm, mon_hei
               C2T_cm=C2T_cm, C2A_cm=C2A_cm, mon_tilt=mon_tilt, downsample_rate=downsample_rate)
 # mon.plot_map()
 # plt.show()
-ind = Indicator(mon, width_cm = 3., height_cm = 3., position = 'northeast', is_sync = True, freq = 2.)
+ind = Indicator(mon, width_cm=3., height_cm=3., position='northeast', is_sync=True, freq=1.)
 
 """ Now for the fun stuff! Each block of code below shows an example of
 the stimulus routines that are currently implemented in the codebase. Uncomment
@@ -70,7 +70,7 @@ you might need to start debugging!
 #                      is_triggered=False,
 #                      is_sync_pulse=False,
 #                      display_screen=1,
-#                      by_index=True)
+#                      is_by_index=True)
 #
 # ds.set_stim(uniform_contrast)
 # ds.trigger_display()
@@ -78,17 +78,17 @@ you might need to start debugging!
 
 
 #======================= Flashing Circle Stimulus =============================
-# flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
-#                                       center=(20., 30.), radius=30., color=-1.,
-#                                       flash_frame_num=30, pregap_dur=2.,
-#                                       postgap_dur=3., background=0.,
-#                                       is_smooth_edge=True, smooth_width_ratio=0.2,
-#                                       smooth_func=stim.blur_cos)
-# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-#                      is_sync_pulse=False, by_index=False, display_iter=2,
-#                      display_screen=0)
-# ds.set_stim(flashing_circle)
-# ds.trigger_display()
+flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='degree',
+                                      center=(20., 30.), radius=30., color=-1.,
+                                      flash_frame_num=30, pregap_dur=2.,
+                                      postgap_dur=3., background=0.,
+                                      is_smooth_edge=True, smooth_width_ratio=0.2,
+                                      smooth_func=stim.blur_cos)
+ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+                     is_sync_pulse=False, is_by_index=False, display_iter=2,
+                     display_screen=0, is_interpolate=False)
+ds.set_stim(flashing_circle)
+ds.trigger_display()
 #==============================================================================
 
 
@@ -99,7 +99,7 @@ you might need to start debugging!
 #                                 probe_frame_num=6, iteration=2, is_include_edge = True)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=2, display_screen=1,
-#                      by_index=True)
+#                      is_by_index=True)
 # ds.set_stim(sparse_noise)
 # ds.trigger_display()
 #==============================================================================
@@ -111,7 +111,7 @@ you might need to start debugging!
 #                                 probe_frame_num=6, iteration=2, is_include_edge=False)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=2, display_screen=0,
-#                      by_index=False)
+#                      is_by_index=False)
 # ds.set_stim(sparse_noise)
 # ds.trigger_display()
 #==============================================================================
@@ -124,7 +124,7 @@ you might need to start debugging!
 #                                        min_distance=50.)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
-#                      by_index=True)
+#                      is_by_index=True)
 # ds.set_stim(sparse_noise)
 # ds.trigger_display()
 #==============================================================================
@@ -137,7 +137,7 @@ you might need to start debugging!
 #                                        min_distance=50.)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
-#                      by_index=True)
+#                      is_by_index=True)
 # ds.set_stim(sparse_noise)
 # ds.trigger_display()
 #==============================================================================
@@ -152,7 +152,7 @@ you might need to start debugging!
 #
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1, is_triggered=False,
 #                      is_sync_pulse=False, is_interpolate=False, display_screen=0,
-#                      by_index=False)
+#                      is_by_index=False)
 #
 # ds.set_stim(dg)
 # ds.trigger_display()
@@ -169,7 +169,7 @@ you might need to start debugging!
 #
 # ds=DisplaySequence(log_dir=r'C:\data', backupdir=None, display_iter=1,
 #                    is_triggered=False, is_sync_pulse=False, is_interpolate=False,
-#                    display_screen=0, by_index=True)
+#                    display_screen=0, is_by_index=True)
 # ds.set_stim(dg)
 # ds.trigger_display()
 #==============================================================================
@@ -214,7 +214,7 @@ you might need to start debugging!
 #                                smooth_func=stim.blur_cos)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
-#                      by_index=True)
+#                      is_by_index=True)
 # ds.set_stim(sgc)
 # ds.trigger_display()
 #==============================================================================
@@ -230,7 +230,7 @@ you might need to start debugging!
 #                                smooth_func=stim.blur_cos)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
-#                      by_index=True, identifier='test')
+#                      is_by_index=True, identifier='test')
 # ds.set_stim(sgc)
 # ds.trigger_display()
 #==============================================================================
@@ -242,20 +242,20 @@ you might need to start debugging!
 #                             pregap_dur=0., postgap_dur=0.)
 # ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
 #                      is_sync_pulse=False, display_iter=1, display_screen=0,
-#                      by_index=True, identifier='test')
+#                      is_by_index=True, identifier='test')
 # ds.set_stim(ss)
 # ds.trigger_display()
 #==============================================================================
 
 #=============================== static images ================================
-si = stim.StaticImages(monitor=mon, indicator=ind, background=0., coordinate='degree',
-                       img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
-                       midgap_dur=0.1, iteration=2, pregap_dur=2., postgap_dur=3.)
-ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
-                     is_sync_pulse=False, display_iter=1, display_screen=0,
-                     by_index=True, identifier='test')
-si.set_imgs_from_hdf5(imgs_file_path=r"D:\data2\rabies_tracing_project\method_development"
-                                     r"\2017-09-06-natural-scenes\wrapped_images_for_display.hdf5")
-ds.set_stim(si)
-ds.trigger_display()
+# si = stim.StaticImages(monitor=mon, indicator=ind, background=0., coordinate='degree',
+#                        img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
+#                        midgap_dur=0.1, iteration=2, pregap_dur=2., postgap_dur=3.)
+# ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
+#                      is_sync_pulse=False, display_iter=1, display_screen=0,
+#                      is_by_index=True, identifier='test', is_interpolate=True)
+# si.set_imgs_from_hdf5(imgs_file_path=r"D:\data2\rabies_tracing_project\method_development"
+#                                      r"\2017-09-06-natural-scenes\wrapped_images_for_display.hdf5")
+# ds.set_stim(si)
+# ds.trigger_display()
 #==============================================================================
