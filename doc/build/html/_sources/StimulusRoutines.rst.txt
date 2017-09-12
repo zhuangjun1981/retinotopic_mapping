@@ -63,6 +63,12 @@ StimulusSeparator
    :members:
 
 
+CombinedStimuli
+---------------
+.. autoclass:: retinotopic_mapping.StimulusRoutines.CombinedStimuli
+   :members:
+
+
 KSstim
 ------
 .. autoclass:: retinotopic_mapping.StimulusRoutines.KSstim
@@ -74,3 +80,5 @@ KSstimAllDir
 ------------
 .. autoclass:: retinotopic_mapping.StimulusRoutines.KSstimAllDir
    :members:
+
+

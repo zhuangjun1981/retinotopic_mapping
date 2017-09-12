@@ -109,6 +109,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#staticgratingcircle">StaticGratingCircle</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#staticimages">StaticImages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#stimulusseparator">StimulusSeparator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#combinedstimuli">CombinedStimuli</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ksstim">KSstim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ksstimalldir">KSstimAllDir</a></li>
 </ul>
@@ -262,10 +263,22 @@ to <cite>3.</cite></p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -355,10 +368,22 @@ to <cite>3.</cite></p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -416,7 +441,7 @@ equal to -1</dd>
 <h2>FlashingCircle<a class="headerlink" href="#flashingcircle" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="retinotopic_mapping.StimulusRoutines.FlashingCircle">
-<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">FlashingCircle</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>coordinate='degree'</em>, <em>center=(0.0</em>, <em>60.0)</em>, <em>radius=10.0</em>, <em>is_smooth_edge=False</em>, <em>smooth_width_ratio=0.2</em>, <em>smooth_func=&lt;function blur_cos&gt;</em>, <em>color=-1.0</em>, <em>flash_frame_num=3</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em>, <em>background=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.FlashingCircle" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">FlashingCircle</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>coordinate='degree'</em>, <em>center=(0.0</em>, <em>60.0)</em>, <em>radius=10.0</em>, <em>is_smooth_edge=False</em>, <em>smooth_width_ratio=0.2</em>, <em>smooth_func=&lt;function blur_cos&gt;</em>, <em>color=-1.0</em>, <em>flash_frame_num=3</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em>, <em>background=0.0</em>, <em>midgap_dur=1.0</em>, <em>iteration=1</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.FlashingCircle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate flashing circle stimulus.</p>
 <p>Stimulus routine presents a circle centered at the position <cite>center</cite>
 with given <cite>radius</cite>.</p>
@@ -497,10 +522,13 @@ of the stimulus, defaults to <cite>3</cite>.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">postgap_frame_num</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">midgap_frame_num</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">pregap_frame_num</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">postgap_frame_num</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">pregap_frame_num</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -524,19 +552,31 @@ of the stimulus, defaults to <cite>3</cite>.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_center</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_color</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_center</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_color</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_flash_frame_num</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_radius</span></code></td>
@@ -697,10 +737,22 @@ the centers of displayed probes are within the subregion.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -879,10 +931,22 @@ the centers of displayed probes are within the subregion.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -1036,10 +1100,22 @@ second, smooth band width</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -1228,10 +1304,22 @@ second, smooth band width</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -1365,16 +1453,28 @@ if float, assume sizes in altitude and azimuth are the same</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_imgs_from_hdf5</span></code></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_imgs_from_tif</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">wrap_images</span></code></td>
@@ -1473,10 +1573,22 @@ visual stimuli when displayed in the same session</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -1491,6 +1603,91 @@ visual stimuli when displayed in the same session</p>
 <dt id="retinotopic_mapping.StimulusRoutines.StimulusSeparator.generate_movie">
 <code class="descname">generate_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.StimulusSeparator.generate_movie" title="Permalink to this definition">¶</a></dt>
 <dd><p>place holder of function ‘generate_movie’ for each specific stimulus</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="combinedstimuli">
+<h2>CombinedStimuli<a class="headerlink" href="#combinedstimuli" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="retinotopic_mapping.StimulusRoutines.CombinedStimuli">
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.StimulusRoutines.</code><code class="descname">CombinedStimuli</code><span class="sig-paren">(</span><em>monitor</em>, <em>indicator</em>, <em>background=0.0</em>, <em>coordinate='degree'</em>, <em>pregap_dur=2.0</em>, <em>postgap_dur=3.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.CombinedStimuli" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">postgap_frame_num</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">pregap_frame_num</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_frames</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">generate_movie_by_index</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_stimuli</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="retinotopic_mapping.StimulusRoutines.CombinedStimuli.set_stimuli">
+<code class="descname">set_stimuli</code><span class="sig-paren">(</span><em>stimuli</em>, <em>static_images_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.CombinedStimuli.set_stimuli" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stimuli</strong> : list of above stimulus object</p>
+<p><strong>static_images_path</strong> : str</p>
+<blockquote class="last">
+<div><p>system path to the hdf5 file storing the wrapped images for display. If there
+is StaticImages stimulus in the stimuli list, it will try to load images and
+display</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -1618,13 +1815,25 @@ is right to left</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_squares</span></code></td>
 <td></td>
 </tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_background</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_coordinate</span></code></td>
+<td></td>
+</tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_direction</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_post_gap_dur</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_indicator</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pre_gap_dur</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_monitor</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_postgap_dur</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_pregap_dur</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_sweep_sigma</span></code></td>
@@ -1673,7 +1882,7 @@ non-synchronized: alternating between -1 and 1 at defined frequency</dd>
 <dl class="method">
 <dt id="retinotopic_mapping.StimulusRoutines.KSstim.generate_movie_by_index">
 <code class="descname">generate_movie_by_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.StimulusRoutines.KSstim.generate_movie_by_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>place holder of function _generate_movie_by_index()
+<dd><p>place holder of function generate_movie_by_index()
 for each specific stimulus</p>
 </dd></dl>
 
