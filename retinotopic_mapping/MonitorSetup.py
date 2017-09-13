@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import retinotopic_mapping.tools.ImageAnalysis as ia
 
+
 class Monitor(object):
     """
     monitor object created by Jun, has the method "remap" to generate the
@@ -55,6 +56,7 @@ class Monitor(object):
     refresh_rate : float, optional
         the refresh rate of the monitor in Hz, defaults to 60
     """
+
     def __init__(self,
                  resolution,
                  dis,
@@ -71,15 +73,15 @@ class Monitor(object):
                  gamma_grid=None,
                  luminance=None,
                  downsample_rate=10,
-                 refresh_rate = 60.):
+                 refresh_rate=60.):
         """
         Initialize monitor object.
 
         """
 
         if resolution[0] % downsample_rate != 0 \
-                       or resolution[1] % downsample_rate != 0:
-           raise ArithmeticError ('Resolution pixel numbers are not '
+                or resolution[1] % downsample_rate != 0:
+            raise ArithmeticError('Resolution pixel numbers are not '
                                   'divisible by down sampling rate.')
 
         self.resolution = resolution
@@ -99,14 +101,14 @@ class Monitor(object):
         self.luminance = luminance
         self.refresh_rate = 60
 
-        #distance form projection point of the eye to bottom of the monitor
+        # distance form projection point of the eye to bottom of the monitor
         self.C2B_cm = self.mon_height_cm - self.C2T_cm
-        #distance form projection point of the eye to right of the monitor
+        # distance form projection point of the eye to right of the monitor
         self.C2P_cm = self.mon_width_cm - self.C2A_cm
 
-        resolution=[0,0]
-        resolution[0]=self.resolution[0]/downsample_rate
-        resolution[1]=self.resolution[1]/downsample_rate
+        resolution = [0, 0]
+        resolution[0] = self.resolution[0] / downsample_rate
+        resolution[1] = self.resolution[1] / downsample_rate
 
         map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
@@ -118,10 +120,10 @@ class Monitor(object):
             map_x = np.linspace(-1 * self.C2A_cm, self.C2P_cm, resolution[1])
 
         map_y = np.linspace(self.C2T_cm, -1.0 * self.C2B_cm, resolution[0])
-        old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse = False)
+        old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse=False)
 
-        self.lin_coord_x=old_map_x
-        self.lin_coord_y=old_map_y
+        self.lin_coord_x = old_map_x
+        self.lin_coord_y = old_map_y
 
         self.remap()
 
@@ -135,15 +137,14 @@ class Monitor(object):
     def set_downsample_rate(self, downsample_rate):
 
         if self.resolution[0] % downsample_rate != 0 \
-             or self.resolution[1] % downsample_rate != 0:
-
-           raise ArithmeticError ('Resolution pixel numbers are not divisible by down sampling rate.')
+                or self.resolution[1] % downsample_rate != 0:
+            raise ArithmeticError('Resolution pixel numbers are not divisible by down sampling rate.')
 
         self.downsample_rate = downsample_rate
 
-        resolution = [0,0]
-        resolution[0] = self.resolution[0]/downsample_rate
-        resolution[1] = self.resolution[1]/downsample_rate
+        resolution = [0, 0]
+        resolution[0] = self.resolution[0] / downsample_rate
+        resolution[1] = self.resolution[1] / downsample_rate
 
         map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
@@ -155,7 +156,7 @@ class Monitor(object):
             map_x = np.linspace(-1 * self.C2P_cm, self.C2P_cm, resolution[1])
 
         map_y = np.linspace(self.C2T_cm, -1.0 * self.C2B_cm, resolution[0])
-        old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse = False)
+        old_map_x, old_map_y = np.meshgrid(map_x, map_y, sparse=False)
 
         self.lin_coord_x = old_map_x
         self.lin_coord_y = old_map_y
@@ -170,15 +171,15 @@ class Monitor(object):
         the `deg_coord_x` and `deg_coord_y` attributes.
         """
 
-        resolution = [0,0]
-        resolution[0] = self.resolution[0]/self.downsample_rate
-        resolution[1] = self.resolution[1]/self.downsample_rate
+        resolution = [0, 0]
+        resolution[0] = self.resolution[0] / self.downsample_rate
+        resolution[1] = self.resolution[1] / self.downsample_rate
 
         map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
                                                range(resolution[0]))
 
-        new_map_x = np.zeros(resolution,dtype=np.float32)
-        new_map_y = np.zeros(resolution,dtype=np.float32)
+        new_map_x = np.zeros(resolution, dtype=np.float32)
+        new_map_y = np.zeros(resolution, dtype=np.float32)
 
         for j in range(resolution[1]):
             new_map_x[:, j] = ((180.0 / np.pi) *
@@ -252,31 +253,31 @@ class Monitor(object):
         lookupJ: j index in linear matrix to this pixel after warping
         """
 
-        #length of one degree on monitor at gaze point
+        # length of one degree on monitor at gaze point
         degDis = np.tan(np.pi / 180) * self.dis
 
-        #generate degree coordinate without warpping
+        # generate degree coordinate without warpping
         degNoWarpCorX = self.lin_coord_x / degDis
         degNoWarpCorY = self.lin_coord_y / degDis
 
-        #deg coordinates
-        degCorX = self.deg_coord_x + self.mon_tilt-90
+        # deg coordinates
+        degCorX = self.deg_coord_x + self.mon_tilt - 90
         degCorY = self.deg_coord_y
 
         lookupI = np.zeros(degCorX.shape).astype(np.int32)
         lookupJ = np.zeros(degCorX.shape).astype(np.int32)
 
         for j in xrange(lookupI.shape[1]):
-            currDegX = degCorX[0,j]
-            diffDegX = degNoWarpCorX[0,:] - currDegX
+            currDegX = degCorX[0, j]
+            diffDegX = degNoWarpCorX[0, :] - currDegX
             IndJ = np.argmin(np.abs(diffDegX))
-            lookupJ[:,j] = IndJ
+            lookupJ[:, j] = IndJ
 
             for i in xrange(lookupI.shape[0]):
-                currDegY = degCorY[i,j]
-                diffDegY = degNoWarpCorY[:,IndJ] - currDegY
+                currDegY = degCorY[i, j]
+                diffDegY = degNoWarpCorY[:, IndJ] - currDegY
                 indI = np.argmin(np.abs(diffDegY))
-                lookupI[i,j] = indI
+                lookupI[i, j] = indI
 
         return lookupI, lookupJ
 
@@ -332,7 +333,7 @@ class Monitor(object):
         elif len(imgs.shape) == 3:
             imgs_raw = imgs
         else:
-            raise ValueError ('input "imgs" should be 2d or 3d array.')
+            raise ValueError('input "imgs" should be 2d or 3d array.')
 
         # generate raw image pixel coordinates in visual degrees
         alt_start = center_coor[0] + (imgs_raw.shape[1] / 2) * deg_per_pixel_alt
@@ -343,12 +344,15 @@ class Monitor(object):
 
         # initialize output array
         imgs_wrapped = np.zeros((imgs_raw.shape[0],
-                                self.deg_coord_x.shape[0],
-                                self.deg_coord_x.shape[1]), dtype=np.float32)
+                                 self.deg_coord_x.shape[0],
+                                 self.deg_coord_x.shape[1]), dtype=np.float32)
         imgs_wrapped[:] = np.nan
 
         # for cropping imgs_raw
-        x_min = None; x_max=None; y_min=None; y_max=None
+        x_min = None;
+        x_max = None;
+        y_min = None;
+        y_max = None
 
         # for testing
         # img_count = np.zeros((imgs_raw.shape[1], imgs_raw.shape[2]), dtype=np.uint32)
@@ -363,16 +367,16 @@ class Monitor(object):
                 # if the wrapped coordinates of current display pixel is covered
                 # by the raw image
                 if alt_axis[0] >= coord_w[0] >= alt_axis[-1] and \
-                    azi_axis[0] <= coord_w[1] <= azi_axis[-1]:
+                                        azi_axis[0] <= coord_w[1] <= azi_axis[-1]:
 
                     # get raw pixels arround the wrapped coordinates of current display pixel
                     u = (alt_axis[0] - coord_w[0]) / deg_per_pixel_alt
                     l = (coord_w[1] - azi_axis[0]) / deg_per_pixel_azi
 
-                    #for testing:
+                    # for testing:
                     # img_count[int(u), int(l)] += 1
 
-                    if (u == round(u) and l == round(l)): # right hit on one raw pixel
+                    if (u == round(u) and l == round(l)):  # right hit on one raw pixel
                         imgs_wrapped[:, ii, jj] = imgs_raw[:, int(u), int(l)]
 
                         # for cropping
@@ -386,7 +390,10 @@ class Monitor(object):
                             y_max = max(y_max, u)
 
                     else:
-                        u = int(u); b = u + 1; l = int(l); r = l + 1
+                        u = int(u);
+                        b = u + 1;
+                        l = int(l);
+                        r = l + 1
                         w_ul = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[l]])
                         w_bl = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[l]])
                         w_ur = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[r]])
@@ -401,10 +408,15 @@ class Monitor(object):
 
                         # for cropping
                         if x_min is None:
-                            x_min = l; x_max = l + 1; y_min = u; y_max = u + 1
+                            x_min = l;
+                            x_max = l + 1;
+                            y_min = u;
+                            y_max = u + 1
                         else:
-                            x_min = min(x_min, l); x_max = max(x_max, l + 1)
-                            y_min = min(y_min, u); y_max = max(y_max, u + 1)
+                            x_min = min(x_min, l);
+                            x_max = max(x_max, l + 1)
+                            y_min = min(y_min, u);
+                            y_max = max(y_max, u + 1)
 
         # for testing
         # plt.imshow(img_count, interpolation='bicubic')
@@ -433,8 +445,8 @@ class Monitor(object):
         # print np.sum(alt_range)
         # print np.sum(azi_range)
 
-        imgs_dewrapped=imgs_raw[:, alt_range, :]
-        imgs_dewrapped=imgs_dewrapped[:, :, azi_range]
+        imgs_dewrapped = imgs_raw[:, alt_range, :]
+        imgs_dewrapped = imgs_dewrapped[:, :, azi_range]
 
         # get degree coordinats of dewrapped images
         deg_coord_alt_ax_dewrapped = alt_axis[alt_range]
@@ -444,7 +456,7 @@ class Monitor(object):
         deg_coord_alt_dewrapped = deg_coord_alt_dewrapped.astype(np.float32)
         deg_coord_azi_dewrapped = deg_coord_azi_dewrapped.astype(np.float32)
 
-        return imgs_wrapped, self.deg_coord_y, self.deg_coord_x, imgs_dewrapped, deg_coord_alt_dewrapped,\
+        return imgs_wrapped, self.deg_coord_y, self.deg_coord_x, imgs_dewrapped, deg_coord_alt_dewrapped, \
                deg_coord_azi_dewrapped
 
 
@@ -468,18 +480,19 @@ class Indicator(object):
     freq : float, optional
         frequency of photodiode, defaults to `2.`
     """
+
     def __init__(self,
                  monitor,
-                 width_cm = 3.,
-                 height_cm = 3.,
-                 position = 'northeast',
-                 is_sync = True,
-                 freq = 2.):
+                 width_cm=3.,
+                 height_cm=3.,
+                 position='northeast',
+                 is_sync=True,
+                 freq=2.):
         """
         Initialize indicator object
         """
 
-        self.monitor=monitor
+        self.monitor = monitor
         self.width_cm = width_cm
         self.height_cm = height_cm
         self.width_pixel, self.height_pixel = self.get_size_pixel()
@@ -488,7 +501,7 @@ class Indicator(object):
         self.is_sync = is_sync
 
         if is_sync == False:
-            self.freq = freq #if not synchronized with stimulation, self update frquency of the indicator
+            self.freq = freq  # if not synchronized with stimulation, self update frquency of the indicator
             self.frame_num = self.get_frames()
         else:
             self.freq = None
@@ -501,9 +514,9 @@ class Indicator(object):
         screen_height = (self.monitor.resolution[0] /
                          self.monitor.downsample_rate)
 
-        indicator_width = int((self.width_cm / self.monitor.mon_width_cm ) *
+        indicator_width = int((self.width_cm / self.monitor.mon_width_cm) *
                               screen_width)
-        indicator_height = int((self.height_cm / self.monitor.mon_height_cm ) *
+        indicator_height = int((self.height_cm / self.monitor.mon_height_cm) *
                                screen_height)
 
         return indicator_width, indicator_height
@@ -531,8 +544,8 @@ class Indicator(object):
             center_width = self.width_pixel / 2
             center_height = screen_height - self.height_pixel / 2
         else:
-            raise LookupError ('`position` attribute not in '
-                               '{"northeast","northwest","southeast","southwest"}.')
+            raise LookupError('`position` attribute not in '
+                              '{"northeast","northwest","southeast","southwest"}.')
 
         return int(center_width), int(center_height)
 
@@ -545,6 +558,6 @@ class Indicator(object):
         refresh_rate = self.monitor.refresh_rate
 
         if refresh_rate % self.freq != 0:
-            raise ArithmeticError ("`freq` not divisble by monitor ref rate.")
+            raise ArithmeticError("`freq` not divisble by monitor ref rate.")
 
-        return refresh_rate/self.freq
+        return refresh_rate / self.freq

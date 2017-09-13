@@ -1,8 +1,7 @@
-
-'''
+"""
 Contains various stimulus routines
+"""
 
-'''
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,10 +37,10 @@ def in_hull(p, hull):
         triangulation get the value -1.
     """
     from scipy.spatial import Delaunay
-    if not isinstance(hull,Delaunay):
+    if not isinstance(hull, Delaunay):
         hull = Delaunay(hull)
 
-    return hull.find_simplex(p)>=0
+    return hull.find_simplex(p) >= 0
 
 
 def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
@@ -55,7 +54,7 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
     ----------
     deg_coord_alt : ndarray
         2d array of warped altitude coordinates of monitor pixels
-    deg_coord_alt : ndarray
+    deg_coord_azi : ndarray
         2d array of warped azimuth coordinates of monitor pixels
     probes : tuple or list
         each element of probes represents a single probe (center_alt, center_azi, sign)
@@ -84,7 +83,6 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
     ori_arc = (ori % 360.) * 2 * np.pi / 360.
 
     for probe in probes:
-
         dis_width = np.abs(np.cos(ori_arc) * (deg_coord_azi - probe[1]) +
                            np.sin(ori_arc) * (deg_coord_alt - probe[0]))
 
@@ -100,8 +98,8 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
         # f.colorbar(fig2, ax=ax2)
         # plt.show()
 
-        frame[np.logical_and(dis_width<=width/2.,
-                             dis_height<=height/2.)] = probe[2]
+        frame[np.logical_and(dis_width <= width / 2.,
+                             dis_height <= height / 2.)] = probe[2]
 
     return frame
 
@@ -176,10 +174,10 @@ def get_circle_mask(map_alt, map_azi, center, radius, is_smooth_edge=False,
     """
 
     if map_alt.shape != map_azi.shape:
-         raise ValueError, 'map_alt and map_azi should have same shape!'
+        raise ValueError('map_alt and map_azi should have same shape.')
 
     if len(map_alt.shape) != 2:
-         raise ValueError, 'map_alt and map_azi should be 2-d!!'
+        raise ValueError('map_alt and map_azi should be 2-d.')
 
     dis_mat = np.sqrt((map_alt - center[0]) ** 2 + (map_azi - center[1]) ** 2)
     # plt.imshow(dis_mat)
@@ -200,7 +198,7 @@ def get_circle_mask(map_alt, map_azi, center, radius, is_smooth_edge=False,
 
 
 def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
-                center=(0.,60.), phase=0., contrast=1.):
+                center=(0., 60.), phase=0., contrast=1.):
     """
     Generate a grating frame with defined spatial frequency, center location,
     phase and contrast
@@ -229,15 +227,15 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
     """
 
     if azi_map.shape != alt_map.shape:
-        raise ValueError, 'map_alt and map_azi should have same shape!'
+        raise ValueError('map_alt and map_azi should have same shape.')
 
     if len(azi_map.shape) != 2:
-        raise ValueError, 'map_alt and map_azi should be 2-d!!'
+        raise ValueError('map_alt and map_azi should be 2-d.')
 
     axis_arc = ((dire + 90.) * np.pi / 180.) % (2 * np.pi)
 
-    map_azi_h = np.array(azi_map, dtype = np.float32)
-    map_alt_h = np.array(alt_map, dtype = np.float32)
+    map_azi_h = np.array(azi_map, dtype=np.float32)
+    map_alt_h = np.array(alt_map, dtype=np.float32)
 
     distance = (np.sin(axis_arc) * (map_azi_h - center[1]) -
                 np.cos(axis_arc) * (map_alt_h - center[0]))
@@ -246,7 +244,7 @@ def get_grating(alt_map, azi_map, dire=0., spatial_freq=0.1,
 
     grating = grating * contrast  # adjust contrast
 
-    grating = (grating + 1.) / 2. # change the scale of grating to be [0., 1.]
+    grating = (grating + 1.) / 2.  # change the scale of grating to be [0., 1.]
 
     return grating
 
@@ -401,6 +399,7 @@ class Stim(object):
         duration of gap period after stimulus, measured in seconds, defaults
         to `3.`
     """
+
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  pregap_dur=2., postgap_dur=3.):
         """
@@ -411,12 +410,12 @@ class Stim(object):
         self.indicator = indicator
 
         if background < -1. or background > 1.:
-            raise ValueError ('parameter "background" should be a float within [-1., 1.].')
+            raise ValueError('parameter "background" should be a float within [-1., 1.].')
         else:
             self.background = float(background)
 
         if coordinate not in ['degree', 'linear']:
-            raise ValueError ('parameter "coordinate" should be either "degree" or "linear".')
+            raise ValueError('parameter "coordinate" should be either "degree" or "linear".')
         else:
             self.coordinate = coordinate
 
@@ -529,14 +528,14 @@ class Stim(object):
 
     def set_background(self, background):
         if background < -1. or background > 1.:
-            raise ValueError ('parameter "background" should be a float within [-1., 1.].')
+            raise ValueError('parameter "background" should be a float within [-1., 1.].')
         else:
             self.background = float(background)
         self.clear()
 
     def set_coordinate(self, coordinate):
         if coordinate not in ['degree', 'linear']:
-            raise ValueError ('parameter "coordinate" should be either "degree" or "linear".')
+            raise ValueError('parameter "coordinate" should be either "degree" or "linear".')
         self.coordinate = coordinate
 
 
@@ -568,6 +567,7 @@ class UniformContrast(Stim):
     background : float, optional
         color during pre and post gap, defaults to `0.` which is grey
     """
+
     def __init__(self, monitor, indicator, duration, color=0., pregap_dur=2.,
                  postgap_dur=3., background=0., coordinate='degree'):
         """
@@ -608,13 +608,13 @@ class UniformContrast(Stim):
         return tuple(frames)
 
     def _generate_frames_for_index_display(self):
-        " parameters are predefined here, nothing to compute. "
+        """ parameters are predefined here, nothing to compute. """
         if self.indicator.is_sync:
             # Parameters that define the stimulus
             frames = ((0, -1.), (1, 1.))
             return frames
         else:
-            raise NotImplementedError, "method not avaialable for non-sync indicator"
+            raise NotImplementedError("method not avaialable for non-sync indicator.")
 
     def _generate_display_index(self):
         """ compute a list of indices corresponding to each frame to display. """
@@ -634,23 +634,22 @@ class UniformContrast(Stim):
 
         # Initialize numpy array of 0's as placeholder for stimulus routine
         full_sequence = np.ones((num_frames,
-                                  num_pixels_width,
-                                  num_pixels_height),
-                                  dtype=np.float32) * self.background
+                                 num_pixels_width,
+                                 num_pixels_height),
+                                dtype=np.float32) * self.background
 
         # Compute pixel coordinates for indicator
         indicator_width_min = (self.indicator.center_width_pixel
-                               - self.indicator.width_pixel/2)
+                               - self.indicator.width_pixel / 2)
         indicator_width_max = (self.indicator.center_width_pixel
-                               + self.indicator.width_pixel/2)
+                               + self.indicator.width_pixel / 2)
         indicator_height_min = (self.indicator.center_height_pixel
-                                - self.indicator.height_pixel/2)
+                                - self.indicator.height_pixel / 2)
         indicator_height_max = (self.indicator.center_height_pixel
-                                + self.indicator.height_pixel/2)
+                                + self.indicator.height_pixel / 2)
 
-        display = self.color*np.ones((num_pixels_width,
-                                      num_pixels_height),
-                                      dtype=np.float32)
+        display = self.color * np.ones((num_pixels_width,num_pixels_height),
+                                       dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1:
@@ -665,9 +664,9 @@ class UniformContrast(Stim):
         NF_dict = dict(self.__dict__)
         NF_dict.pop('monitor')
         NF_dict.pop('indicator')
-        full_dict = {'stimulation' : NF_dict,
-                     'monitor' : monitor_dict,
-                     'indicator' : indicator_dict}
+        full_dict = {'stimulation': NF_dict,
+                     'monitor': monitor_dict,
+                     'indicator': indicator_dict}
 
         return full_sequence, full_dict
 
@@ -688,10 +687,10 @@ class UniformContrast(Stim):
         full_seq = np.zeros((len(self.frames),
                              self.monitor.deg_coord_x.shape[0],
                              self.monitor.deg_coord_x.shape[1]),
-                             dtype=np.float32)
+                            dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel
-                               - self.indicator.width_pixel/2)
+                               - self.indicator.width_pixel / 2)
         indicator_width_max = (self.indicator.center_width_pixel
                                + self.indicator.width_pixel / 2)
         indicator_height_min = (self.indicator.center_height_pixel
@@ -701,11 +700,11 @@ class UniformContrast(Stim):
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
                               np.size(self.monitor.deg_coord_x, 1)),
-                              dtype=np.float32)*self.background
+                             dtype=np.float32) * self.background
 
         display = np.ones((np.size(self.monitor.deg_coord_x, 0),
                            np.size(self.monitor.deg_coord_x, 1)),
-                           dtype=np.float32)*self.color
+                          dtype=np.float32) * self.color
 
         if not (self.coordinate == 'degree' or self.coordinate == 'linear'):
             raise LookupError, "`coordinate` value not in {'degree','linear'}"
@@ -719,7 +718,7 @@ class UniformContrast(Stim):
                 curr_FC_seq = display
 
             curr_FC_seq[indicator_height_min:indicator_height_max,
-                           indicator_width_min:indicator_width_max] = curr_frame[1]
+            indicator_width_min:indicator_width_max] = curr_frame[1]
 
             full_seq[i] = curr_FC_seq
 
@@ -783,6 +782,7 @@ class FlashingCircle(Stim):
         number of frames that circle is displayed during each presentation
         of the stimulus, defaults to `3`.
     """
+
     def __init__(self, monitor, indicator, coordinate='degree', center=(0., 60.),
                  radius=10., is_smooth_edge=False, smooth_width_ratio=0.2,
                  smooth_func=blur_cos, color=-1., flash_frame_num=3,
@@ -793,12 +793,12 @@ class FlashingCircle(Stim):
         Initialize `FlashingCircle` stimulus object.
         """
 
-        super(FlashingCircle,self).__init__(monitor=monitor,
-                                            indicator=indicator,
-                                            background=background,
-                                            coordinate=coordinate,
-                                            pregap_dur=pregap_dur,
-                                            postgap_dur=postgap_dur)
+        super(FlashingCircle, self).__init__(monitor=monitor,
+                                             indicator=indicator,
+                                             background=background,
+                                             coordinate=coordinate,
+                                             pregap_dur=pregap_dur,
+                                             postgap_dur=postgap_dur)
 
         self.stim_name = 'FlashingCircle'
         self.center = center
@@ -929,20 +929,20 @@ class FlashingCircle(Stim):
         full_sequence = np.zeros((num_frames,
                                   num_pixels_width,
                                   num_pixels_height),
-                                  dtype=np.float32)
+                                 dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel
-                               - self.indicator.width_pixel/2)
+                               - self.indicator.width_pixel / 2)
         indicator_width_max = (self.indicator.center_width_pixel
-                               + self.indicator.width_pixel/2)
+                               + self.indicator.width_pixel / 2)
         indicator_height_min = (self.indicator.center_height_pixel
-                                - self.indicator.height_pixel/2)
+                                - self.indicator.height_pixel / 2)
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel / 2)
 
-        background = self.background*np.ones((num_pixels_width,
-                                              num_pixels_height),
-                                              dtype=np.float32)
+        background = self.background * np.ones((num_pixels_width,
+                                                num_pixels_height),
+                                               dtype=np.float32)
 
         if self.coordinate == 'degree':
             map_azi = self.monitor.deg_coord_x
@@ -964,21 +964,21 @@ class FlashingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1:
-                full_sequence[i] = self.color*circle_mask - background*(circle_mask-1)
+                full_sequence[i] = self.color * circle_mask - background * (circle_mask - 1)
 
             full_sequence[i, indicator_height_min:indicator_height_max,
-                          indicator_width_min:indicator_width_max] = frame[1]
+            indicator_width_min:indicator_width_max] = frame[1]
 
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        NFdict=dict(self.__dict__)
+        NFdict = dict(self.__dict__)
         NFdict.pop('monitor')
         NFdict.pop('indicator')
         NFdict.pop('smooth_func')
-        full_dict={'stimulation':NFdict,
-                   'monitor':mondict,
-                   'indicator':indicator_dict}
+        full_dict = {'stimulation': NFdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
 
         return full_sequence, full_dict
 
@@ -989,9 +989,9 @@ class FlashingCircle(Stim):
 
         self.frames = self.generate_frames()
 
-        full_seq = np.zeros((len(self.frames),self.monitor.deg_coord_x.shape[0],
+        full_seq = np.zeros((len(self.frames), self.monitor.deg_coord_x.shape[0],
                              self.monitor.deg_coord_x.shape[1]),
-                             dtype=np.float32)
+                            dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel -
                                (self.indicator.width_pixel / 2))
@@ -1003,8 +1003,8 @@ class FlashingCircle(Stim):
                                 (self.indicator.height_pixel / 2))
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
-                              np.size(self.monitor.deg_coord_x,1)),
-                              dtype = np.float32)*self.background
+                              np.size(self.monitor.deg_coord_x, 1)),
+                             dtype=np.float32) * self.background
 
         if self.coordinate == 'degree':
             map_azi = self.monitor.deg_coord_x
@@ -1029,27 +1029,27 @@ class FlashingCircle(Stim):
                 curr_FC_seq = background
             else:
                 curr_FC_seq = ((circle_mask * self.color) +
-                                  ((-1 * (circle_mask - 1)) * background))
+                               ((-1 * (circle_mask - 1)) * background))
 
             curr_FC_seq[indicator_height_min:indicator_height_max,
-                           indicator_width_min:indicator_width_max] = curr_frame[1]
+            indicator_width_min:indicator_width_max] = curr_frame[1]
 
             full_seq[i] = curr_FC_seq
 
-            if i in range(0, len(self.frames),len(self.frames)/10):
+            if i in range(0, len(self.frames), len(self.frames) / 10):
                 print ['Generating numpy sequence: '
-                       +str(int(100 * (i+1) / len(self.frames)))+'%']
+                       + str(int(100 * (i + 1) / len(self.frames))) + '%']
 
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        NFdict=dict(self.__dict__)
+        NFdict = dict(self.__dict__)
         NFdict.pop('monitor')
         NFdict.pop('indicator')
         NFdict.pop('smooth_func')
-        full_dict={'stimulation':NFdict,
-                   'monitor':mondict,
-                   'indicator':indicator_dict}
+        full_dict = {'stimulation': NFdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
 
         return full_seq, full_dict
 
@@ -1103,16 +1103,16 @@ class SparseNoise(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 grid_space=(10.,10.), probe_size=(10., 10.), probe_orientation=0.,
+                 grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
-        super(SparseNoise,self).__init__(monitor=monitor,
-                                         indicator=indicator,
-                                         background=background,
-                                         coordinate = coordinate,
-                                         pregap_dur=pregap_dur,
-                                         postgap_dur=postgap_dur)
+        super(SparseNoise, self).__init__(monitor=monitor,
+                                          indicator=indicator,
+                                          background=background,
+                                          coordinate=coordinate,
+                                          pregap_dur=pregap_dur,
+                                          postgap_dur=postgap_dur)
         """    
         Initialize sparse noise object, inherits Parameters from Stim object
         """
@@ -1196,15 +1196,15 @@ class SparseNoise(Stim):
         grid_points = self._get_grid_locations()
 
         if self.sign == 'ON':
-            grid_points = [[x,1] for x in grid_points]
+            grid_points = [[x, 1] for x in grid_points]
             random.shuffle(grid_points)
             return grid_points
         elif self.sign == 'OFF':
-            grid_points = [[x,-1] for x in grid_points]
+            grid_points = [[x, -1] for x in grid_points]
             random.shuffle(grid_points)
             return grid_points
         elif self.sign == 'ON-OFF':
-            all_grid_points = [[x,1] for x in grid_points] + [[x,-1] for x in grid_points]
+            all_grid_points = [[x, 1] for x in grid_points] + [[x, -1] for x in grid_points]
             random.shuffle(all_grid_points)
             # remove coincident hit of same location by continuous frames
             print 'removing coincident hit of same location with continuous frames:'
@@ -1212,11 +1212,11 @@ class SparseNoise(Stim):
                 iteration = 0
                 coincident_hit_num = 0
                 for i, grid_point in enumerate(all_grid_points[:-3]):
-                    if (all_grid_points[i][0] == all_grid_points[i+1][0]).all():
-                        all_grid_points[i+1], all_grid_points[i+2] = all_grid_points[i+2], all_grid_points[i+1]
+                    if (all_grid_points[i][0] == all_grid_points[i + 1][0]).all():
+                        all_grid_points[i + 1], all_grid_points[i + 2] = all_grid_points[i + 2], all_grid_points[i + 1]
                         coincident_hit_num += 1
                 iteration += 1
-                print 'iteration:',iteration,'  continous hits number:',coincident_hit_num
+                print 'iteration:', iteration, '  continous hits number:', coincident_hit_num
                 if coincident_hit_num == 0:
                     break
 
@@ -1415,12 +1415,12 @@ class SparseNoise(Stim):
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
-        if self.coordinate=='degree':
-             coord_azi=self.monitor.deg_coord_x
-             coord_alt=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_azi=self.monitor.lin_coord_x
-             coord_alt=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
         else:
             raise ValueError('Do not understand coordinate system: {}. '
                              'Should be either "linear" or "degree".'.
@@ -1453,17 +1453,17 @@ class SparseNoise(Stim):
                 full_seq[i] = disp_mat
 
             full_seq[i, indicator_height_min:indicator_height_max,
-                     indicator_width_min:indicator_width_max] = frame[3]
+            indicator_width_min:indicator_width_max] = frame[3]
 
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        SNdict=dict(self.__dict__)
+        SNdict = dict(self.__dict__)
         SNdict.pop('monitor')
         SNdict.pop('indicator')
-        full_dict={'stimulation':SNdict,
-                        'monitor':mondict,
-                        'indicator':indicator_dict}
+        full_dict = {'stimulation': SNdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
 
         return full_seq, full_dict
 
@@ -1474,12 +1474,12 @@ class SparseNoise(Stim):
 
         self.frames = self.generate_frames()
 
-        if self.coordinate=='degree':
-             coord_x=self.monitor.deg_coord_x
-             coord_y=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_x=self.monitor.lin_coord_x
-             coord_y=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_x = self.monitor.deg_coord_x
+            coord_y = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_x = self.monitor.lin_coord_x
+            coord_y = self.monitor.lin_coord_y
         else:
             raise ValueError('Do not understand coordinate system: {}. '
                              'Should be either "linear" or "degree".'.
@@ -1500,11 +1500,11 @@ class SparseNoise(Stim):
                            dtype=np.float32) * self.background
 
         for i, curr_frame in enumerate(self.frames):
-            if curr_frame[0] == 1: # not a gap
+            if curr_frame[0] == 1:  # not a gap
 
                 curr_probes = ([curr_frame[1][0], curr_frame[1][1], curr_frame[2]],)
 
-                if i == 0: # first frame and (not a gap)
+                if i == 0:  # first frame and (not a gap)
                     curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
                                                       deg_coord_azi=coord_x,
                                                       probes=curr_probes,
@@ -1512,8 +1512,8 @@ class SparseNoise(Stim):
                                                       height=self.probe_size[1],
                                                       ori=self.probe_orientation,
                                                       background_color=self.background)
-                else: # (not first frame) and (not a gap)
-                    if self.frames[i-1][1] is None: # (not first frame) and (not a gap) and (new square from gap)
+                else:  # (not first frame) and (not a gap)
+                    if self.frames[i - 1][1] is None:  # (not first frame) and (not a gap) and (new square from gap)
                         curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
                                                           deg_coord_azi=coord_x,
                                                           probes=curr_probes,
@@ -1521,7 +1521,7 @@ class SparseNoise(Stim):
                                                           height=self.probe_size[1],
                                                           ori=self.probe_orientation,
                                                           background_color=self.background)
-                    elif (curr_frame[1]!=self.frames[i-1][1]).any() or (curr_frame[2]!=self.frames[i-1][2]):
+                    elif (curr_frame[1] != self.frames[i - 1][1]).any() or (curr_frame[2] != self.frames[i - 1][2]):
                         # (not first frame) and (not a gap) and (new square from old square)
                         curr_disp_mat = get_warped_probes(deg_coord_alt=coord_y,
                                                           deg_coord_azi=coord_x,
@@ -1531,27 +1531,27 @@ class SparseNoise(Stim):
                                                           ori=self.probe_orientation,
                                                           background_color=self.background)
 
-                #assign current display matrix to full sequence
+                # assign current display matrix to full sequence
                 full_seq[i] = curr_disp_mat
 
-            #add sync square for photodiode
+            # add sync square for photodiode
             full_seq[i, indicator_height_min:indicator_height_max,
-                     indicator_width_min:indicator_width_max] = curr_frame[3]
+            indicator_width_min:indicator_width_max] = curr_frame[3]
 
-            if i in range(0, len(self.frames),len(self.frames)/10):
-                print ['Generating numpy sequence: '+
-                       str(int(100 * (i+1) / len(self.frames)))+'%']
+            if i in range(0, len(self.frames), len(self.frames) / 10):
+                print ['Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%']
 
-        #generate log dictionary
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        # generate log dictionary
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        SNdict=dict(self.__dict__)
+        SNdict = dict(self.__dict__)
         SNdict.pop('monitor')
         SNdict.pop('indicator')
-        full_dict={'stimulation':SNdict,
-                        'monitor':mondict,
-                        'indicator':indicator_dict}
+        full_dict = {'stimulation': SNdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
 
         return full_seq, full_dict
 
@@ -1617,13 +1617,13 @@ class LocallySparseNoise(Stim):
     """
 
     def __init__(self, monitor, indicator, min_distance=20., background=0., coordinate='degree',
-                 grid_space=(10.,10.), probe_size=(10.,10.), probe_orientation=0.,
+                 grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
-        super(LocallySparseNoise,self).__init__(monitor=monitor, indicator=indicator,
-                                                background=background, coordinate = coordinate,
-                                                pregap_dur=pregap_dur, postgap_dur=postgap_dur)
+        super(LocallySparseNoise, self).__init__(monitor=monitor, indicator=indicator,
+                                                 background=background, coordinate=coordinate,
+                                                 pregap_dur=pregap_dur, postgap_dur=postgap_dur)
         """    
         Initialize sparse noise object, inherits Parameters from Stim object
         """
@@ -1679,7 +1679,6 @@ class LocallySparseNoise(Stim):
         grid_points : n x 2 array,
             refined [azi, alt] pairs of probe centers going to be displayed
         """
-
 
         # get all the visual points for each pixels on monitor
         if self.coordinate == 'degree':
@@ -1937,8 +1936,8 @@ class LocallySparseNoise(Stim):
             probes_iter = self._generate_probe_sequence_one_iteration(all_probes=all_probes,
                                                                       is_redistribute=True)
             for probes in probes_iter:
-                    frames_unique.append([1., probes, i, 1.])
-                    frames_unique.append([1., probes, i, -1.])
+                frames_unique.append([1., probes, i, 1.])
+                frames_unique.append([1., probes, i, -1.])
 
         frames_unique = tuple([tuple(f) for f in frames_unique])
 
@@ -2088,17 +2087,17 @@ class DriftingGratingCircle(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 center=(0.,60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
+                 center=(0., 60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
                  con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3., is_smooth_edge=False,
                  smooth_width_ratio=0.2, smooth_func=blur_cos):
 
-        super(DriftingGratingCircle,self).__init__(monitor=monitor,
-                                                   indicator=indicator,
-                                                   background=background,
-                                                   coordinate=coordinate,
-                                                   pregap_dur=pregap_dur,
-                                                   postgap_dur=postgap_dur)
+        super(DriftingGratingCircle, self).__init__(monitor=monitor,
+                                                    indicator=indicator,
+                                                    background=background,
+                                                    coordinate=coordinate,
+                                                    pregap_dur=pregap_dur,
+                                                    postgap_dur=postgap_dur)
         """
         Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
         from `Stim` class
@@ -2106,8 +2105,8 @@ class DriftingGratingCircle(Stim):
 
         self.stim_name = 'DriftingGratingCircle'
         if len(center) != 2:
-            raise ValueError ("DriftingGragingCircle: input 'center' should have "
-                              "two elements: (altitude, azimuth).")
+            raise ValueError("DriftingGragingCircle: input 'center' should have "
+                             "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.tf_list = list(set(tf_list))
@@ -2130,8 +2129,8 @@ class DriftingGratingCircle(Stim):
 
         self.iteration = iteration
         self.frame_config = ('is_display', 'isCycleStart', 'spatial frequency (cycle/deg)',
-                            'temporal frequency (Hz)', 'direction (deg)',
-                            'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
+                             'temporal frequency (Hz)', 'direction (deg)',
+                             'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
                              'indicator color [-1., 1.]')
 
         for tf in tf_list:
@@ -2140,7 +2139,7 @@ class DriftingGratingCircle(Stim):
                 print period
                 print block_dur % period
                 print 0.95 * period
-                error_msg = ('Duration of each block times tf '+ str(tf)
+                error_msg = ('Duration of each block times tf ' + str(tf)
                              + ' should be close to a whole number!')
                 raise ValueError, error_msg
 
@@ -2196,7 +2195,7 @@ class DriftingGratingCircle(Stim):
 
         frame_per_cycle = int(self.monitor.refresh_rate / tf)
 
-        phases_per_cycle = list(np.arange(0, np.pi*2, np.pi*2/frame_per_cycle))
+        phases_per_cycle = list(np.arange(0, np.pi * 2, np.pi * 2 / frame_per_cycle))
 
         phases = []
 
@@ -2245,19 +2244,19 @@ class DriftingGratingCircle(Stim):
         """
 
         frames = []
-        off_params = [0, None,None,None,None,None,None,None,-1.]
+        off_params = [0, None, None, None, None, None, None, None, -1.]
         # midgap_frames = int(self.midgap_dur*self.monitor.refresh_rate)
 
         for i in range(self.iteration):
-            if i == 0: # very first block
+            if i == 0:  # very first block
                 frames += [off_params for ind in range(self.pregap_frame_num)]
-            else: # first block for the later iteration
+            else:  # first block for the later iteration
                 frames += [off_params for ind in range(self.midgap_frame_num)]
 
             all_conditions = self._generate_all_conditions()
 
             for j, condition in enumerate(all_conditions):
-                if j != 0: # later conditions
+                if j != 0:  # later conditions
                     frames += [off_params for ind in range(self.midgap_frame_num)]
 
                 sf, tf, dire, con, size = condition
@@ -2267,7 +2266,7 @@ class DriftingGratingCircle(Stim):
                 # if (dire % 360.) >= 90. and (dire % 360. < 270.):
                 #      phases = [-phase for phase in phases]
 
-                for k, phase in enumerate(phases): # each frame in the block
+                for k, phase in enumerate(phases):  # each frame in the block
 
                     # mark first frame of each cycle
                     if k % frame_per_cycle == 0:
@@ -2281,7 +2280,7 @@ class DriftingGratingCircle(Stim):
         # add post gap frame
         frames += [off_params for ind in range(self.postgap_frame_num)]
 
-        #add non-synchronized indicator
+        # add non-synchronized indicator
         if self.indicator.is_sync == False:
             for l in range(len(frames)):
                 if np.floor(l // self.indicator.frame_num) % 2 == 0:
@@ -2415,36 +2414,36 @@ class DriftingGratingCircle(Stim):
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
-        if self.coordinate=='degree':
-             coord_azi=self.monitor.deg_coord_x
-             coord_alt=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_azi=self.monitor.lin_coord_x
-             coord_alt=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
         indicator_width_min = (self.indicator.center_width_pixel
-                               - self.indicator.width_pixel/2)
+                               - self.indicator.width_pixel / 2)
         indicator_width_max = (self.indicator.center_width_pixel
-                               + self.indicator.width_pixel/2)
+                               + self.indicator.width_pixel / 2)
         indicator_height_min = (self.indicator.center_height_pixel
-                                - self.indicator.height_pixel/2)
+                                - self.indicator.height_pixel / 2)
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel / 2)
 
-        mov = self.background*np.ones((num_unique_frames,
-                                       num_pixels_width,
-                                       num_pixels_height),
-                                       dtype=np.float32)
+        mov = self.background * np.ones((num_unique_frames,
+                                         num_pixels_width,
+                                         num_pixels_height),
+                                        dtype=np.float32)
 
-        background_frame = self.background*np.ones((num_pixels_width,
-                                                    num_pixels_height),
-                                                    dtype=np.float32)
+        background_frame = self.background * np.ones((num_pixels_width,
+                                                      num_pixels_height),
+                                                     dtype=np.float32)
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1: # not a gap
+            if frame[0] == 1:  # not a gap
 
                 # curr_ori = self._get_ori(frame[3])
 
@@ -2461,22 +2460,22 @@ class DriftingGratingCircle(Stim):
                 curr_circle_mask = mask_dict[frame[6]]
 
                 mov[i] = ((curr_grating * curr_circle_mask) +
-                             (background_frame * (curr_circle_mask * -1. + 1.)))
+                          (background_frame * (curr_circle_mask * -1. + 1.)))
 
-            #add sync square for photodiode
+            # add sync square for photodiode
             mov[i, indicator_height_min:indicator_height_max,
-                indicator_width_min:indicator_width_max] = frame[-1]
+            indicator_width_min:indicator_width_max] = frame[-1]
 
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        self_dict=dict(self.__dict__)
+        self_dict = dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
         self_dict.pop('smooth_func')
-        log={'stimulation':self_dict,
-             'monitor':mondict,
-             'indicator':indicator_dict}
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
 
         return mov, log
 
@@ -2486,12 +2485,12 @@ class DriftingGratingCircle(Stim):
         """
 
         masks = {}
-        if self.coordinate=='degree':
-             coord_azi=self.monitor.deg_coord_x
-             coord_alt=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_azi=self.monitor.lin_coord_x
-             coord_alt=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
         else:
             raise ValueError('Do not understand coordinate system: {}. '
                              'Should be either "linear" or "degree".'.
@@ -2515,41 +2514,41 @@ class DriftingGratingCircle(Stim):
         self.frames = self.generate_frames()
         mask_dict = self._generate_circle_mask_dict()
 
-        if self.coordinate=='degree':
-             coord_azi=self.monitor.deg_coord_x
-             coord_alt=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_azi=self.monitor.lin_coord_x
-             coord_alt=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
         else:
             raise LookupError, "`coordinate` not in {'linear','degree'}"
 
         indicator_width_min = (self.indicator.center_width_pixel
-                               - self.indicator.width_pixel/2)
+                               - self.indicator.width_pixel / 2)
         indicator_width_max = (self.indicator.center_width_pixel
-                               + self.indicator.width_pixel/2)
+                               + self.indicator.width_pixel / 2)
         indicator_height_min = (self.indicator.center_height_pixel
-                                - self.indicator.height_pixel/2)
+                                - self.indicator.height_pixel / 2)
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel / 2)
 
         mov = np.ones((len(self.frames),
                        coord_azi.shape[0],
-                       coord_azi.shape[1]),dtype=np.float32) * self.background
-        background_frame = np.ones(coord_azi.shape,dtype=np.float32)*self.background
+                       coord_azi.shape[1]), dtype=np.float32) * self.background
+        background_frame = np.ones(coord_azi.shape, dtype=np.float32) * self.background
 
         for i, curr_frame in enumerate(self.frames):
 
-            if curr_frame[0] == 1: # not a gap
+            if curr_frame[0] == 1:  # not a gap
 
                 # curr_ori = self._get_ori(curr_frame[4])
                 curr_grating = get_grating(alt_map=coord_alt,
                                            azi_map=coord_azi,
-                                           dire= curr_frame[4],
-                                           spatial_freq = curr_frame[2],
-                                           center = self.center,
-                                           phase = curr_frame[7],
-                                           contrast = curr_frame[5])
+                                           dire=curr_frame[4],
+                                           spatial_freq=curr_frame[2],
+                                           center=self.center,
+                                           phase=curr_frame[7],
+                                           contrast=curr_frame[5])
                 # plt.imshow(curr_grating)
                 # plt.show()
 
@@ -2558,27 +2557,27 @@ class DriftingGratingCircle(Stim):
                 curr_circle_mask = mask_dict[curr_frame[6]]
 
                 mov[i] = ((curr_grating * curr_circle_mask) +
-                             (background_frame * (curr_circle_mask * -1. + 1.)))
+                          (background_frame * (curr_circle_mask * -1. + 1.)))
 
-            #add sync square for photodiode
+            # add sync square for photodiode
             mov[i, indicator_height_min:indicator_height_max,
-                indicator_width_min:indicator_width_max] = curr_frame[-1]
+            indicator_width_min:indicator_width_max] = curr_frame[-1]
 
-            if i in range(0, len(self.frames),len(self.frames)/10):
-                print ['Generating numpy sequence: '+
-                       str(int(100 * (i+1) / len(self.frames)))+'%']
+            if i in range(0, len(self.frames), len(self.frames) / 10):
+                print ['Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%']
 
-        #generate log dictionary
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        # generate log dictionary
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        self_dict=dict(self.__dict__)
+        self_dict = dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
         self_dict.pop('smooth_func')
-        log={'stimulation':self_dict,
-             'monitor':mondict,
-             'indicator':indicator_dict}
+        log = {'stimulation': self_dict,
+               'monitor': mondict,
+               'indicator': indicator_dict}
 
         return mov, log
 
@@ -2657,8 +2656,8 @@ class StaticGratingCircle(Stim):
         self.stim_name = 'StaticGratingCircle'
 
         if len(center) != 2:
-            raise ValueError ("StaticGragingCircle: input 'center' should have "
-                              "two elements: (altitude, azimuth).")
+            raise ValueError("StaticGragingCircle: input 'center' should have "
+                             "two elements: (altitude, azimuth).")
         self.center = center
         self.sf_list = list(set(sf_list))
         self.phase_list = list(set([p % 360. for p in phase_list]))
@@ -2701,12 +2700,12 @@ class StaticGratingCircle(Stim):
         generate a dictionary of circle masks for each size in size list
         """
         masks = {}
-        if self.coordinate=='degree':
-             coord_azi=self.monitor.deg_coord_x
-             coord_alt=self.monitor.deg_coord_y
-        elif self.coordinate=='linear':
-             coord_azi=self.monitor.lin_coord_x
-             coord_alt=self.monitor.lin_coord_y
+        if self.coordinate == 'degree':
+            coord_azi = self.monitor.deg_coord_x
+            coord_alt = self.monitor.deg_coord_y
+        elif self.coordinate == 'linear':
+            coord_azi = self.monitor.lin_coord_x
+            coord_alt = self.monitor.lin_coord_y
         else:
             raise ValueError('Do not understand coordinate system: {}. '
                              'Should be either "linear" or "degree".'.
@@ -2759,7 +2758,7 @@ class StaticGratingCircle(Stim):
             6. indicator color, [-1., 1.]
         """
 
-        all_conditions =  self._generate_all_conditions()
+        all_conditions = self._generate_all_conditions()
         gap_frame = (0., None, None, None, None, None, None, None, -1.)
         frames_unique = [gap_frame]
 
@@ -2785,7 +2784,7 @@ class StaticGratingCircle(Stim):
             frames_unique = self._generate_frames_for_index_display()
 
             if len(frames_unique) % 2 != 1:
-                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
+                raise ValueError('StaticGratingCircle: the number of unique frames should odd.')
             condition_num = (len(frames_unique) - 1) / 2
 
             index_to_display = [0] * self.pregap_frame_num
@@ -2940,8 +2939,8 @@ class StaticImages(Stim):
                                            pregap_dur=pregap_dur, postgap_dur=postgap_dur)
 
         if len(img_center) != 2:
-            raise ValueError ("StaticImages: input 'img_center' should have "
-                              "two elements: (altitude, azimuth).")
+            raise ValueError("StaticImages: input 'img_center' should have "
+                             "two elements: (altitude, azimuth).")
         self.stim_name = 'StaticImages'
         self.img_center = img_center
         self.frame_config = ('is_display', 'image_index', 'indicator color [-1., 1.]')
@@ -3005,9 +3004,9 @@ class StaticImages(Stim):
         """
 
         if os.path.isfile(os.path.join(work_dir, 'wrapped_images_for_display.hdf5')):
-            raise IOError ('"wrapped_images_for_display.hdf5" already exists in the '
-                           '"work_dir" : {}. Please choose another folder or delete '
-                           'the file.'.format(os.path.realpath(work_dir)))
+            raise IOError('"wrapped_images_for_display.hdf5" already exists in the '
+                          '"work_dir" : {}. Please choose another folder or delete '
+                          'the file.'.format(os.path.realpath(work_dir)))
 
         imgs = tf.imread(os.path.join(work_dir, 'images_original.tif'))
 
@@ -3032,12 +3031,12 @@ class StaticImages(Stim):
         imgs_wrapped = tf.imread(imgs_path_wrapped)
 
         if len(imgs_wrapped.shape) != 3:
-            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+            raise ValueError('StaticImages: the input wrapped images should be a 3d array.')
 
         if (imgs_wrapped.shape[1], imgs_wrapped.shape[2]) != self.monitor.deg_coord_x.shape:
-            raise ValueError ('StaticImages: the input wrapped images should have '
-                              'the same dimensions of the pixel resolution of '
-                              'downsampled monitor.')
+            raise ValueError('StaticImages: the input wrapped images should have '
+                             'the same dimensions of the pixel resolution of '
+                             'downsampled monitor.')
 
         self.images_wrapped = imgs_wrapped
 
@@ -3069,13 +3068,13 @@ class StaticImages(Stim):
         img_f = h5py.File(imgs_file_path, 'r')
 
         if len(img_f['images_wrapped/images'].shape) != 3:
-            raise ValueError ('StaticImages: the input wrapped images should be a 3d array.')
+            raise ValueError('StaticImages: the input wrapped images should be a 3d array.')
 
         if (img_f['images_wrapped/images'].shape[1],
             img_f['images_wrapped/images'].shape[2]) != self.monitor.deg_coord_x.shape:
-            raise ValueError ('StaticImages: the input wrapped images should have '
-                              'the same dimensions of the pixel resolution of '
-                              'downsampled monitor.')
+            raise ValueError('StaticImages: the input wrapped images should have '
+                             'the same dimensions of the pixel resolution of '
+                             'downsampled monitor.')
 
         try:
             alt_w = img_f['images_wrapped/altitude'].value
@@ -3089,8 +3088,8 @@ class StaticImages(Stim):
 
         if alt_w is not None:
             if not np.array_equal(alt_w, self.monitor.deg_coord_y):
-                raise ValueError ('the altitude coordinates of input wrapped images do not '
-                                  'match the wrapped monitor pixel altitude coordinates.')
+                raise ValueError('the altitude coordinates of input wrapped images do not '
+                                 'match the wrapped monitor pixel altitude coordinates.')
         if azi_w is not None:
             if not np.array_equal(azi_w, self.monitor.deg_coord_x):
                 raise ValueError('the azimuth coordinates of input wrapped images do not '
@@ -3117,7 +3116,7 @@ class StaticImages(Stim):
                 try:
                     alt_d = img_f['images_dewrapped/altitude'].value
                     if alt_d.shape[0] != self.images_dewrapped.shape[1] or \
-                        alt_d.shape[1] != self.images_dewrapped.shape[2]:
+                                    alt_d.shape[1] != self.images_dewrapped.shape[2]:
                         print ('altitude coordinates of images_dewrapped in the input file have '
                                'different shape as frames in self.images_dewrapped. Set'
                                'self.altitude_dewrapped to None.')
@@ -3130,7 +3129,7 @@ class StaticImages(Stim):
                 try:
                     azi_d = img_f['images_dewrapped/azimuth'].value
                     if azi_d.shape[0] != self.images_dewrapped.shape[1] or \
-                        azi_d.shape[1] != self.images_dewrapped.shape[2]:
+                                    azi_d.shape[1] != self.images_dewrapped.shape[2]:
                         print ('azimuth coordinates of images_dewrapped in the input file have '
                                'different shape as frames in self.images_dewrapped. Set'
                                'self.azimuth_dewrapped to None.')
@@ -3160,9 +3159,9 @@ class StaticImages(Stim):
             2. indicator color, [-1., 1.]
         """
         if not hasattr(self, 'images_wrapped'):
-            raise LookupError ('StaticImages: cannot find attribute: "imgs_wrapped".'
-                               'Please use self.set_imgs_from_tif() or '
-                               'self.set_imgs_from_hdf5() to set the images.')
+            raise LookupError('StaticImages: cannot find attribute: "imgs_wrapped".'
+                              'Please use self.set_imgs_from_tif() or '
+                              'self.set_imgs_from_hdf5() to set the images.')
 
         img_num = self.images_wrapped.shape[0]
         frames_unique = [(0, None, -1.)]
@@ -3186,7 +3185,7 @@ class StaticImages(Stim):
             frames_unique = self._generate_frames_for_index_display()
 
             if len(frames_unique) % 2 != 1:
-                raise ValueError ('StaticGratingCircle: the number of unique frames should odd.')
+                raise ValueError('StaticGratingCircle: the number of unique frames should odd.')
             img_num = (len(frames_unique) - 1) / 2
 
             index_to_display = [0] * self.pregap_frame_num
@@ -3270,7 +3269,7 @@ class StimulusSeparator(Stim):
     visual stimuli when displayed in the same session
     """
 
-    def __init__(self,  monitor, indicator, coordinate='degree', background=0.,
+    def __init__(self, monitor, indicator, coordinate='degree', background=0.,
                  indicator_on_frame_num=4, indicator_off_frame_num=4,
                  cycle_num=10, pregap_dur=0., postgap_dur=0.):
 
@@ -3358,7 +3357,6 @@ class StimulusSeparator(Stim):
 
 
 class CombinedStimuli(Stim):
-
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  pregap_dur=2., postgap_dur=3.):
 
@@ -3384,8 +3382,8 @@ class CombinedStimuli(Stim):
             if not stimulus.stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise',
                                           'LocallySparseNoise', 'DriftingGratingCircle',
                                           'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
-                raise LookupError ('Stimulus type "{}" is not currently supported.'
-                                   .format(stimulus.stim_name))
+                raise LookupError('Stimulus type "{}" is not currently supported.'
+                                  .format(stimulus.stim_name))
 
         self.stimuli = stimuli
         self.static_images_path = static_images_path
@@ -3421,7 +3419,7 @@ class CombinedStimuli(Stim):
             curr_log.pop('monitor')
             curr_log.pop('indicator')
 
-            self.individual_logs.update({curr_stim_id : curr_log['stimulation']})
+            self.individual_logs.update({curr_stim_id: curr_log['stimulation']})
 
             curr_frames_unique = [[curr_stim_id] + list(f) for f in curr_log['stimulation']['frames_unique']]
             curr_index_to_display = np.array(curr_log['stimulation']['index_to_display'], dtype=np.uint64)
@@ -3507,16 +3505,16 @@ class KSstim(Stim):
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
-                 square_size=25., square_center=(0,0), flicker_frame=10,
+                 square_size=25., square_center=(0, 0), flicker_frame=10,
                  sweep_width=20., step_width=0.15, direction='B2U', sweep_frame=1,
                  iteration=1, pregap_dur=2., postgap_dur=3.):
 
-        super(KSstim,self).__init__(monitor=monitor,
-                                    indicator=indicator,
-                                    coordinate=coordinate,
-                                    background=background,
-                                    pregap_dur=pregap_dur,
-                                    postgap_dur=postgap_dur)
+        super(KSstim, self).__init__(monitor=monitor,
+                                     indicator=indicator,
+                                     coordinate=coordinate,
+                                     background=background,
+                                     pregap_dur=pregap_dur,
+                                     postgap_dur=postgap_dur)
         """
         Initialize Kalatsky & Stryker stimulus object 
         """
@@ -3532,12 +3530,12 @@ class KSstim(Stim):
         self.sweep_frame = sweep_frame
         self.iteration = iteration
         self.frame_config = ('is_display', 'squarePolarity',
-                            'sweep_index', 'indicator_color')
+                             'sweep_index', 'indicator_color')
         self.sweep_config = ('orientation', 'sweepStartCoordinate',
-                            'sweepEndCoordinate')
+                             'sweepEndCoordinate')
 
         self.sweep_speed = (self.monitor.refresh_rate *
-                           self.step_width / self.sweep_frame)
+                            self.step_width / self.sweep_frame)
         self.flicker_hz = self.monitor.refresh_rate / self.flicker_frame
 
         self.clear()
@@ -3564,24 +3562,24 @@ class KSstim(Stim):
         min_y = map_y.min()
         max_y = map_y.max()
 
-        neg_x = np.ceil( abs( ( ( min_x - self.square_center[0] ) /
-                              ( 2 * self.square_size ) ) ) ) + 1
-        pos_x = np.ceil( abs( ( ( max_x - self.square_center[0] ) /
-                              ( 2 * self.square_size ) ) ) ) + 1
+        neg_x = np.ceil(abs(((min_x - self.square_center[0]) /
+                             (2 * self.square_size)))) + 1
+        pos_x = np.ceil(abs(((max_x - self.square_center[0]) /
+                             (2 * self.square_size)))) + 1
 
-        neg_y = np.ceil( abs( ( ( min_y - self.square_center[0] ) /
-                              ( 2 * self.square_size ) ) ) ) + 1
-        pos_y = np.ceil( abs( ( ( max_y - self.square_center[0] ) /
-                              ( 2 * self.square_size ) ) ) ) + 1
+        neg_y = np.ceil(abs(((min_y - self.square_center[0]) /
+                             (2 * self.square_size)))) + 1
+        pos_y = np.ceil(abs(((max_y - self.square_center[0]) /
+                             (2 * self.square_size)))) + 1
 
         squareV = np.ones((np.size(map_x, 0),
                            np.size(map_x, 1)),
-                           dtype = np.float32)
+                          dtype=np.float32)
         squareV = -1 * squareV
 
-        stepV = np.arange(self.square_center[0] - (2*neg_x + 0.5)*self.square_size,
-                          self.square_center[0] + (2*pos_x - 0.5)*self.square_size,
-                          self.square_size*2)
+        stepV = np.arange(self.square_center[0] - (2 * neg_x + 0.5) * self.square_size,
+                          self.square_center[0] + (2 * pos_x - 0.5) * self.square_size,
+                          self.square_size * 2)
 
         for i in range(len(stepV)):
             squareV[np.where(np.logical_and(map_x >= stepV[i],
@@ -3589,17 +3587,17 @@ class KSstim(Stim):
                                                      self.square_size)))] = 1.0
 
         squareH = np.ones((np.size(map_y, 0),
-                           np.size(map_y, 1)), dtype = np.float32)
+                           np.size(map_y, 1)), dtype=np.float32)
         squareH = -1 * squareH
 
-        stepH = np.arange(self.square_center[1] - (2*neg_y + 0.5)*self.square_size,
-                          self.square_center[1] + (2*pos_y - 0.5)*self.square_size,
-                          self.square_size*2)
+        stepH = np.arange(self.square_center[1] - (2 * neg_y + 0.5) * self.square_size,
+                          self.square_center[1] + (2 * pos_y - 0.5) * self.square_size,
+                          self.square_size * 2)
 
         for j in range(len(stepH)):
-            squareH[ np.where(np.logical_and(map_y >= stepH[j],
-                                             map_y < (stepH[j] +
-                                                      self.square_size)))] = 1
+            squareH[np.where(np.logical_and(map_y >= stepH[j],
+                                            map_y < (stepH[j] +
+                                                     self.square_size)))] = 1
 
         squares = np.multiply(squareV, squareH)
 
@@ -3617,7 +3615,7 @@ class KSstim(Stim):
         generate full screen sweep sequence
         """
         sweep_width = self.sweep_width
-        step_width =  self.step_width
+        step_width = self.step_width
         direction = self.direction
 
         if self.coordinate == 'degree':
@@ -3656,9 +3654,9 @@ class KSstim(Stim):
         if 'step_x' in locals():
             sweeps = np.zeros((len(step_x),
                                np.size(map_x, 0),
-                               np.size(map_x, 1)), dtype = np.float32)
+                               np.size(map_x, 1)), dtype=np.float32)
             for i in range(len(step_x)):
-                temp = sweeps[i,:,:]
+                temp = sweeps[i, :, :]
                 temp[np.where(np.logical_and(map_x >= step_x[i],
                                              map_x < (step_x[i] +
                                                       sweep_width)))] = 1.0
@@ -3668,9 +3666,9 @@ class KSstim(Stim):
         if 'step_y' in locals():
             sweeps = np.zeros((len(step_y),
                                np.size(map_y, 0),
-                               np.size(map_y, 1)), dtype = np.float32)
+                               np.size(map_y, 1)), dtype=np.float32)
             for j in range(len(step_y)):
-                temp=sweeps[j,:,:]
+                temp = sweeps[j, :, :]
                 temp[np.where(np.logical_and(map_y >= step_y[j],
                                              map_y < (step_y[j] +
                                                       sweep_width)))] = 1.0
@@ -3704,18 +3702,18 @@ class KSstim(Stim):
         flicker_frame = self.flicker_frame
         iteration = self.iteration
 
-        sweep_num = np.size(sweeps,0) # Number of sweeps vertical or horizontal
-        displayframe_num = sweep_frame*sweep_num # total frame number for 1 iter
+        sweep_num = np.size(sweeps, 0)  # Number of sweeps vertical or horizontal
+        displayframe_num = sweep_frame * sweep_num  # total frame number for 1 iter
 
-        #frames for one iteration
-        iter_frames=[]
+        # frames for one iteration
+        iter_frames = []
 
-        #add frames for gaps
+        # add frames for gaps
         for i in range(self.pregap_frame_num):
-            iter_frames.append([0,None,None,-1])
+            iter_frames.append([0, None, None, -1])
 
-        #add frames for display
-        is_reverse=[]
+        # add frames for display
+        is_reverse = []
 
         for i in range(displayframe_num):
 
@@ -3724,31 +3722,31 @@ class KSstim(Stim):
             else:
                 is_reverse = 1
 
-            sweep_index=int(np.floor(i // sweep_frame))
+            sweep_index = int(np.floor(i // sweep_frame))
 
-            #add sychornized indicator
+            # add sychornized indicator
             if self.indicator.is_sync == True:
                 indicator_color = 1
             else:
                 indicator_color = -1
 
-            iter_frames.append([1,is_reverse,sweep_index,indicator_color])
+            iter_frames.append([1, is_reverse, sweep_index, indicator_color])
 
         # add gap frames at the end
         for i in range(self.postgap_frame_num):
-            iter_frames.append([0,None,None,-1])
+            iter_frames.append([0, None, None, -1])
 
         full_frames = []
 
-        #add frames for multiple iteration
+        # add frames for multiple iteration
         for i in range(int(iteration)):
             full_frames += iter_frames
 
-        #add non-synchronized indicator
+        # add non-synchronized indicator
         if self.indicator.is_sync == False:
             indicator_frame = self.indicator.frame_num
 
-            for j in range(np.size(full_frames,0)):
+            for j in range(np.size(full_frames, 0)):
                 if np.floor(j // indicator_frame) % 2 == 0:
                     full_frames[j][3] = 1
                 else:
@@ -3767,12 +3765,12 @@ class KSstim(Stim):
 
         sweeps, self.sweep_table = self.generate_sweeps()
 
-        self.frames=self.generate_frames()
+        self.frames = self.generate_frames()
 
         full_seq = np.zeros((len(self.frames),
-                                 self.monitor.deg_coord_x.shape[0],
-                                 self.monitor.deg_coord_x.shape[1]),
-                                                         dtype=np.float32)
+                             self.monitor.deg_coord_x.shape[0],
+                             self.monitor.deg_coord_x.shape[1]),
+                            dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel -
                                (self.indicator.width_pixel / 2))
@@ -3784,8 +3782,8 @@ class KSstim(Stim):
                                 (self.indicator.height_pixel / 2))
 
         background = np.ones((np.size(self.monitor.deg_coord_x, 0),
-                              np.size(self.monitor.deg_coord_x,1)),
-                                 dtype = np.float32) * self.background
+                              np.size(self.monitor.deg_coord_x, 1)),
+                             dtype=np.float32) * self.background
 
         for i in range(len(self.frames)):
             curr_frame = self.frames[i]
@@ -3797,27 +3795,26 @@ class KSstim(Stim):
                 currSquare = self.squares * curr_frame[1]
                 curr_sweep = sweeps[curr_frame[2]]
                 curr_NM_seq = ((curr_sweep * currSquare) +
-                                    ((-1 * (curr_sweep - 1)) * background))
+                               ((-1 * (curr_sweep - 1)) * background))
 
             curr_NM_seq[indicator_height_min:indicator_height_max,
-                        indicator_width_min:indicator_width_max] = curr_frame[3]
+            indicator_width_min:indicator_width_max] = curr_frame[3]
 
             full_seq[i] = curr_NM_seq
 
-            if i in range(0, len(self.frames),len(self.frames)/10):
-                print ['Generating numpy sequence: '+str(int(100 * (i+1)
-                                                   / len(self.frames)))+'%']
+            if i in range(0, len(self.frames), len(self.frames) / 10):
+                print ['Generating numpy sequence: ' + str(int(100 * (i + 1)
+                                                               / len(self.frames))) + '%']
 
-
-        mondict=dict(self.monitor.__dict__)
-        indicator_dict=dict(self.indicator.__dict__)
+        mondict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
         indicator_dict.pop('monitor')
-        KSdict=dict(self.__dict__)
+        KSdict = dict(self.__dict__)
         KSdict.pop('monitor')
         KSdict.pop('indicator')
-        full_dict={'stimulation':KSdict,
-                        'monitor':mondict,
-                        'indicator':indicator_dict}
+        full_dict = {'stimulation': KSdict,
+                     'monitor': mondict,
+                     'indicator': indicator_dict}
 
         return full_seq, full_dict
 
@@ -3826,19 +3823,19 @@ class KSstim(Stim):
         self.frames = None
         self.square = None
 
-    def set_direction(self,direction):
+    def set_direction(self, direction):
 
-        if direction in ['B2U','U2B','L2R','R2L']:
+        if direction in ['B2U', 'U2B', 'L2R', 'R2L']:
             self.direction = direction
             self.clear()
         else:
             raise LookupError, '`direction` not in {"B2U","U2B","L2R","R2L"}'
 
-    def set_sweep_sigma(self,sweepSigma):
+    def set_sweep_sigma(self, sweepSigma):
         self.sweepSigma = sweepSigma
         self.clear()
 
-    def set_sweep_width(self,sweep_width):
+    def set_sweep_width(self, sweep_width):
         self.sweep_width = sweep_width
         self.clear()
 
@@ -3881,8 +3878,9 @@ class KSstimAllDir(object):
     postgap_dur : float, optional
         number of seconds after stimulus is presented, defaults to `3.`
     """
+
     def __init__(self, monitor, indicator, coordinate='degree', background=0.,
-                 square_size=25, square_center=(0,0), flicker_frame=6, sweep_width=20.,
+                 square_size=25, square_center=(0, 0), flicker_frame=6, sweep_width=20.,
                  step_width=0.15, sweep_frame=1, iteration=1, pregap_dur=2.,
                  postgap_dur=3.):
         """
@@ -3908,20 +3906,20 @@ class KSstimAllDir(object):
         """
         Generate stimulus movie frame by frame
         """
-        KS_stim=KSstim(self.monitor,
-                       self.indicator,
-                       background=self.background,
-                       coordinate=self.coordinate,
-                       direction='B2U',
-                       square_size=self.square_size,
-                       square_center=self.square_center,
-                       flicker_frame=self.flicker_frame,
-                       sweep_width=self.sweep_width,
-                       step_width=self.step_width,
-                       sweep_frame=self.sweep_frame,
-                       iteration=self.iteration,
-                       pregap_dur=self.pregap_dur,
-                       postgap_dur=self.postgap_dur)
+        KS_stim = KSstim(self.monitor,
+                         self.indicator,
+                         background=self.background,
+                         coordinate=self.coordinate,
+                         direction='B2U',
+                         square_size=self.square_size,
+                         square_center=self.square_center,
+                         flicker_frame=self.flicker_frame,
+                         sweep_width=self.sweep_width,
+                         step_width=self.step_width,
+                         sweep_frame=self.sweep_frame,
+                         iteration=self.iteration,
+                         pregap_dur=self.pregap_dur,
+                         postgap_dur=self.postgap_dur)
 
         mov_B2U, dict_B2U = KS_stim.generate_movie()
         KS_stim.set_direction('U2B')
@@ -3931,12 +3929,12 @@ class KSstimAllDir(object):
         KS_stim.set_direction('R2L')
         mov_R2L, dict_R2L = KS_stim.generate_movie()
 
-        mov = np.vstack((mov_B2U,mov_U2B,mov_L2R,mov_R2L))
-        log = {'monitor':dict_B2U['monitor'],
-               'indicator':dict_B2U['indicator']}
+        mov = np.vstack((mov_B2U, mov_U2B, mov_L2R, mov_R2L))
+        log = {'monitor': dict_B2U['monitor'],
+               'indicator': dict_B2U['indicator']}
         stimulation = dict(dict_B2U['stimulation'])
         stimulation['stim_name'] = 'KSstimAllDir'
-        stimulation['direction'] = ['B2U','U2B','L2R','R2L']
+        stimulation['direction'] = ['B2U', 'U2B', 'L2R', 'R2L']
 
         sweep_table = []
         frames = []
@@ -3944,40 +3942,40 @@ class KSstimAllDir(object):
         sweep_table_B2U = dict_B2U['stimulation']['sweep_table']
         frames_B2U = dict_B2U['stimulation']['frames']
         sweep_length_B2U = len(sweep_table_B2U)
-        sweep_table_B2U = [ ['B2U', x[1], x[2]] for x in sweep_table_B2U]
-        frames_B2U = [[x[0],x[1],x[2],x[3],'B2U'] for x in frames_B2U]
+        sweep_table_B2U = [['B2U', x[1], x[2]] for x in sweep_table_B2U]
+        frames_B2U = [[x[0], x[1], x[2], x[3], 'B2U'] for x in frames_B2U]
         sweep_table += sweep_table_B2U
         frames += frames_B2U
 
         sweep_table_U2B = dict_U2B['stimulation']['sweep_table']
         frames_U2B = dict_U2B['stimulation']['frames']
         sweep_length_U2B = len(sweep_table_U2B)
-        sweep_table_U2B = [ ['U2B', x[1], x[2]] for x in sweep_table_U2B]
-        frames_U2B = [[x[0],x[1],x[2],x[3],'U2B'] for x in frames_U2B]
+        sweep_table_U2B = [['U2B', x[1], x[2]] for x in sweep_table_U2B]
+        frames_U2B = [[x[0], x[1], x[2], x[3], 'U2B'] for x in frames_U2B]
         for frame in frames_U2B:
             if frame[2] is not None:
-                 frame[2] += sweep_length_B2U
+                frame[2] += sweep_length_B2U
         sweep_table += sweep_table_U2B
         frames += frames_U2B
 
         sweep_table_L2R = dict_L2R['stimulation']['sweep_table']
         frames_L2R = dict_L2R['stimulation']['frames']
         sweep_length_L2R = len(sweep_table_L2R)
-        sweep_table_L2R = [ ['L2R', x[1], x[2]] for x in sweep_table_L2R]
-        frames_L2R = [[x[0],x[1],x[2],x[3],'L2R'] for x in frames_L2R]
+        sweep_table_L2R = [['L2R', x[1], x[2]] for x in sweep_table_L2R]
+        frames_L2R = [[x[0], x[1], x[2], x[3], 'L2R'] for x in frames_L2R]
         for frame in frames_L2R:
             if frame[2] is not None:
-                 frame[2] += sweep_length_B2U+sweep_length_U2B
+                frame[2] += sweep_length_B2U + sweep_length_U2B
         sweep_table += sweep_table_L2R
         frames += frames_L2R
 
         sweep_table_R2L = dict_R2L['stimulation']['sweep_table']
         frames_R2L = dict_R2L['stimulation']['frames']
-        sweep_table_R2L = [ ['R2L', x[1], x[2]] for x in sweep_table_R2L]
-        frames_R2L = [[x[0],x[1],x[2],x[3],'R2L'] for x in frames_R2L]
+        sweep_table_R2L = [['R2L', x[1], x[2]] for x in sweep_table_R2L]
+        frames_R2L = [[x[0], x[1], x[2], x[3], 'R2L'] for x in frames_R2L]
         for frame in frames_R2L:
             if frame[2] is not None:
-                 frame[2] += sweep_length_B2U+sweep_length_U2B+sweep_length_L2R
+                frame[2] += sweep_length_B2U + sweep_length_U2B + sweep_length_L2R
         sweep_table += sweep_table_R2L
         frames += frames_R2L
 
