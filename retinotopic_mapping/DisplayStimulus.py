@@ -1,4 +1,3 @@
-
 '''
 Visual Stimulus codebase implements several classes to display stimulus routines.
 Can display frame by frame or compress data for certain stimulus routines and
@@ -49,14 +48,14 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     refresh_rate = float(refresh_rate)
 
     num_frames = len(ts)
-    disp_true = ts[-1]-ts[0]
-    disp_expect = (len(ts)-1)/refresh_rate
-    avg_frame_time = np.mean(frame_duration)*1000
-    sdev_frame_time = np.std(frame_duration)*1000
-    short_frame = min(frame_duration)*1000
-    short_frame_ind = np.nonzero(frame_duration==np.min(frame_duration))[0][0]
-    long_frame = max(frame_duration)*1000
-    long_frame_ind = np.nonzero(frame_duration==np.max(frame_duration))[0][0]
+    disp_true = ts[-1] - ts[0]
+    disp_expect = (len(ts) - 1) / refresh_rate
+    avg_frame_time = np.mean(frame_duration) * 1000
+    sdev_frame_time = np.std(frame_duration) * 1000
+    short_frame = min(frame_duration) * 1000
+    short_frame_ind = np.nonzero(frame_duration == np.min(frame_duration))[0][0]
+    long_frame = max(frame_duration) * 1000
+    long_frame_ind = np.nonzero(frame_duration == np.max(frame_duration))[0][0]
 
     frame_stats = '\n'
     frame_stats += 'Total number of frames    : %d. \n' % num_frames
@@ -71,11 +70,11 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
 
     for i in range(len(check_point)):
         check_number = check_point[i]
-        frame_number = len(frame_duration[frame_duration>check_number])
+        frame_number = len(frame_duration[frame_duration > check_number])
         frame_stats += 'Number of frames longer than %d ms: %d; %.2f%% \n' \
-                       % (round(check_number*1000),
+                       % (round(check_number * 1000),
                           frame_number,
-                          round(frame_number*10000/(len(ts)-1))/100)
+                          round(frame_number * 10000 / (len(ts) - 1)) / 100)
 
     print frame_stats
 
@@ -95,6 +94,7 @@ class DisplaySequence(object):
 
 
     """
+
     def __init__(self,
                  log_dir,
                  backupdir=None,
@@ -201,7 +201,7 @@ class DisplaySequence(object):
 
         self.clear()
 
-    def set_any_array(self, any_array, log_dict = None):
+    def set_any_array(self, any_array, log_dict=None):
         """
         to display any numpy 3-d array.
         """
@@ -210,9 +210,9 @@ class DisplaySequence(object):
 
         vmax = np.amax(any_array).astype(np.float32)
         vmin = np.amin(any_array).astype(np.float32)
-        v_range = (vmax-vmin)
-        any_array_nor = ((any_array-vmin)/v_range).astype(np.float16)
-        self.sequence = 2*(any_array_nor-0.5)
+        v_range = (vmax - vmin)
+        any_array_nor = ((any_array - vmin) / v_range).astype(np.float16)
+        self.sequence = 2 * (any_array_nor - 0.5)
 
         if log_dict != None:
             if type(log_dict) is dict:
@@ -269,9 +269,9 @@ class DisplaySequence(object):
         # --------------- early preparation for display--------------------
         # test monitor resolution
         try:
-             resolution = self.seq_log['monitor']['resolution'][::-1]
+            resolution = self.seq_log['monitor']['resolution'][::-1]
         except KeyError:
-             resolution = (800,600)
+            resolution = (800, 600)
 
         # test monitor refresh rate
         try:
@@ -282,32 +282,32 @@ class DisplaySequence(object):
 
         # prepare display frames log
         if self.sequence is None:
-            raise LookupError ("Please set the sequence to be displayed by using self.set_stim().\n")
+            raise LookupError("Please set the sequence to be displayed by using self.set_stim().\n")
         if not self.seq_log:
-            raise LookupError ("Please set the sequence log dictionary to be displayed "
-                               "by using self.set_stim().\n")
+            raise LookupError("Please set the sequence log dictionary to be displayed "
+                              "by using self.set_stim().\n")
 
         # if display by index, check frame indices were not larger than the number of frames in
         # self.sequence
         if self.is_by_index:
             max_index = max(self.seq_log['stimulation']['index_to_display'])
             min_index = min(self.seq_log['stimulation']['index_to_display'])
-            if  max_index >= self.sequence.shape[0] or  min_index < 0:
-                raise ValueError ('Max display index range: {} is out of self.sequence frame range: {}.'
-                                  .format((min_index, max_index), (0, self.sequence.shape[0] - 1)))
+            if max_index >= self.sequence.shape[0] or min_index < 0:
+                raise ValueError('Max display index range: {} is out of self.sequence frame range: {}.'
+                                 .format((min_index, max_index), (0, self.sequence.shape[0] - 1)))
             if 'frames_unique' not in self.seq_log['stimulation'].keys():
-                raise LookupError ('"frames_unique" is not found in self.seq_log["stimulation"]. This'
-                                   'is required when display by index.')
+                raise LookupError('"frames_unique" is not found in self.seq_log["stimulation"]. This'
+                                  'is required when display by index.')
         else:
             if 'frames' not in self.seq_log['stimulation'].keys():
                 raise LookupError('"frames" is not found in self.seq_log["stimulation"]. This'
-                                   'is required when display by full sequence.')
+                                  'is required when display by full sequence.')
 
         # calculate expected display time
         if self.is_by_index:
             index_to_display = self.seq_log['stimulation']['index_to_display']
             display_time = (float(len(index_to_display)) *
-                            self.display_iter/ refresh_rate)
+                            self.display_iter / refresh_rate)
         else:
             display_time = (float(self.sequence.shape[0]) *
                             self.display_iter / refresh_rate)
@@ -324,7 +324,7 @@ class DisplaySequence(object):
                                fullscr=True,
                                screen=self.display_screen,
                                color=self.initial_background_color)
-        stim = visual.ImageStim(window, size=(2,2),
+        stim = visual.ImageStim(window, size=(2, 2),
                                 interpolate=self.is_interpolate)
 
         # initialize keep_display
@@ -338,7 +338,7 @@ class DisplaySequence(object):
                 self.clear()
                 return None
             else:
-                time.sleep(5.) # wait remote object to start
+                time.sleep(5.)  # wait remote object to start
 
         # display sequence either frame by frame or by index
         self.displayed_frames = []
@@ -351,17 +351,17 @@ class DisplaySequence(object):
 
         self.save_log()
 
-        #analyze frames
+        # analyze frames
         try:
-             self.frame_duration, self.frame_stats = \
-             analyze_frames(ts=self.time_stamp,
-                            refresh_rate = self.seq_log['monitor']['refresh_rate'])
+            self.frame_duration, self.frame_stats = \
+                analyze_frames(ts=self.time_stamp,
+                               refresh_rate=self.seq_log['monitor']['refresh_rate'])
         except KeyError:
             print "No monitor refresh rate information, assuming 60Hz."
             self.frame_duration, self.frame_stats = \
-                 analyze_frames(ts=self.time_stamp, refresh_rate=60.)
+                analyze_frames(ts=self.time_stamp, refresh_rate=60.)
 
-        #clear display data
+        # clear display data
         self.clear()
 
     def _wait_for_trigger(self, event):
@@ -379,10 +379,10 @@ class DisplaySequence(object):
             signal is detected.
         """
 
-        #check NI signal
+        # check NI signal
         trigger_task = iodaq.DigitalInput(self.trigger_NI_dev,
-                                         self.trigger_NI_port,
-                                         self.trigger_NI_line)
+                                          self.trigger_NI_port,
+                                          self.trigger_NI_line)
         trigger_task.StartTask()
 
         print "Waiting for trigger: " + event + ' on ' + trigger_task.devstr
@@ -394,13 +394,13 @@ class DisplaySequence(object):
                 self._update_display_status()
             else:
                 if self.keep_display:
-                     trigger_task.StopTask()
-                     print 'Trigger detected. Start displaying...\n\n'
-                     return True
+                    trigger_task.StopTask()
+                    print 'Trigger detected. Start displaying...\n\n'
+                    return True
                 else:
-                     trigger_task.StopTask()
-                     print 'Manual stop signal detected. Stopping the program.'
-                     return False
+                    trigger_task.StopTask()
+                    print 'Manual stop signal detected. Stopping the program.'
+                    return False
         elif event == 'high_level':
             last_TTL = trigger_task.read()[0]
             while last_TTL != 1 and self.keep_display:
@@ -408,26 +408,26 @@ class DisplaySequence(object):
                 self._update_display_status()
             else:
                 if self.keep_display:
-                     trigger_task.StopTask()
-                     print 'Trigger detected. Start displaying...\n\n'
-                     return True
+                    trigger_task.StopTask()
+                    print 'Trigger detected. Start displaying...\n\n'
+                    return True
                 else:
-                     trigger_task.StopTask()
-                     print 'Manual stop signal detected. Stopping the program.'
-                     return False
+                    trigger_task.StopTask()
+                    print 'Manual stop signal detected. Stopping the program.'
+                    return False
         elif event == 'negative_edge':
             last_TTL = trigger_task.read()[0]
             while self.keep_display:
                 current_TTL = trigger_task.read()[0]
                 if (last_TTL == 1) and (current_TTL == 0):
-                     break
+                    break
                 else:
-                     last_TTL = int(current_TTL)
-                     self._update_display_status()
+                    last_TTL = int(current_TTL)
+                    self._update_display_status()
             else:
-                 trigger_task.StopTask()
-                 print 'Manual stop signal detected. Stopping the program.'
-                 return False
+                trigger_task.StopTask()
+                print 'Manual stop signal detected. Stopping the program.'
+                return False
             trigger_task.StopTask()
             print 'Trigger detected. Start displaying...\n\n'
             return True
@@ -436,20 +436,20 @@ class DisplaySequence(object):
             while self.keep_display:
                 current_TTL = trigger_task.read()[0]
                 if (last_TTL == 0) and (current_TTL == 1):
-                     break
+                    break
                 else:
-                     last_TTL = int(current_TTL)
-                     self._update_display_status()
+                    last_TTL = int(current_TTL)
+                    self._update_display_status()
             else:
-                 trigger_task.StopTask();
-                 print 'Manual stop signal detected. Stopping the program.'
-                 return False
+                trigger_task.StopTask();
+                print 'Manual stop signal detected. Stopping the program.'
+                return False
             trigger_task.StopTask()
             print 'Trigger detected. Start displaying...\n\n'
             return True
         else:
-             raise NameError, "`trigger` not in " \
-             "{'negative_edge','positive_edge', 'high_level','low_level'}!"
+            raise NameError, "`trigger` not in " \
+                             "{'negative_edge','positive_edge', 'high_level','low_level'}!"
 
     def _get_file_name(self):
         """
@@ -458,20 +458,20 @@ class DisplaySequence(object):
 
         try:
             self.file_name = datetime.datetime.now().strftime('%y%m%d%H%M%S') + \
-                            '-' + self.seq_log['stimulation']['stim_name'] + \
-                            '-M' + self.mouse_id + '-' + self.user_id + '-' + \
-                            self.identifier
+                             '-' + self.seq_log['stimulation']['stim_name'] + \
+                             '-M' + self.mouse_id + '-' + self.user_id + '-' + \
+                             self.identifier
         except KeyError:
             self.file_name = datetime.datetime.now().strftime('%y%m%d%H%M%S') + \
-                            '-' + 'customStim' + '-M' + self.mouse_id + '-' + \
-                            self.user_id + '-' + self.identifier
+                             '-' + 'customStim' + '-M' + self.mouse_id + '-' + \
+                             self.user_id + '-' + self.identifier
 
         if self.is_triggered:
-             self.file_name += '-Triggered'
+            self.file_name += '-Triggered'
         else:
-             self.file_name += '-notTriggered'
+            self.file_name += '-notTriggered'
 
-    def _display_by_index(self,window,stim):
+    def _display_by_index(self, window, stim):
         """ display by index routine for simpler stim routines """
 
         # display frames by index
@@ -492,7 +492,7 @@ class DisplaySequence(object):
         i = 0
         self.displayed_frames = []
 
-        while self.keep_display and i < (num_iters*self.display_iter):
+        while self.keep_display and i < (num_iters * self.display_iter):
 
             frame_num = i % num_iters
 
@@ -511,17 +511,17 @@ class DisplaySequence(object):
 
             stim.setImage(self.sequence[frame_index][::-1])
             stim.draw()
-            time_stamps.append(time.clock()-start_time)
+            time_stamps.append(time.clock() - start_time)
 
-            #set syncPuls signal
+            # set syncPuls signal
             if self.is_sync_pulse:
-                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+                _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
 
-            #show visual stim
+            # show visual stim
             window.flip()
             self.displayed_frames.append(self.seq_log['stimulation']['frames_unique'][frame_index])
 
-            #set syncPuls signal
+            # set syncPuls signal
             if self.is_sync_pulse:
                 _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
 
@@ -532,18 +532,18 @@ class DisplaySequence(object):
         window.close()
 
         if self.is_sync_pulse:
-             syncPulseTask.StopTask()
+            syncPulseTask.StopTask()
 
         self.time_stamp = np.array(time_stamps)
-        self.display_length = stop_time-start_time
+        self.display_length = stop_time - start_time
 
         if self.keep_display == True:
-             print '\nDisplay successfully completed.'
+            print '\nDisplay successfully completed.'
 
     def _display(self, window, stim):
 
         # display frames
-        time_stamp=[]
+        time_stamp = []
         start_time = time.clock()
         singleRunFrames = self.sequence.shape[0]
 
@@ -571,34 +571,34 @@ class DisplaySequence(object):
 
             stim.setImage(self.sequence[frame_num][::-1])
             stim.draw()
-            time_stamp.append(time.clock()-start_time)
+            time_stamp.append(time.clock() - start_time)
 
-            #set syncPuls signal
+            # set syncPuls signal
             if self.is_sync_pulse:
-                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
+                _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
 
-            #show visual stim
+            # show visual stim
             window.flip()
             self.displayed_frames.append(self.seq_log['stimulation']['frames'][frame_num])
 
-            #set syncPuls signal
+            # set syncPuls signal
             if self.is_sync_pulse:
-                 _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
+                _ = syncPulseTask.write(np.array([0]).astype(np.uint8))
 
             self._update_display_status()
-            i=i+1
+            i = i + 1
 
         stop_time = time.clock()
         window.close()
 
         if self.is_sync_pulse:
-             syncPulseTask.StopTask()
+            syncPulseTask.StopTask()
 
         self.time_stamp = np.array(time_stamp)
-        self.display_length = stop_time-start_time
+        self.display_length = stop_time - start_time
 
         if self.keep_display == True:
-             print '\nDisplay successfully completed.'
+            print '\nDisplay successfully completed.'
 
     def flag_to_close(self):
         self.keep_display = False
@@ -606,10 +606,10 @@ class DisplaySequence(object):
     def _update_display_status(self):
 
         if self.keep_display is None:
-             raise LookupError, 'self.keep_display should start as True'
+            raise LookupError, 'self.keep_display should start as True'
 
-        #check keyboard input 'q' or 'escape'
-        keyList = event.getKeys(['q','escape'])
+        # check keyboard input 'q' or 'escape'
+        keyList = event.getKeys(['q', 'escape'])
         if len(keyList) > 0:
             self.keep_display = False
             print "Keyboard stop signal detected. Stop displaying. \n"
@@ -636,30 +636,30 @@ class DisplaySequence(object):
         elif self.keep_display == False:
             self.file_name += '-incomplete'
 
-        #set up log object
+        # set up log object
         directory = self.log_dir + '\sequence_display_log'
-        if not(os.path.isdir(directory)):
-             os.makedirs(directory)
+        if not (os.path.isdir(directory)):
+            os.makedirs(directory)
 
         logFile = dict(self.seq_log)
         displayLog = dict(self.__dict__)
         displayLog.pop('seq_log')
         displayLog.pop('sequence')
-        logFile.update({'presentation':displayLog})
+        logFile.update({'presentation': displayLog})
 
-        file_name =  self.file_name + ".pkl"
+        file_name = self.file_name + ".pkl"
 
-        #generate full log dictionary
+        # generate full log dictionary
         path = os.path.join(directory, file_name)
-        ft.saveFile(path,logFile)
+        ft.saveFile(path, logFile)
         print ".pkl file generated successfully."
 
         backupFileFolder = self._get_backup_folder()
         if backupFileFolder is not None:
             if not (os.path.isdir(backupFileFolder)):
-                 os.makedirs(backupFileFolder)
-            backupFilePath = os.path.join(backupFileFolder,file_name)
-            ft.saveFile(backupFilePath,logFile)
+                os.makedirs(backupFileFolder)
+            backupFilePath = os.path.join(backupFileFolder, file_name)
+            ft.saveFile(backupFilePath, logFile)
             print ".pkl backup file generate successfully"
         else:
             print "did not find backup path, no backup has been saved."
@@ -676,12 +676,12 @@ class DisplaySequence(object):
                 stim_name = self.seq_log['stimulation']['stim_name']
                 if 'KSstim' in stim_name:
                     backupFileFolder = \
-                         os.path.join(self.backupdir,
-                                      curr_date+'-M'+self.mouse_id+'-Retinotopy')
+                        os.path.join(self.backupdir,
+                                     curr_date + '-M' + self.mouse_id + '-Retinotopy')
                 else:
                     backupFileFolder = \
-                         os.path.join(self.backupdir,
-                                      curr_date+'-M'+self.mouse_id+'-'+stim_name)
+                        os.path.join(self.backupdir,
+                                     curr_date + '-M' + self.mouse_id + '-' + stim_name)
                 return backupFileFolder
             else:
                 return None
@@ -698,4 +698,4 @@ class DisplaySequence(object):
 
 
 if __name__ == "__main__":
-     pass
+    pass
