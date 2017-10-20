@@ -12,7 +12,9 @@ to the locally built html version in `/doc/build/html/` folder under
 
 The retinotopic mapping package is a self-contained module
 for display visual stimuli in visual physiology experiments and
-for data analysis on the results of those experiments.
+for data analysis on the results of those experiments. This package is
+used to display visual stimulus and to analyze data for the study
+Zhuang et al., 2017 (7)
 
 The visual stimuli generation and display is implemented in the modules
 `MonitorSetup.py`, `StimulusRoutines.py` and `DisplayStimulus.py`.
@@ -44,10 +46,9 @@ periodic sweeping checker board visual stimuli (3, 4).
 The package also provides some useful plotting functions to visualize
 the results.
 
-Please check the '\examples\signmap_analysis' folder for a jupyter
-notebook showing automated visual area segmentation of mouse cortex.
-
-https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.ipynb
+Please check the '\examples\signmap_analysis' folder for a [jupyter
+notebook](https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/signmap_analysis/retinotopic_mapping_example.ipynb)
+showing automated visual area segmentation of mouse cortex.
 
 ### Contributors:
 * Jun Zhuang @zhuangj
@@ -94,6 +95,8 @@ python setup.py install
 5. Sereno MI, Dale AM, Reppas JB, Kwong KK, Belliveau JW, Brady TJ, Rosen BR, Tootell RB (1995) Borders of multiple visual areas in humans revealed by functional magnetic resonance imaging. Science 268:889-893.
 
 6. Sereno MI, McDonald CT, Allman JM (1994) Analysis of retinotopic maps in extrastriate cortex. Cereb Cortex 4:601-620.
+
+7. Zhuang J, Ng L, Williams D, Valley M, Li Y, Garrett M, Waters J (2017) An extended retinotopic map of mouse cortex. eLife 6: e18372.
 
 
 #### Issues:
