@@ -54,6 +54,9 @@ https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_map
 * John Yearseley @yearsj
 * Derric Williams @derricw
 
+### Level of support
+We are planning on occasional updating this tool with no fixed schedule. Community involvement is encouraged through both issues and pull requests.
+
 #### Language:
 
 1. python 2.7
