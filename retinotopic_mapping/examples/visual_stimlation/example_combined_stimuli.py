@@ -3,6 +3,7 @@
 Example script to test StimulusRoutines.CombinedStimuli class
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import retinotopic_mapping.StimulusRoutines as stim
@@ -135,6 +136,8 @@ si_deg_per_pixel = (0.1, 0.1)
 si_display_dur = 0.25
 si_midgap_dur = 0.
 si_iteration = 10
+si_images_folder = r"D:\data2\rabies_tracing_project\method_development" \
+                   r"\2017-09-06-natural-scenes"
 # =================================================================================
 
 # ============================ StimulusSeparator ==================================
@@ -145,8 +148,6 @@ ss_cycle_num = 10
 
 # ============================ CombinedStimuli ====================================
 cs_stim_ind_sequence = [0, 7, 1, 7, 2, 7, 3, 7, 4, 7, 5, 7, 6, 7]
-cs_imgs_file_path = r"D:\data2\rabies_tracing_project\method_development" \
-                    r"\2017-09-06-natural-scenes\wrapped_images_for_display.hdf5"
 # =================================================================================
 
 
@@ -251,6 +252,14 @@ si = stim.StaticImages(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
                        midgap_dur=si_midgap_dur, iteration=si_iteration)
 # =================================================================================
 
+# ============================ wrape images =======================================
+print ('wrapping images ...')
+static_images_path = os.path.join(si_images_folder, 'wrapped_images_for_display.hdf5')
+if os.path.isfile(static_images_path):
+    os.remove(static_images_path)
+si.wrap_images(si_images_folder)
+# =================================================================================
+
 # ======================= Stimulus Separator ======================================
 ss = stim.StimulusSeparator(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
                             postgap_dur=postgap_dur, coordinate=coordinate,
@@ -269,10 +278,11 @@ cs = stim.CombinedStimuli(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
 # ======================= Set Stimuli Sequence ====================================
 all_stim = [uc, fc, sn, lsn, dgc, sgc, si, ss]
 stim_seq = [all_stim[stim_ind] for stim_ind in cs_stim_ind_sequence]
-cs.set_stimuli(stimuli=stim_seq, static_images_path=cs_imgs_file_path)
+cs.set_stimuli(stimuli=stim_seq, static_images_path=static_images_path)
 # =================================================================================
 
 # =============================== display =========================================
 ds.set_stim(cs)
 ds.trigger_display()
+plt.show()
 # =================================================================================
