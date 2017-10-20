@@ -1,6 +1,7 @@
 About
 =======
-he retinotopic mapping package is a self-contained module
+The `retinotopic mapping package <https://github.com/zhuangjun1981
+/retinotopic_mapping>`_ is a self-contained module
 for display visual stimuli in visual physiology experiments and
 for data analysis on the results of those experiments.
 
@@ -14,7 +15,9 @@ routines are highly customizable and designed to give the user
 significant flexibility and control in creative experimental design.
 
 Please check the '\examples\visual_stimulation' folder for
-example script :mod:`example_stimulation.py` of visual stimulation.
+example script `example_stimulation.py <https://github.com/zhuangjun1981
+/retinotopic_mapping/blob/master/retinotopic_mapping/examples
+/visual_stimlation/example_stimulation.py>`_ of visual stimulation.
 
 One specific analysis this package can perform is automated
 segmentation of the mouse visual cortex, which is implemented in
@@ -34,10 +37,10 @@ periodic sweeping checker board visual stimuli (3, 4).
 The package also provides some useful plotting functions to visualize
 the results.
 
-Please check the '\examples\signmap_analysis' folder for a jupyter
-notebook showing automated visual area segmentation of mouse cortex.
-
-https://github.com/zhuangjun1981/retinotopic_mapping/blob/master/retinotopic_mapping/examples/retinotopic_mapping_example.ipynb
+Please check the '\examples\signmap_analysis' folder for a `jupyter
+notebook <https://github.com/zhuangjun1981/retinotopic_mapping/blob
+/master/retinotopic_mapping/examples/signmap_analysis
+/retinotopic_mapping_example.ipynb>`_ showing automated visual area segmentation of mouse cortex.
 
 
 What is a retinotopic map?
