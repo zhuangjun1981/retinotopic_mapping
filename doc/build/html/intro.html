@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; Retinotopic Mapping 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/>
+        <link rel="next" title="Examples" href="examples.html"/>
+        <link rel="prev" title="Installing" href="install.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Retinotopic Mapping
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-your-monitor">Setting up your monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-your-display-setup">Testing your display setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#displaying-stimulus">Displaying Stimulus</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Retinotopic Mapping</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>The first thing to do after downloading the retinotopic mapping
+module is to set up a monitor to display some stimulus routines.
+Ideally you should have two monitors, one for running your python
+scripts and another for displaying stimulus. This will allow you
+to get familiar with the code base in a simple and straightforward
+manner, as well as get some practice in debugging your experimental
+setup.</p>
+<p>After working through this tutorial you should be able to display simple
+stimulus routines, and be familiar enough with the basic functionality of the
+experimental part of the code base to debug your own python scripts.</p>
+<div class="section" id="setting-up-your-monitor">
+<h2>Setting up your monitor<a class="headerlink" href="#setting-up-your-monitor" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">MonitorSetup</span></code> module is used to store and keep track of all
+your experimental display monitor specs as well as the geometry of the experiment.</p>
+<p>There are two classes within the  module: <code class="xref py py-class docutils literal"><span class="pre">Monitor</span></code>
+and <code class="xref py py-class docutils literal"><span class="pre">Indicator</span></code>. For now we won’t pay much attention
+to the <code class="xref py py-class docutils literal"><span class="pre">Indicator</span></code> class, except to mention that it is
+used for timing purposes.</p>
+<p>Instead we will focus on the <code class="xref py py-class docutils literal"><span class="pre">Monitor</span></code> class, what it
+does and how it works. But first, here is a visualization of the experimental setup
+to get an idea of what kind of geometerical parameters are stored in the object.</p>
+<div class="figure" id="id1">
+<img alt="_images/mouse_geometry.png" src="_images/mouse_geometry.png" />
+<p class="caption"><span class="caption-text">Image taken from (2) in <a class="reference internal" href="about.html#citations"><span class="std std-ref">Citations</span></a>.</span></p>
+</div>
+<p>The specs you will need to initialize a monitor object are as
+follows:</p>
+<ul class="simple">
+<li>Monitor resolution (in pixels).</li>
+<li>Monitor refresh rate (in Hz).</li>
+<li>Monitor width/height (in cm).</li>
+<li>Distance from the mouse’s eyeball to the monitor (in cm).</li>
+<li>Distance from the mouse’s gaze center to the top of the monitor (in cm).</li>
+<li>Distance from the mouse’s gaze center to the anterior edge of the monitor (in cm).</li>
+<li>Angle between the mouse’s body axis and the plane that the monitor lies in (in deg).</li>
+</ul>
+<p>It’s not important that you know the exact parameters right away but you
+should definitely check to see if you are able to display stimulus.
+Since this is a package to both analyze <strong>and</strong> display experimental
+results, it is important that you are able to play around with all of the parameters
+that define the visual stimuli. That way you will have significant freedom
+and creativity in customizing your own routines.</p>
+</div>
+<div class="section" id="testing-your-display-setup">
+<h2>Testing your display setup<a class="headerlink" href="#testing-your-display-setup" title="Permalink to this headline">¶</a></h2>
+<p>Since we are just interested in trying to display some stimulus quickly, don’t
+worry too much about having exact numbers for all of these parameters. It turns
+out that <a class="reference external" href="http://www.psychopy.org/documentation.html">PsychoPy</a> will automatically
+resize your display monitor to fit the screen if you put in the wrong parameters.
+So just put something in and try to make sure everything works on your machine
+before going any further.</p>
+<p>Let’s assume we have a monitor with resolution 1080x1920, refresh rate of 60Hz,
+and height and width of 90 and 50 cm respectively. Neglect the geometry
+of the experimental setup for now unless you already know your exact parameters.</p>
+<p>Then under these assumptions we can initialize
+<code class="xref py py-class docutils literal"><span class="pre">Monitor</span></code> and <code class="xref py py-class docutils literal"><span class="pre">Indicator</span></code> objects
+as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">MonitorSetup</span> <span class="k">import</span> <span class="n">Monitor</span><span class="p">,</span> <span class="n">Indicator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mon</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">1080</span><span class="p">,</span><span class="mi">1920</span><span class="p">),</span>
+<span class="go">                  refresh_rate=60.,</span>
+<span class="go">                  mon_width_cm=90.,</span>
+<span class="go">                  mon_height_cm=50.,</span>
+<span class="go">                  dis=20,</span>
+<span class="go">                  mon_tilt=10.</span>
+<span class="go">                  C2T_cm=30.</span>
+<span class="go">                  C2A_cm=40.)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">Indicator</span><span class="p">(</span><span class="n">mon</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="displaying-stimulus">
+<h2>Displaying Stimulus<a class="headerlink" href="#displaying-stimulus" title="Permalink to this headline">¶</a></h2>
+<p>Now we are ready to display a stimulus routine on your monitor
+from the <code class="xref py py-mod docutils literal"><span class="pre">DisplaySequence</span></code> class. There are several
+routines to choose from the <code class="xref py py-mod docutils literal"><span class="pre">Stimulus</span></code> module
+(each of which can be previewed <a class="reference internal" href="examples.html#examples"><span class="std std-ref">here</span></a>), but
+for this example we will initialize the <code class="xref py py-mod docutils literal"><span class="pre">FlashingCircle</span></code>
+routine which takes the <code class="docutils literal"><span class="pre">mon</span></code> and <code class="docutils literal"><span class="pre">ind</span></code> variables
+as parameters.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">StimulusRoutines</span> <span class="k">as</span> <span class="nn">stim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">DisplayStimulus</span> <span class="k">import</span> <span class="n">DisplaySequence</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flashing_circle</span> <span class="o">=</span> <span class="n">stim</span><span class="o">.</span><span class="n">FlashingCircle</span><span class="p">(</span><span class="n">mon</span><span class="p">,</span><span class="n">ind</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">DisplaySequence</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="s1">&#39;log_directory&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">trigger_display</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which will give an output that should look something like this</p>
+<img alt="_images/flashing_circle.gif" class="align-center" src="_images/flashing_circle.gif" />
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are having trouble with setting up your display monitor
+try experimenting with the <code class="docutils literal"><span class="pre">for_debugging.py</span></code> script found
+in the primary module folder. This script can be used to display
+template routines and debug your setup to get up and running.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, JY.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
