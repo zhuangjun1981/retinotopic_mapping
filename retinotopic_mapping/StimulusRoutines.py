@@ -3443,7 +3443,12 @@ class CombinedStimuli(Stim):
         self_dict = dict(self.__dict__)
         self_dict.pop('monitor')
         self_dict.pop('indicator')
+
+        stim_seq = []
+        for stim_ind, stim in enumerate(self.stimuli):
+            stim_seq.append(ft.int2str(stim_ind, 3) + '_' + stim.stim_name)
         self_dict.pop('stimuli')
+        self_dict.update({'stimuli_sequence':stim_seq})
         log = {'stimulation': self_dict,
                'monitor': mondict,
                'indicator': indicator_dict}

@@ -311,7 +311,7 @@ class DisplaySequence(object):
         else:
             display_time = (float(self.sequence.shape[0]) *
                             self.display_iter / refresh_rate)
-        print '\n Expected display time: ', display_time, ' seconds\n'
+        print '\nExpected display time: ', display_time, ' seconds\n'
 
         # generate file name
         self._get_file_name()
@@ -349,8 +349,6 @@ class DisplaySequence(object):
             # display frame by frame
             self._display(window, stim)
 
-        self.save_log()
-
         # analyze frames
         try:
             self.frame_duration, self.frame_stats = \
@@ -360,6 +358,8 @@ class DisplaySequence(object):
             print "No monitor refresh rate information, assuming 60Hz."
             self.frame_duration, self.frame_stats = \
                 analyze_frames(ts=self.time_stamp, refresh_rate=60.)
+
+        self.save_log()
 
         # clear display data
         self.clear()
