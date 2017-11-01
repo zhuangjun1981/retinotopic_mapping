@@ -16,5 +16,14 @@ class DisplayLogAnalyzer(object):
         if not self.log_dict['presentation']['is_by_index']:
             raise NotImplementedError('The visual stimuli display should be indexed.')
 
-    def get_stimuli_type_sequence(self):
-        pass
+        self.check_integrity()
+
+    def check_integrity(self):
+
+        print(self.log_dict['presentation']['frame_stats'])
+
+        if not self.log_dict['presentation']['keep_display']:
+            raise ValueError('Stimulus presentation did not end normally.')
+
+        total_frame1 = len(self.log_dict['presentation']['displayed_frames'])
+

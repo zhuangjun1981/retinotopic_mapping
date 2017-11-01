@@ -16,7 +16,7 @@ from tools import FileTools as ft
 from tools.IO import nidaq as iodaq
 
 
-def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
+def analyze_frames(ts_start, ts_end, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
     """
     Analyze frame durations of time stamp data.
 
@@ -27,8 +27,10 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
 
     Parameters
     ----------
-    ts : ndarray
-        list of time stamps of each frame measured (in seconds).
+    ts_start : 1d array
+        list of time stamps of each frame start (in seconds).
+    ts_end: 1d array
+        list of time stamps of each frame end (in seconds).
     refresh_rate : float
         the refresh rate of imaging monitor measured (in Hz).
     check_point : tuple, optional
@@ -42,43 +44,39 @@ def analyze_frames(ts, refresh_rate, check_point=(0.02, 0.033, 0.05, 0.1)):
 
     """
 
-    frame_duration = ts[1::] - ts[0:-1]
+    frame_interval = np.diff(ts_start)
     plt.figure()
-    plt.hist(frame_duration, bins=np.linspace(0.0, 0.05, num=51))
+    plt.hist(frame_interval, bins=np.linspace(0.0, 0.05, num=51))
     refresh_rate = float(refresh_rate)
 
-    num_frames = len(ts)
-    disp_true = ts[-1] - ts[0]
-    disp_expect = (len(ts) - 1) / refresh_rate
-    avg_frame_time = np.mean(frame_duration) * 1000
-    sdev_frame_time = np.std(frame_duration) * 1000
-    short_frame = min(frame_duration) * 1000
-    short_frame_ind = np.nonzero(frame_duration == np.min(frame_duration))[0][0]
-    long_frame = max(frame_duration) * 1000
-    long_frame_ind = np.nonzero(frame_duration == np.max(frame_duration))[0][0]
+    num_frames = ts_start.shape[0]
+    disp_true = ts_end[-1] - ts_start[0]
+    disp_expect = float(num_frames) / refresh_rate
+    avg_frame_time = np.mean(frame_interval) * 1000
+    sdev_frame_time = np.std(frame_interval) * 1000
+    short_frame = min(frame_interval) * 1000
+    short_frame_ind = np.where(frame_interval == np.min(frame_interval))[0][0]
+    long_frame = max(frame_interval) * 1000
+    long_frame_ind = np.where(frame_interval == np.max(frame_interval))[0][0]
 
-    frame_stats = '\n'
-    frame_stats += 'Total number of frames    : %d. \n' % num_frames
-    frame_stats += 'Total length of display   : %.5f second. \n' % disp_true
-    frame_stats += 'Expected length of display: %.5f second. \n' % disp_expect
-    frame_stats += 'Mean of frame durations   : %.2f ms. \n' % avg_frame_time
-    frame_stats += 'Standard deviation of frame : %.2f ms.\n' % sdev_frame_time
-    frame_stats += 'Shortest frame: %.2f ms, index: %d. \n' % (short_frame,
-                                                               short_frame_ind)
-    frame_stats += 'Longest frame : %.2f ms, index: %d. \n' % (long_frame,
-                                                               long_frame_ind)
+    frame_stats = ''
+    frame_stats += '\nTotal number of frames      : {}.'.format(num_frames)
+    frame_stats += '\nTotal length of display     : {:.5f} second.'.format(disp_true)
+    frame_stats += '\nExpected length of display  : {:.5f} second.'.format(disp_expect)
+    frame_stats += '\nMean of frame intervals     : {:.2f} ms.'.format(avg_frame_time)
+    frame_stats += '\nS.D. of frame intervals     : {:.2f} ms.'.format(sdev_frame_time)
+    frame_stats += '\nShortest frame: {:.2f} ms, index: {}.'.format(short_frame, short_frame_ind)
+    frame_stats += '\nLongest frame : {:.2f} ms, index: {}.'.format(long_frame, long_frame_ind)
 
     for i in range(len(check_point)):
         check_number = check_point[i]
-        frame_number = len(frame_duration[frame_duration > check_number])
-        frame_stats += 'Number of frames longer than %d ms: %d; %.2f%% \n' \
-                       % (round(check_number * 1000),
-                          frame_number,
-                          round(frame_number * 10000 / (len(ts) - 1)) / 100)
+        frame_number = len(frame_interval[frame_interval > check_number])
+        frame_stats += '\nNumber of frames longer than {:5.3f} second: {}; {:6.2f}%'.\
+            format(check_number, frame_number, (float(frame_number) * 100 / num_frames))
 
-    print frame_stats
+    print(frame_stats)
 
-    return frame_duration, frame_stats
+    return frame_interval, frame_stats
 
 
 class DisplaySequence(object):
@@ -352,12 +350,12 @@ class DisplaySequence(object):
         # analyze frames
         try:
             self.frame_duration, self.frame_stats = \
-                analyze_frames(ts=self.time_stamp,
+                analyze_frames(ts_start=self.frame_ts_start, ts_end=self.frame_ts_end,
                                refresh_rate=self.seq_log['monitor']['refresh_rate'])
         except KeyError:
             print "No monitor refresh rate information, assuming 60Hz."
             self.frame_duration, self.frame_stats = \
-                analyze_frames(ts=self.time_stamp, refresh_rate=60.)
+                analyze_frames(ts_start=self.frame_ts_start, ts_end=self.frame_ts_end, refresh_rate=60.)
 
         self.save_log()
 
@@ -475,7 +473,8 @@ class DisplaySequence(object):
         """ display by index routine for simpler stim routines """
 
         # display frames by index
-        time_stamps = []
+        frame_ts_start = []
+        frame_ts_end = []
         start_time = time.clock()
         index_to_display = self.seq_log['stimulation']['index_to_display']
         num_iters = len(index_to_display)
@@ -511,15 +510,16 @@ class DisplaySequence(object):
 
             stim.setImage(self.sequence[frame_index][::-1])
             stim.draw()
-            time_stamps.append(time.clock() - start_time)
 
             # set syncPuls signal
             if self.is_sync_pulse:
                 _ = syncPulseTask.write(np.array([1]).astype(np.uint8))
 
             # show visual stim
+            frame_ts_start.append(time.clock() - start_time)
             window.flip()
             self.displayed_frames.append(self.seq_log['stimulation']['frames_unique'][frame_index])
+            frame_ts_end.append(time.clock() - start_time)
 
             # set syncPuls signal
             if self.is_sync_pulse:
@@ -534,7 +534,8 @@ class DisplaySequence(object):
         if self.is_sync_pulse:
             syncPulseTask.StopTask()
 
-        self.time_stamp = np.array(time_stamps)
+        self.frame_ts_start = np.array(frame_ts_start)
+        self.frame_ts_end = np.array(frame_ts_end)
         self.display_length = stop_time - start_time
 
         if self.keep_display == True:
@@ -543,7 +544,8 @@ class DisplaySequence(object):
     def _display(self, window, stim):
 
         # display frames
-        time_stamp = []
+        frame_ts_start = []
+        frame_ts_end = []
         start_time = time.clock()
         singleRunFrames = self.sequence.shape[0]
 
@@ -571,7 +573,7 @@ class DisplaySequence(object):
 
             stim.setImage(self.sequence[frame_num][::-1])
             stim.draw()
-            time_stamp.append(time.clock() - start_time)
+            frame_ts_start.append(time.clock() - start_time)
 
             # set syncPuls signal
             if self.is_sync_pulse:
@@ -587,6 +589,7 @@ class DisplaySequence(object):
 
             self._update_display_status()
             i = i + 1
+            frame_ts_end.append(time.clock() - start_time)
 
         stop_time = time.clock()
         window.close()
@@ -594,7 +597,8 @@ class DisplaySequence(object):
         if self.is_sync_pulse:
             syncPulseTask.StopTask()
 
-        self.time_stamp = np.array(time_stamp)
+        self.frame_ts_start = np.array(frame_ts_start)
+        self.frame_ts_end = np.array(frame_ts_end)
         self.display_length = stop_time - start_time
 
         if self.keep_display == True:
@@ -637,7 +641,7 @@ class DisplaySequence(object):
             self.file_name += '-incomplete'
 
         # set up log object
-        directory = self.log_dir + '\sequence_display_log'
+        directory = os.path.join(self.log_dir + 'visual_display_log')
         if not (os.path.isdir(directory)):
             os.makedirs(directory)
 
@@ -665,26 +669,13 @@ class DisplaySequence(object):
             print "did not find backup path, no backup has been saved."
 
     def _get_backup_folder(self):
-
-        if self.file_name is None:
-            raise LookupError, 'self.file_name not found.'
+        if self.backupdir is not None:
+            backup_folder = os.path.join(self.backupdir, 'visual_display_log')
+            if not os.path.isdir(backup_folder):
+                os.makedirs(backup_folder)
+            return backup_folder
         else:
-
-            if self.backupdir is not None:
-
-                curr_date = self.file_name[0:6]
-                stim_name = self.seq_log['stimulation']['stim_name']
-                if 'KSstim' in stim_name:
-                    backupFileFolder = \
-                        os.path.join(self.backupdir,
-                                     curr_date + '-M' + self.mouse_id + '-Retinotopy')
-                else:
-                    backupFileFolder = \
-                        os.path.join(self.backupdir,
-                                     curr_date + '-M' + self.mouse_id + '-' + stim_name)
-                return backupFileFolder
-            else:
-                return None
+            return None
 
     def clear(self):
         """ clear display information. """
