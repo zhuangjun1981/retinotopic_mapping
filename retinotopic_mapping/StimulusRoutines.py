@@ -488,8 +488,6 @@ class Stim(object):
             del self.frames_unique
         if hasattr(self, 'index_to_display'):
             del self.index_to_display
-        if hasattr(self, 'frame_config'):
-            del self.frame_config
 
         # for StaticImages
         if hasattr(self, 'images_wrapped'):
@@ -625,6 +623,7 @@ class UniformContrast(Stim):
 
     def generate_movie_by_index(self):
         """ compute the stimulus movie to be displayed by index. """
+
         self.frames_unique = self._generate_frames_for_index_display()
         self.index_to_display = self._generate_display_index()
 
@@ -1644,8 +1643,6 @@ class LocallySparseNoise(Stim):
             raise ValueError('SparseNoise: probe_frame_num should be no less than 2.')
 
         self.is_include_edge = is_include_edge
-        # self.frame_config = ('is_display', '(azimuth, altitude)',
-        #                      'polarity', 'indicator_color')
 
         if subregion is None:
             if self.coordinate == 'degree':
