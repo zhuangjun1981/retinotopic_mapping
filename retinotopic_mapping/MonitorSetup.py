@@ -35,8 +35,10 @@ class Monitor(object):
         distance from gaze center to monitor top
     C2A_cm : float
         distance from gaze center to anterior edge of the monitor
-    mon_tilt : float
-        angle between mouse body axis and monitor plane, in degrees
+    center_coordinates : tuple of two floats
+        (altitude, azimuth), in degrees. the coordinates of the projecting point
+        from the eye ball to the monitor. This allows to place the display monitor
+        in any arbitrary position.
     visual_field : str from {'right','left'}, optional
         the eye that is facing the monitor, defaults to 'right'
     deg_coord_x : ndarray, optional
@@ -64,7 +66,7 @@ class Monitor(object):
                  mon_height_cm,
                  C2T_cm,
                  C2A_cm,
-                 mon_tilt,
+                 center_coordinates=(0., 60.),
                  visual_field='right',
                  deg_coord_x=None,
                  deg_coord_y=None,
@@ -90,7 +92,7 @@ class Monitor(object):
         self.mon_height_cm = mon_height_cm
         self.C2T_cm = C2T_cm
         self.C2A_cm = C2A_cm
-        self.mon_tilt = mon_tilt
+        self.center_coordinates = center_coordinates
         self.visual_field = visual_field
         self.deg_coord_x = deg_coord_x
         self.deg_coord_y = deg_coord_y
@@ -146,8 +148,8 @@ class Monitor(object):
         resolution[0] = self.resolution[0] / downsample_rate
         resolution[1] = self.resolution[1] / downsample_rate
 
-        map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
-                                               range(resolution[0]))
+        # map_coord_x, map_coord_y = np.meshgrid(range(resolution[1]),
+        #                                        range(resolution[0]))
 
         if self.visual_field == "left":
             map_x = np.linspace(self.C2A_cm, -1.0 * self.C2P_cm, resolution[1])
@@ -191,8 +193,8 @@ class Monitor(object):
                 new_map_y[i, j] = ((180.0 / np.pi) *
                                    np.arctan(self.lin_coord_y[i, 0] / dis2))
 
-        self.deg_coord_x = new_map_x + 90 - self.mon_tilt
-        self.deg_coord_y = new_map_y
+        self.deg_coord_x = new_map_x + self.center_coordinates[1]
+        self.deg_coord_y = new_map_y + self.center_coordinates[0]
 
     def plot_map(self):
 
@@ -261,8 +263,8 @@ class Monitor(object):
         degNoWarpCorY = self.lin_coord_y / degDis
 
         # deg coordinates
-        degCorX = self.deg_coord_x + self.mon_tilt - 90
-        degCorY = self.deg_coord_y
+        degCorX = self.deg_coord_x + self.center_coordinates[0]
+        degCorY = self.deg_coord_y + self.center_coordinates[1]
 
         lookupI = np.zeros(degCorX.shape).astype(np.int32)
         lookupJ = np.zeros(degCorX.shape).astype(np.int32)

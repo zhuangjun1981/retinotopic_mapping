@@ -5,7 +5,7 @@ import retinotopic_mapping.MonitorSetup as ms
 curr_folder = os.path.dirname(os.path.realpath(__file__))
 os.chdir(curr_folder)
 
-class TestSimulation(unittest.TestCase):
+class TestMonitorSetup(unittest.TestCase):
 
     def setUp(self):
         import tifffile as tf
@@ -13,10 +13,19 @@ class TestSimulation(unittest.TestCase):
                                                     'test_data',
                                                     'images_original.tif'))
 
+    def test_Monitor_remap(self):
+        mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
+                         mon_width_cm=40., mon_height_cm=30.,
+                         C2T_cm=15., C2A_cm=20., center_coordinates=(0., 60.),
+                         downsample_rate=10)
+        mon.plot_map()
+        import matplotlib.pyplot as plt
+        plt.show()
+
     def test_Monitor_generate_lookup_table(self):
         mon = ms.Monitor(resolution=(1200,1600), dis=15.,
                          mon_width_cm=40., mon_height_cm=30.,
-                         C2T_cm=15.,C2A_cm=20., mon_tilt=30.,
+                         C2T_cm=15.,C2A_cm=20., center_coordinates=(0., 60.),
                          downsample_rate=10)
 
         lookup_i, lookup_j = mon.generate_lookup_table()
@@ -32,7 +41,7 @@ class TestSimulation(unittest.TestCase):
     def test_Monitor_warp_images(self):
         mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
                          mon_width_cm=40., mon_height_cm=30.,
-                         C2T_cm=15., C2A_cm=20., mon_tilt=30.,
+                         C2T_cm=15., C2A_cm=20., center_coordinates=(0., 60.),
                          downsample_rate=10)
         import numpy as np
         nsw, altw, aziw, nsd, altd, azid = mon.warp_images(imgs=np.array([self.natural_scene]),
@@ -54,7 +63,7 @@ class TestSimulation(unittest.TestCase):
         # ax3.set_title('dewrapped')
         # f.colorbar(fig3, ax=ax3)
         # plt.show()
-
+        #
         # print altd.shape
         # print azid.shape
 
