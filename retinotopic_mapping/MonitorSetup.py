@@ -351,10 +351,7 @@ class Monitor(object):
         imgs_wrapped[:] = np.nan
 
         # for cropping imgs_raw
-        x_min = None;
-        x_max = None;
-        y_min = None;
-        y_max = None
+        x_min = x_max = y_max = y_min = None
 
         # for testing
         # img_count = np.zeros((imgs_raw.shape[1], imgs_raw.shape[2]), dtype=np.uint32)
@@ -392,9 +389,9 @@ class Monitor(object):
                             y_max = max(y_max, u)
 
                     else:
-                        u = int(u);
-                        b = u + 1;
-                        l = int(l);
+                        u = int(u)
+                        b = u + 1
+                        l = int(l)
                         r = l + 1
                         w_ul = 1. / ia.distance(coord_w, [alt_axis[u], azi_axis[l]])
                         w_bl = 1. / ia.distance(coord_w, [alt_axis[b], azi_axis[l]])
@@ -410,14 +407,14 @@ class Monitor(object):
 
                         # for cropping
                         if x_min is None:
-                            x_min = l;
-                            x_max = l + 1;
-                            y_min = u;
+                            x_min = l
+                            x_max = l + 1
+                            y_min = u
                             y_max = u + 1
                         else:
-                            x_min = min(x_min, l);
+                            x_min = min(x_min, l)
                             x_max = max(x_max, l + 1)
-                            y_min = min(y_min, u);
+                            y_min = min(y_min, u)
                             y_max = max(y_max, u + 1)
 
         # for testing
