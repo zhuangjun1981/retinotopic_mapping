@@ -10,7 +10,8 @@ class TestSimulation(unittest.TestCase):
         # Setup monitor/indicator objects
         self.monitor = ms.Monitor(resolution=(1200,1600), dis=15.,
                                   mon_width_cm=40., mon_height_cm=30.,
-                                  C2T_cm=15.,C2A_cm=20., mon_tilt=30., downsample_rate=10)
+                                  C2T_cm=15.,C2A_cm=20., center_coordinates=(0., 60.),
+                                  downsample_rate=10)
         # import matplotlib.pyplot as plt
         # self.monitor.plot_map()
         # plt.show()

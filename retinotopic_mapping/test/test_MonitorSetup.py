@@ -18,9 +18,35 @@ class TestMonitorSetup(unittest.TestCase):
                          mon_width_cm=40., mon_height_cm=30.,
                          C2T_cm=15., C2A_cm=20., center_coordinates=(0., 60.),
                          downsample_rate=10)
-        mon.plot_map()
-        import matplotlib.pyplot as plt
-        plt.show()
+        mon.remap()
+        assert(abs(mon.deg_coord_y[60, 80] - 0.) < 1.)
+        assert(abs(mon.deg_coord_x[60, 80] - 60.) < 1.)
+
+        # mon.plot_map()
+        # import matplotlib.pyplot as plt
+        # plt.show()
+
+        mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
+                         mon_width_cm=40., mon_height_cm=30.,
+                         C2T_cm=15., C2A_cm=20., center_coordinates=(20., -10.),
+                         downsample_rate=10)
+        mon.remap()
+        assert (abs(mon.deg_coord_y[60, 80] - 20.) < 1.)
+        assert (abs(mon.deg_coord_x[60, 80] - (-10.)) < 1.)
+        # mon.plot_map()
+        # import matplotlib.pyplot as plt
+        # plt.show()
+
+        mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
+                         mon_width_cm=40., mon_height_cm=30.,
+                         C2T_cm=5., C2A_cm=35., center_coordinates=(20., -10.),
+                         downsample_rate=10)
+        mon.remap()
+        assert (abs(mon.deg_coord_y[20, 140] - 20.) < 1.)
+        assert (abs(mon.deg_coord_x[20, 140] - (-10.)) < 1.)
+        # mon.plot_map()
+        # import matplotlib.pyplot as plt
+        # plt.show()
 
     def test_Monitor_generate_lookup_table(self):
         mon = ms.Monitor(resolution=(1200,1600), dis=15.,

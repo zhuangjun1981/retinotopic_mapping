@@ -17,7 +17,7 @@ mon_height_cm = 32  # enter your monitors height in cm
 mon_refresh_rate = 60  # enter your monitors height in Hz
 mon_C2T_cm = mon_height_cm / 2.
 mon_C2A_cm = mon_width_cm / 2.
-mon_tilt = 30.
+mon_center_coordinates = (0., 60.)
 mon_dis = 15.
 mon_downsample_rate = 5
 # =================================================================================
@@ -155,7 +155,8 @@ cs_stim_ind_sequence = [0, 7, 1, 7, 2, 7, 3, 7, 4, 7, 5, 7, 6, 7]
 # ================ Initialize the monitor object ==================================
 mon = Monitor(resolution=mon_resolution, dis=mon_dis, mon_width_cm=mon_width_cm,
               mon_height_cm=mon_height_cm, C2T_cm=mon_C2T_cm, C2A_cm=mon_C2A_cm,
-              mon_tilt=mon_tilt, downsample_rate=mon_downsample_rate)
+              center_coordinates=mon_center_coordinates,
+              downsample_rate=mon_downsample_rate)
 # mon.plot_map()
 # plt.show()
 # =================================================================================
