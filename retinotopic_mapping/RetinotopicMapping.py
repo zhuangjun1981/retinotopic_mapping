@@ -2761,8 +2761,8 @@ class Patch(object):
         gridAzi, gridAlt = np.meshgrid(np.arange(aziRange[0], aziRange[1], pixelSize),
                                        np.arange(altRange[0], altRange[1], pixelSize))
 
-        visualSpace = np.zeros((np.ceil((altRange[1] - altRange[0]) / pixelSize),
-                                np.ceil((aziRange[1] - aziRange[0]) / pixelSize)))
+        visualSpace = np.zeros((int(np.ceil((altRange[1] - altRange[0]) / pixelSize)),
+                                int(np.ceil((aziRange[1] - aziRange[0]) / pixelSize))))
 
         patchArray = self.array
         for i in range(patchArray.shape[0]):
