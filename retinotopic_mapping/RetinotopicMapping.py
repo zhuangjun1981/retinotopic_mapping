@@ -1424,12 +1424,14 @@ class RetinotopicMappingTrial(object):
                                                                     aziPosMapf,
                                                                     pixelSize=visualSpacePixelSize,
                                                                     closeIter=visualSpaceCloseIter)
+                    visualSpace1 = visualSpace1.astype(np.uint8)
 
                     # calculate the visual space and unique area of the second patch
                     visualSpace2, AU2, _, _ = patch2.getVisualSpace(altPosMapf,
                                                                     aziPosMapf,
                                                                     pixelSize=visualSpacePixelSize,
                                                                     closeIter=visualSpaceCloseIter)
+                    visualSpace2 = visualSpace2.astype(np.uint8)
 
                     # calculate the overlapping area of these two patches
                     sumSpace = visualSpace1 + visualSpace2
