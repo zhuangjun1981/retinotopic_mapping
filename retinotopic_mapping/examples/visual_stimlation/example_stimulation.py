@@ -29,31 +29,49 @@ the mouse will be located during an experiment. All we are interested in
 here is just making sure that we can display stimulus on a monitor and learning
 how to work with the different stimulus routines.
 """
-#==============================================================================
-resolution = (1200,1920) #enter your monitors resolution
+
+
+# ======================== monitor parameters ================================
+mon_resolution = (1200,1920) #enter your monitors resolution (height, width)
 mon_width_cm = 52 #enter your monitors width in cm
 mon_height_cm = 32 #enter your monitors height in cm
-refresh_rate = 60  #enter your monitors height in Hz
-#==============================================================================
-# The following variables correspond to the geometry of the mouse with
-# respect to the monitor, don't worry about them for now we just need them
-# for all of the functions to work
+mon_refresh_rate = 60  #enter your monitors height in Hz
 
-C2T_cm = mon_height_cm / 2.
-C2A_cm = mon_width_cm / 2.
-mon_tilt = 30.
-dis = 15.
+'''
+The following variables correspond to the geometry of the mouse with
+respect to the monitor, don't worry about them for now we just need them
+for all of the functions to work.
+'''
 
-# Set the downsample rate; needs to be an integer `n` such that each resolution
-# number is divisble by `n`,
-downsample_rate = 5
+mon_C2T_cm = mon_height_cm / 2.  # center (projection point from mouse eye to the monitor) to monitor top edge in cm
+mon_C2A_cm = mon_width_cm / 2.  # center (projection point from mouse eye to the monitor) to monitor anterior edge in cm
+mon_center_coordinates = (0., 60.) # the visual coordinates of center (altitude, azimuth)
+mon_dis_cm = 15. # cm from mouse eye to the monitor
+mon_downsample_rate = 10 # downsample rate of the displayed images relative to the monitor resolution.
+# the both numbers in mon_resolution should be divisble by this number
+# ======================== monitor parameters ================================
 
-# Initialize the monitor and ind objects
-mon = Monitor(resolution=resolution, dis=dis, mon_width_cm=mon_width_cm, mon_height_cm=mon_height_cm,
-              C2T_cm=C2T_cm, C2A_cm=C2A_cm, mon_tilt=mon_tilt, downsample_rate=downsample_rate)
-# mon.plot_map()
-# plt.show()
-ind = Indicator(mon, width_cm=3., height_cm=3., position='northeast', is_sync=True, freq=1.)
+# ======================== indicator parameters ================================
+ind_width_cm = 3.
+ind_height_cm = 3.
+ind_position = 'northeast'
+ind_is_sync = 'True'
+ind_freq = 1.
+# ======================== indicator parameters ================================
+
+
+# Initialize the monitor
+mon = Monitor(resolution=mon_resolution, dis=mon_dis_cm, mon_width_cm=mon_width_cm, mon_height_cm=mon_height_cm,
+              C2T_cm=mon_C2T_cm, C2A_cm=mon_C2A_cm, center_coordinates=mon_center_coordinates,
+              downsample_rate=mon_downsample_rate)
+
+# plot warpped monitor coordinates
+mon.plot_map()
+plt.show()
+
+# initialize indicator object
+ind = Indicator(mon, width_cm=ind_width_cm, height_cm=ind_height_cm, position=ind_position, is_sync=ind_is_sync,
+                freq=ind_freq)
 
 """ Now for the fun stuff! Each block of code below shows an example of
 the stimulus routines that are currently implemented in the codebase. Uncomment
