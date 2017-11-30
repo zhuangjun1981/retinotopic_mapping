@@ -641,7 +641,7 @@ class DisplaySequence(object):
             self.file_name += '-incomplete'
 
         # set up log object
-        directory = os.path.join(self.log_dir + 'visual_display_log')
+        directory = os.path.join(self.log_dir, 'visual_display_log')
         if not (os.path.isdir(directory)):
             os.makedirs(directory)
 
