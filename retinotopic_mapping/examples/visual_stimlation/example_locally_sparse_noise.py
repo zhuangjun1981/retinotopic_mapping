@@ -54,15 +54,22 @@ ind_is_sync = 'True'
 ind_freq = 1.
 # ======================== indicator parameters ================================
 
+# ============================ generic stimulus parameters ======================
+pregap_dur = 2.
+postgap_dur = 3.
+background = 0.
+coordinate = 'degree'
+# ===============================================================================
+
 # ============================ LocallySparseNoise ===============================
 lsn_subregion = None
 lsn_min_distance = 40.
-lsn_grid_space = (5., 5.)
-lsn_probe_size = (5., 10.)
+lsn_grid_space = (4., 4.)
+lsn_probe_size = (4., 4.)
 lsn_probe_orientation = 0.
 lsn_probe_frame_num = 15
-lsn_sign = 'OFF'
-lsn_iteration = 20
+lsn_sign = 'ON-OFF'
+lsn_iteration = 10
 lsn_is_include_edge = True
 # ===============================================================================
 
