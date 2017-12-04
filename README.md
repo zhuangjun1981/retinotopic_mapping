@@ -79,7 +79,8 @@ python setup.py install
 5. matplotlib, version 1.5.1 or later
 6. tifffile, version 0.7.0 or later
 7. PsychoPy, version 1.7 or later
-8. PyDAQmx, version 1.2 or later
+8. pillow, version 4.3.0 or later
+9. PyDAQmx, version 1.2 or later
    * requires National Instruments DAQmx driver, version 15.0 or later
 
 #### References:
