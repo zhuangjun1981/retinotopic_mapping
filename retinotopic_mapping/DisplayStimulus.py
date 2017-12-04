@@ -7,6 +7,7 @@ be used to save and export movies of experimental stimulus routines for
 presentation.
 '''
 from psychopy import visual, event
+import PIL
 import os
 import datetime
 import numpy as np
@@ -113,7 +114,8 @@ class DisplaySequence(object):
                  sync_pulse_NI_port=1,
                  sync_pulse_NI_line=1,
                  display_screen=0,
-                 initial_background_color=0.):
+                 initial_background_color=0.,
+                 color_weights=(1., 1., 1.)):
         """
         initialize `DisplaySequence` object
 
@@ -165,6 +167,12 @@ class DisplaySequence(object):
             determines which monitor to display stimulus on. defaults to `0`.
         initial_background_color :
             defaults to `0`.
+        color_weights: tuple with 3 elements
+            default (1., 1., 1.)
+            each element specifies the weight of each color channel (R, G, B)
+            the value range of each element is [0., 1.]. This is designed for
+            if you want to suppress a certain channel i.e. red channel, you can
+            change this parameter to (0., 1., 1.)
         """
 
         self.sequence = None
@@ -184,6 +192,14 @@ class DisplaySequence(object):
         self.sync_pulse_NI_line = sync_pulse_NI_line
         self.display_screen = display_screen
         self.initial_background_color = float(initial_background_color)
+
+        if len(color_weights) != 3:
+            raise ValueError('input color_weights should be a tuple with 3 elements.')
+        for cw in color_weights:
+            if cw < -1. or cw > 1.:
+                raise ValueError('each element of color_weight should be no less than -1. and no greater than 1.')
+        self.color_weights = color_weights
+
         self.keep_display = None
 
         if display_iter % 1 == 0:
@@ -322,8 +338,8 @@ class DisplaySequence(object):
                                fullscr=True,
                                screen=self.display_screen,
                                color=self.initial_background_color)
-        stim = visual.ImageStim(window, size=(2, 2),
-                                interpolate=self.is_interpolate)
+
+        stim = visual.ImageStim(window, size=(2, 2), interpolate=self.is_interpolate)
 
         # initialize keep_display
         self.keep_display = True
@@ -571,7 +587,24 @@ class DisplaySequence(object):
             #     # then display sequence backwards
             #      frame_num = singleRunFrames - (i % singleRunFrames) -1
 
-            stim.setImage(self.sequence[frame_num][::-1])
+            if self.color_weights == (1., 1., 1.):
+                stim.setImage(self.sequence[frame_num][::-1])
+            else:
+                curr_frame = self.sequence[frame_num]
+                curr_frame = ((curr_frame + 1.) * 255 / 2.)
+                curr_frame_r = PIL.Image.fromarray((curr_frame * self.color_weights[0]).astype(np.uint8))
+                curr_frame_g = PIL.Image.fromarray((curr_frame * self.color_weights[1]).astype(np.uint8))
+                curr_frame_b = PIL.Image.fromarray((curr_frame * self.color_weights[2]).astype(np.uint8))
+                # curr_frame = np.array([curr_frame * self.color_weights[0],
+                #                        curr_frame * self.color_weights[1],
+                #                        curr_frame * self.color_weights[2]]).astype(np.uint8)
+                curr_frame = PIL.Image.merge('RGB', (curr_frame_r, curr_frame_g, curr_frame_b))
+                # plt.imshow(curr_frame)
+                # plt.show()
+                stim.setImage(curr_frame)
+
+            # stim.setImage(self.sequence[frame_num][::-1])
+
             stim.draw()
             frame_ts_start.append(time.clock() - start_time)
 
