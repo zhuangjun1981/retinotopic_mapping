@@ -41,6 +41,7 @@ ds_psychopy_mon = 'testMonitor'
 ds_is_by_index = True
 ds_is_interpolate = False
 ds_is_triggered = False
+ds_is_save_sequence = False
 ds_trigger_event = "negative_edge"
 ds_trigger_NI_dev = 'Dev1'
 ds_trigger_NI_port = 1
@@ -51,6 +52,7 @@ ds_sync_pulse_NI_port = 1
 ds_sync_pulse_NI_line = 1
 ds_display_screen = 0
 ds_initial_background_color = 0.
+ds_color_weights = (0., 1., 1.)
 # =================================================================================
 
 # ============================ generic stimulus parameters ========================
@@ -177,8 +179,9 @@ ds = DisplaySequence(log_dir=ds_log_dir, backupdir=ds_backupdir,
                      is_sync_pulse=ds_is_sync_pulse, sync_pulse_NI_dev=ds_sync_pulse_NI_dev,
                      sync_pulse_NI_port=ds_sync_pulse_NI_port,
                      sync_pulse_NI_line=ds_sync_pulse_NI_line,
-                     display_screen=ds_display_screen,
-                     initial_background_color=ds_initial_background_color)
+                     display_screen=ds_display_screen, is_save_sequence=ds_is_save_sequence,
+                     initial_background_color=ds_initial_background_color,
+                     color_weights=ds_color_weights)
 # =================================================================================
 
 # ========================== Uniform Contrast =====================================

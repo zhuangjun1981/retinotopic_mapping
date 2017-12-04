@@ -104,7 +104,8 @@ flashing_circle = stim.FlashingCircle(monitor=mon, indicator=ind, coordinate='de
                                       smooth_func=stim.blur_cos)
 ds = DisplaySequence(log_dir=r'C:\data', backupdir=None, is_triggered=False,
                      is_sync_pulse=False, is_by_index=False, display_iter=2,
-                     display_screen=0, is_interpolate=False)
+                     display_screen=0, is_interpolate=False,
+                     is_save_sequence=True)
 ds.set_stim(flashing_circle)
 ds.trigger_display()
 #==============================================================================
