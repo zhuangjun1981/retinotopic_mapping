@@ -36,7 +36,8 @@ Dependencies
         4. OpenCV-Python, version >= 2.4.8, <= 2.4.10
         5. scikit-image, version 0.12.3 or later
         6. tifffile, version 0.7.0 or later
-        7. PyDAQmx, version 1.3.2 or later
+        7. PIL, version 4.3.0 or later
+        8. PyDAQmx, version 1.3.2 or later
 
         * also requires National Instruments DAQmx driver
 
@@ -75,4 +76,3 @@ points to mention:
    are if you are having a related issue it either has something
    to do with not supplying a correct path or  making improper
    import statements somewhere in your script.
-
