@@ -33,11 +33,11 @@ Dependencies
         3. matplotlib, version 1.5.1 or later
         4. psychopy, version 1.85.2 or later
         5. pyglet, version 1.2.4 or later
-        4. OpenCV-Python, version >= 2.4.8, <= 2.4.10
-        5. scikit-image, version 0.12.3 or later
-        6. tifffile, version 0.7.0 or later
-        7. PIL, version 4.3.0 or later
-        8. PyDAQmx, version 1.3.2 or later
+        6. OpenCV-Python, version >= 2.4.8, <= 2.4.10
+        7. scikit-image, version 0.12.3 or later
+        8. tifffile, version >=0.7.0, <=0.10.0
+        9. PIL, version 4.3.0 or later
+        10. PyDAQmx, version 1.3.2 or later
 
         * also requires National Instruments DAQmx driver
 
