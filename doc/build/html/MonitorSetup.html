@@ -181,7 +181,7 @@
 <h2>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="retinotopic_mapping.MonitorSetup.Monitor">
-<em class="property">class </em><code class="descclassname">retinotopic_mapping.MonitorSetup.</code><code class="descname">Monitor</code><span class="sig-paren">(</span><em>resolution</em>, <em>dis</em>, <em>mon_width_cm</em>, <em>mon_height_cm</em>, <em>C2T_cm</em>, <em>C2A_cm</em>, <em>mon_tilt</em>, <em>visual_field='right'</em>, <em>deg_coord_x=None</em>, <em>deg_coord_y=None</em>, <em>name='testMonitor'</em>, <em>gamma=None</em>, <em>gamma_grid=None</em>, <em>luminance=None</em>, <em>downsample_rate=10</em>, <em>refresh_rate=60.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">retinotopic_mapping.MonitorSetup.</code><code class="descname">Monitor</code><span class="sig-paren">(</span><em>resolution</em>, <em>dis</em>, <em>mon_width_cm</em>, <em>mon_height_cm</em>, <em>C2T_cm</em>, <em>C2A_cm</em>, <em>center_coordinates=(0.0</em>, <em>60.0)</em>, <em>visual_field='right'</em>, <em>deg_coord_x=None</em>, <em>deg_coord_y=None</em>, <em>name='testMonitor'</em>, <em>gamma=None</em>, <em>gamma_grid=None</em>, <em>luminance=None</em>, <em>downsample_rate=10</em>, <em>refresh_rate=60.0</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor" title="Permalink to this definition">¶</a></dt>
 <dd><p>monitor object created by Jun, has the method “remap” to generate the
 spherical corrected coordinates in degrees</p>
 <p>This object contains the relevant data for the monitor used within a
@@ -218,9 +218,11 @@ warped by calling the <cite>remap</cite> method to populate the <cite>deg_coord_
 <blockquote>
 <div><p>distance from gaze center to anterior edge of the monitor</p>
 </div></blockquote>
-<p><strong>mon_tilt</strong> : float</p>
+<p><strong>center_coordinates</strong> : tuple of two floats</p>
 <blockquote>
-<div><p>angle between mouse body axis and monitor plane, in degrees</p>
+<div><p>(altitude, azimuth), in degrees. the coordinates of the projecting point
+from the eye ball to the monitor. This allows to place the display monitor
+in any arbitrary position.</p>
 </div></blockquote>
 <p><strong>visual_field</strong> : str from {‘right’,’left’}, optional</p>
 <blockquote>
