@@ -10,7 +10,7 @@ from psychopy import visual, event
 import PIL
 import os
 import datetime
-import tifffile as tf
+import skimage.external.tifffile as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import time

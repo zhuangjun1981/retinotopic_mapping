@@ -6,7 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import tifffile as tf
+import skimage.external.tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
 from tools import FileTools as ft
