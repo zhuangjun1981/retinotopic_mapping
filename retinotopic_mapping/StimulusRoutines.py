@@ -1303,6 +1303,8 @@ class SparseNoise(Stim):
                     raise ValueError('SparseNoise: Do not understand "sign", should '
                                      'be one of "ON", "OFF" and "ON-OFF".')
 
+            frames_unique = tuple([tuple(f) for f in frames_unique])
+
             return frames_unique
         else:
             raise NotImplementedError, "method not available for non-sync indicator"
