@@ -2756,7 +2756,7 @@ class StaticGratingCircle(Stim):
         """
 
         all_conditions = self._generate_all_conditions()
-        gap_frame = (0., None, None, None, None, None, None, None, -1.)
+        gap_frame = (0., None, None, None, None, None, -1.)
         frames_unique = [gap_frame]
 
         for condition in all_conditions:
