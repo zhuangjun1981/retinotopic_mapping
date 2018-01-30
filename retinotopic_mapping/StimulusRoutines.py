@@ -2760,10 +2760,10 @@ class StaticGratingCircle(Stim):
         frames_unique = [gap_frame]
 
         for condition in all_conditions:
-            frames_unique.append([1, condition[0], condition[1], condition[2],
-                                  condition[3], condition[4], 1.])
-            frames_unique.append([1, condition[0], condition[1], condition[2],
-                                  condition[3], condition[4], 0.])
+            frames_unique.append((1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 1.))
+            frames_unique.append((1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 0.))
 
         return frames_unique
 
