@@ -581,7 +581,7 @@ class UniformContrast(Stim):
 
         self.stim_name = 'UniformContrast'
         self.duration = duration
-        self.color = color
+        self.color = float(color)
         self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
     def generate_frames(self):
@@ -2370,7 +2370,7 @@ class DriftingGratingCircle(Stim):
 
             for condi_key in condi_keys:
                 curr_frames_unique_total = len(frames_unique)
-                curr_index_to_display_condi = np.array(condi_dict[condi_key]['index_to_display'], dtype=np.uint64)
+                curr_index_to_display_condi = np.array(condi_dict[condi_key]['index_to_display'])
                 frames_unique += list(condi_dict[condi_key]['frames_unique'])
                 condi_ind_in_frames_unique.update(
                     {condi_key: list(curr_index_to_display_condi + curr_frames_unique_total)})

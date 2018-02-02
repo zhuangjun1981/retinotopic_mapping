@@ -6,6 +6,7 @@ saved in the log pkl files.
 
 import numpy as np
 import tools.FileTools as ft
+import tools.GenericTools as gt
 
 class DisplayLogAnalyzer(object):
     """
@@ -128,6 +129,110 @@ class DisplayLogAnalyzer(object):
             stim_dict.update({curr_stim_name : curr_dict})
 
         return stim_dict
+
+    def analyze_photodiode_onsets_sequential(self, pd_thr=-0.5):
+
+        print('\nAnalyzing photodiode onsets in a sequential manner ...')
+
+        stim_dict = self.get_stim_dict()
+
+        stim_ns = stim_dict.keys()
+        stim_ns.sort()
+
+        pd_onsets = []
+
+        for stim_n in stim_ns:
+
+            curr_stim_dict = stim_dict[stim_n]
+            curr_stim_n = curr_stim_dict['stim_name']
+
+            # print('\n{}'.format(curr_stim_n))
+
+            curr_stim_pd_onsets = []
+
+            pd_trace_unique = np.array([f[-1] for f in curr_stim_dict['frames_unique']])
+            index_to_display = np.array(curr_stim_dict['index_to_display'], dtype=np.uint64)
+            pd_trace = pd_trace_unique[index_to_display]
+            pd_onset_indices = gt.up_crossings(data=pd_trace, threshold=pd_thr)
+
+            for pd_onset_ind in pd_onset_indices:
+                onset_frame = curr_stim_dict['frames_unique'][curr_stim_dict['index_to_display'][pd_onset_ind]]
+                # print(onset_frame)
+
+                curr_pd_onset = {'stim_name': curr_stim_n,
+                                 'global_frame_ind': curr_stim_dict['timestamps'][pd_onset_ind]}
+                if curr_stim_n[-34:] == '_UniformContrastRetinotopicMapping':
+                    str_uc = 'color{:05.2f}'.format(curr_stim_dict['color'])
+                    curr_pd_onset.update({'str_uc': str_uc})
+                elif curr_stim_n[-36:] == '_StimulusSeparatorRetinotopicMapping':
+                    str_ss = ''
+                    curr_pd_onset.update({'str_ss': str_ss})
+                elif curr_stim_n[-33:] == '_FlashingCircleRetinotopicMapping':
+                    str_fc = 'alt{:06.1f}_azi{:06.1f}_color{:05.2f}_rad{:03d}'\
+                        .format(curr_stim_dict['center'][0],
+                                curr_stim_dict['center'][1],
+                                curr_stim_dict['color'],
+                                int(curr_stim_dict['radius']))
+                    curr_pd_onset.update({'str_fc': str_fc})
+                elif curr_stim_n[-30:] == '_SparseNoiseRetinotopicMapping':
+                    str_sn_probe = 'alt{:06.1f}_azi{:06.1f}_sign{:02d}'\
+                        .format(onset_frame[1][0], onset_frame[1][1], int(onset_frame[2]))
+                    curr_pd_onset.update({'str_sn_probe': str_sn_probe})
+                elif curr_stim_n[-37:] == '_LocallySparseNoiseRetinotopicMapping':
+                    str_lsn_probes = []
+                    for probe in onset_frame[1]:
+                        str_lsn_probes.append('alt{:06.1f}_azi{:06.1f}_sign{:02d}'
+                                              .format(probe[0], probe[1], int(probe[2])))
+                    str_lsn_probes = set(str_lsn_probes)
+                    curr_pd_onset.update({'str_lsn_probes': str_lsn_probes})
+                elif curr_stim_n[-40:] == '_DriftingGratingCircleRetinotopicMapping':
+                    str_dgc = 'alt{:06.1f}_azi{:06.1f}_sf{:04.2f}_tf{:04.1f}_dire{:03d}_con{:04.2f}_rad{:03d}'\
+                        .format(curr_stim_dict['center'][0],
+                                curr_stim_dict['center'][1],
+                                onset_frame[2],
+                                onset_frame[3],
+                                int(onset_frame[4]),
+                                onset_frame[5],
+                                int(onset_frame[6]))
+                    curr_pd_onset.update({'str_dgc': str_dgc})
+                elif curr_stim_n[-38:] == '_StaticGratingCircleRetinotopicMapping':
+                    str_sgc = 'alt{:06.1f}_azi{:06.1f}_sf{:04.2f}_phase{:03d}_ori{:03d}_con{:04.2f}_rad{:03d}'.\
+                        format(curr_stim_dict['center'][0],
+                               curr_stim_dict['center'][1],
+                               onset_frame[1],
+                               int(onset_frame[2]),
+                               int(onset_frame[3]),
+                               onset_frame[4],
+                               int(onset_frame[5]))
+                    curr_pd_onset.update({'str_sgc': str_sgc})
+                elif curr_stim_n[-31:] == '_StaticImagesRetinotopicMapping':
+                    str_si = 'img_ind{:05d}'.format(onset_frame[1])
+                    curr_pd_onset.update({'str_si': str_si})
+                else:
+                    raise LookupError('Do not understand stimulus name: {}'.format(curr_stim_n))
+
+                curr_stim_pd_onsets.append(curr_pd_onset)
+
+            print('{:<45}: number of photodiode_onset: {}'.format(curr_stim_n, len(curr_stim_pd_onsets)))
+            pd_onsets = pd_onsets + curr_stim_pd_onsets
+
+        # print('\n'.join([str(pd) for pd in pd_onsets]))
+        print('\nTotal number of photodiode onsets: {}'.format(len(pd_onsets)))
+
+        return pd_onsets
+
+    def analyze_photodiode_onsets_combined(self, pd_thr=-0.5):
+
+        pd_onsets = self.analyze_photodiode_onsets_sequential(pd_thr=pd_thr)
+
+        # todo: finish this
+
+
+
+
+
+
+
 
 
 
