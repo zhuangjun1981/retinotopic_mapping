@@ -519,7 +519,7 @@ def plotPatches(patches, plotaxis=None, zoom=1, alpha=0.5, markersize=5):
         else:
             currPatch = value
 
-        h = plotaxis.imshow(currPatch.getSignedMask(), vmax=1, vmin=-1, interpolation='nearest', alpha=alpha)
+        h = plotaxis.imshow(currPatch.getSignedMask(), vmax=1, vmin=-1, interpolation='nearest', alpha=alpha, cmap='jet')
         plotaxis.plot(currPatch.getCenter()[1], currPatch.getCenter()[0], '.k', markersize=markersize * zoom)
         imageHandle.update({'handle_' + key: h})
 
@@ -1234,7 +1234,7 @@ class RetinotopicMappingTrial(object):
 
         if isPlot:
             plt.figure()
-            plt.imshow(eccMapf, interpolation='nearest')
+            plt.imshow(eccMapf, cmap='jet', interpolation='nearest')
             plt.colorbar()
             plt.title('filtered eccentricity map')
             plt.gca().set_axis_off()

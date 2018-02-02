@@ -79,9 +79,8 @@ python setup.py install
 5. pyglet, version 1.2.4 or later
 6. OpenCV-Python, version >= 2.4.8, <= 2.4.10
 7. scikit-image, version 0.12.3 or later
-8. tifffile, version >=0.7.0, <=0.10.0
-9. PIL, version 4.3.0 or later
-10. PyDAQmx, version 1.3.2 or later
+8. PIL, version 4.3.0 or later
+9. PyDAQmx, version 1.3.2 or later
    * requires National Instruments DAQmx driver, version 15.0 or later
 
 #### References:

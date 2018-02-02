@@ -6,7 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import tifffile as tf
+import skimage.external.tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
 from tools import FileTools as ft
@@ -581,7 +581,7 @@ class UniformContrast(Stim):
 
         self.stim_name = 'UniformContrast'
         self.duration = duration
-        self.color = color
+        self.color = float(color)
         self.frame_config = ('is_display', 'indicator color [-1., 1.]')
 
     def generate_frames(self):
@@ -1302,6 +1302,8 @@ class SparseNoise(Stim):
                 else:
                     raise ValueError('SparseNoise: Do not understand "sign", should '
                                      'be one of "ON", "OFF" and "ON-OFF".')
+
+            frames_unique = tuple([tuple(f) for f in frames_unique])
 
             return frames_unique
         else:
@@ -2368,7 +2370,7 @@ class DriftingGratingCircle(Stim):
 
             for condi_key in condi_keys:
                 curr_frames_unique_total = len(frames_unique)
-                curr_index_to_display_condi = np.array(condi_dict[condi_key]['index_to_display'], dtype=np.uint64)
+                curr_index_to_display_condi = np.array(condi_dict[condi_key]['index_to_display'])
                 frames_unique += list(condi_dict[condi_key]['frames_unique'])
                 condi_ind_in_frames_unique.update(
                     {condi_key: list(curr_index_to_display_condi + curr_frames_unique_total)})
@@ -2756,14 +2758,14 @@ class StaticGratingCircle(Stim):
         """
 
         all_conditions = self._generate_all_conditions()
-        gap_frame = (0., None, None, None, None, None, None, None, -1.)
+        gap_frame = (0., None, None, None, None, None, -1.)
         frames_unique = [gap_frame]
 
         for condition in all_conditions:
-            frames_unique.append([1, condition[0], condition[1], condition[2],
-                                  condition[3], condition[4], 1.])
-            frames_unique.append([1, condition[0], condition[1], condition[2],
-                                  condition[3], condition[4], 0.])
+            frames_unique.append((1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 1.))
+            frames_unique.append((1, condition[0], condition[1], condition[2],
+                                  condition[3], condition[4], 0.))
 
         return frames_unique
 

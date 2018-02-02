@@ -5,12 +5,12 @@ import pickle
 import os
 import shutil
 import ImageAnalysis as ia
-import tifffile as tf
+import skimage.external.tifffile as tf
 
 try:
     import cv2
 except ImportError as e:
-    print 'can not import OpenCV. ' + e
+    print('can not import OpenCV. \n{}'.format(e))
 
 
 def saveFile(path, data):

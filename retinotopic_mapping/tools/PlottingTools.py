@@ -9,9 +9,10 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.colors as col
 import scipy.ndimage as ni
-import tifffile as tf
+import skimage.external.tifffile as tf
 import ImageAnalysis as ia
-import cv2
+try: import cv2
+except ImportError as e: print e
 
 
 def get_rgb(colorStr):

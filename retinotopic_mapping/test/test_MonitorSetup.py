@@ -8,7 +8,7 @@ os.chdir(curr_folder)
 class TestMonitorSetup(unittest.TestCase):
 
     def setUp(self):
-        import tifffile as tf
+        import skimage.external.tifffile as tf
         self.natural_scene = tf.imread(os.path.join(curr_folder,
                                                     'test_data',
                                                     'images_original.tif'))
