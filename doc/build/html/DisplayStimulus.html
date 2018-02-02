@@ -38,7 +38,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Retinotopic Mapping 1.0.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/> 
+        <link rel="up" title="API Documentation" href="api.html"/>
+        <link rel="prev" title="retinotopic_mapping.StimulusRoutines" href="StimulusRoutines.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -177,97 +178,6 @@
 <h1>retinotopic_mapping.DisplayStimulus<a class="headerlink" href="#retinotopic-mapping-displaystimulus" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="displaysequence">
 <h2>DisplaySequence<a class="headerlink" href="#displaysequence" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence">
-<em class="property">class </em><code class="descclassname">retinotopic_mapping.DisplayStimulus.</code><code class="descname">DisplaySequence</code><span class="sig-paren">(</span><em>log_dir</em>, <em>backupdir=None</em>, <em>identifier='000'</em>, <em>display_iter=1</em>, <em>mouse_id='Test'</em>, <em>user_id='Name'</em>, <em>psychopy_mon='testMonitor'</em>, <em>is_by_index=False</em>, <em>is_interpolate=False</em>, <em>is_triggered=False</em>, <em>trigger_event='negative_edge'</em>, <em>trigger_NI_dev='Dev1'</em>, <em>trigger_NI_port=1</em>, <em>trigger_NI_line=0</em>, <em>is_sync_pulse=True</em>, <em>sync_pulse_NI_dev='Dev1'</em>, <em>sync_pulse_NI_port=1</em>, <em>sync_pulse_NI_line=1</em>, <em>display_screen=0</em>, <em>initial_background_color=0.0</em>, <em>color_weights=(1.0</em>, <em>1.0</em>, <em>1.0)</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the stimulus routine from memory.</p>
-<p>Takes care of high level management of your computer
-hardware with respect to its interactions within a given experiment.
-Stimulus presentation routines are specified and external connection
-to National Instuments hardware devices is provided. Also takes care
-of the logging of relevant experimental data collected and where it
-will be stored on the computer used for the experiment.</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">flag_to_close</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">save_log</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_any_array</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_display_iteration</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_stim</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">trigger_display</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>clear display information.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.set_any_array">
-<code class="descname">set_any_array</code><span class="sig-paren">(</span><em>any_array</em>, <em>log_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.set_any_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>to display any numpy 3-d array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.set_stim">
-<code class="descname">set_stim</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.set_stim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls the <cite>generate_movie</cite> method of the respective stim object and
-populates the attributes <cite>self.sequence</cite> and <cite>self.seq_log</cite></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stim</strong> : Stim object</p>
-<blockquote class="last">
-<div><p>the type of stimulus to be presented in the experiment</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="retinotopic_mapping.DisplayStimulus.DisplaySequence.trigger_display">
-<code class="descname">trigger_display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayStimulus.DisplaySequence.trigger_display" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display stimulus, initialize and perform global experimental routines.</p>
-<p>Prepares all of the necessary parameters to display stimulus and store
-the data collected in the experiment. Interacts with PyschoPy to create
-and display each frame of the selected stimulus routine. Handles
-global calls to trigger and timing devices within the experimental setup.</p>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assume monitor, indicator, and stimulus objects are defined</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">DisplaySequence</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">DisplaySequence</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;C:\)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">set_stim</span><span class="p">(</span><span class="n">uniform_contrast</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">trigger_display</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -278,6 +188,13 @@ global calls to trigger and timing devices within the experimental setup.</p>
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="StimulusRoutines.html" class="btn btn-neutral" title="retinotopic_mapping.StimulusRoutines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
