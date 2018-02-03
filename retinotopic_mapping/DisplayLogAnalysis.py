@@ -258,7 +258,7 @@ class DisplayLogAnalyzer(object):
 
         Parameters
         ----------
-        pd_onsets_seq: dict
+        pd_onsets_seq: list
             product of self.analyze_photodiode_onsets_sequential()
 
         dgc_onset_type : str
