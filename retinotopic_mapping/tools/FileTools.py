@@ -14,15 +14,13 @@ except ImportError as e:
 
 
 def saveFile(path, data):
-    f = open(path, 'wb')
-    pickle.dump(data, f)
-    f.close()
+    with open(path, 'wb') as f:
+        pickle.dump(data, f)
 
 
 def loadFile(path):
-    f = open(path, 'rb')
-    data = pickle.load(f)
-    f.close()
+    with open(path, 'rb') as f:
+        data = pickle.load(f)
     return data
 
 

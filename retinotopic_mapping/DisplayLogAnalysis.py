@@ -130,12 +130,15 @@ class DisplayLogAnalyzer(object):
 
         return stim_dict
 
-    def analyze_photodiode_onsets_sequential(self, pd_thr=-0.5):
+    def analyze_photodiode_onsets_sequential(self, stim_dict, pd_thr=-0.5):
         """
         Analyze photodiode onsets in a sequential way
 
         Parameters
         ----------
+        stim_dict: dictionary
+            should be the output of self.get_stim_dict()
+
         pd_thr : float
             the threshold to detect photodiode onset, the photodiode color was saved in each displayed frame (the
             last item of frame tuple) as float with range [-1., 1.]. pd_onset is defined as up crossing the pd_thr.
@@ -158,8 +161,6 @@ class DisplayLogAnalyzer(object):
         """
 
         print('\nAnalyzing photodiode onsets in a sequential manner ...')
-
-        stim_dict = self.get_stim_dict()
 
         stim_ns = stim_dict.keys()
         stim_ns.sort()
