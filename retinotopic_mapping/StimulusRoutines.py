@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
 import skimage.external.tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
@@ -3389,7 +3390,8 @@ class CombinedStimuli(Stim):
 
     def generate_movie_by_index(self):
 
-        print ('\nCombinedStimulus: generation stimuli ...')
+        t0 = time.time()
+        print ('\n{:04.1f} min : CombinedStimulus: generation stimuli ...'.format(time.time() - t0))
 
         self.frames_unique = []
         self.index_to_display = []
@@ -3429,8 +3431,9 @@ class CombinedStimuli(Stim):
 
             curr_start_frame_ind += len(curr_frames_unique)
 
-            print ('stimulus: {}; estimated display duration: {:4.1f} minute(s).'
-                   .format(curr_stim_id, len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
+            print ('{:04.1f} min : stimulus: {:<30}; estimated display duration: {:4.1f} minute(s).'
+                   .format(time.time() - t0, curr_stim_id,
+                           len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
 
         self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
         self.index_to_display = list(np.concatenate(self.index_to_display, axis=0))
