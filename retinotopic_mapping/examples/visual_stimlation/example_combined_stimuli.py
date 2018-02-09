@@ -98,7 +98,8 @@ lsn_probe_size = (5., 10.)
 lsn_probe_orientation = 0.
 lsn_probe_frame_num = 15
 lsn_sign = 'OFF'
-lsn_iteration = 20
+lsn_iteration = 10
+lsn_repeat = 3
 lsn_is_include_edge = True
 # =================================================================================
 
@@ -219,7 +220,8 @@ lsn = stim.LocallySparseNoise(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
                               grid_space=lsn_grid_space, sign=lsn_sign,
                               probe_size=lsn_probe_size, probe_orientation=lsn_probe_orientation,
                               probe_frame_num=lsn_probe_frame_num, iteration=lsn_iteration,
-                              is_include_edge=lsn_is_include_edge, min_distance=lsn_min_distance)
+                              is_include_edge=lsn_is_include_edge, min_distance=lsn_min_distance,
+                              repeat=lsn_repeat)
 # =================================================================================
 
 # ======================= Drifting Grating Circle =================================
