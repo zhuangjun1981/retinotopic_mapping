@@ -1610,7 +1610,12 @@ class LocallySparseNoise(Stim):
         only on pixels (white) are displayed in the noise `subregion while if
         `'OFF'` is selected only off (black) pixels are displayed in the noise
     iteration : int, optional
-        number of times to present stimulus, defaults to `1`
+        number of times to present stimulus with random order, the total number
+        a paticular probe will be displayded will be iteration * repeat,
+        defaults to `1`
+    repeat : int, optional
+        number of repeat of whole sequence, the total number a paticular probe
+        will be displayded will be iteration * repeat, defaults to `1`
     is_include_edge : bool, default True,
         if True, the displayed probes will cover the edge case and ensure that
         the entire subregion is covered.
@@ -1620,7 +1625,7 @@ class LocallySparseNoise(Stim):
 
     def __init__(self, monitor, indicator, min_distance=20., background=0., coordinate='degree',
                  grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
-                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
+                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1, repeat=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
 
         super(LocallySparseNoise, self).__init__(monitor=monitor, indicator=indicator,
@@ -1662,10 +1667,16 @@ class LocallySparseNoise(Stim):
             self.subregion = subregion
 
         self.sign = sign
+
         if iteration >= 1:
             self.iteration = int(iteration)
         else:
             raise ValueError('iteration should be no less than 1.')
+
+        if repeat >= 1:
+            self.repeat = int(repeat)
+        else:
+            raise ValueError('repeat should be no less than 1.')
 
         self.clear()
 
@@ -1965,13 +1976,14 @@ class LocallySparseNoise(Stim):
             probe_off_frame_num = self.probe_frame_num - probe_on_frame_num
 
             index_to_display = []
-            index_to_display += [0] * self.pregap_frame_num
 
             for display_ind in range(display_num):
                 index_to_display += [display_ind * 2 + 1] * probe_on_frame_num
                 index_to_display += [display_ind * 2 + 2] * probe_off_frame_num
 
-            index_to_display += [0] * self.postgap_frame_num
+            index_to_display = index_to_display * self.repeat
+
+            index_to_display += [0] * self.pregap_frame_num + index_to_display + [0] * self.postgap_frame_num
 
             return frames_unique, index_to_display
 
