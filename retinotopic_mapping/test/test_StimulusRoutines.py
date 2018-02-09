@@ -431,7 +431,7 @@ class TestSimulation(unittest.TestCase):
                                     is_include_edge=True)
 
         all_probes = lsn._generate_all_probes()
-        probes_one_frame = lsn._generate_probe_locs_one_frame(all_probes)
+        probes_one_frame, all_probes_left = lsn._generate_probe_locs_one_frame(all_probes)
 
         import itertools
         import numpy as np

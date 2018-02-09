@@ -1741,7 +1741,12 @@ class LocallySparseNoise(Stim):
         np.random.shuffle(probes)
         probes_one_frame = []
 
+        probes_left = list(probes)
+
         for probe in probes:
+
+            # print len(probes)
+
             is_overlap = False
 
             for probe_frame in probes_one_frame:
@@ -1754,9 +1759,9 @@ class LocallySparseNoise(Stim):
 
             if not is_overlap:
                 probes_one_frame.append(probe)
-                probes.remove(probe)
+                probes_left.remove(probe)
 
-        return probes_one_frame
+        return probes_one_frame, probes_left
 
     def _generate_probe_sequence_one_iteration(self, all_probes, is_redistribute=True):
         """
@@ -1785,7 +1790,7 @@ class LocallySparseNoise(Stim):
         frames = []
 
         while len(all_probes_cpy) > 0:
-            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
+            curr_frames, all_probes_cpy = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
             frames.append(curr_frames)
 
         if is_redistribute:
@@ -3432,7 +3437,7 @@ class CombinedStimuli(Stim):
             curr_start_frame_ind += len(curr_frames_unique)
 
             print ('{:04.1f} min : stimulus: {:<30}; estimated display duration: {:4.1f} minute(s).'
-                   .format(time.time() - t0, curr_stim_id,
+                   .format((time.time() - t0) / 60., curr_stim_id,
                            len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
 
         self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
