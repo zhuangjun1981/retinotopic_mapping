@@ -411,7 +411,7 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10., 10.), probe_size=(10., 10.),
                                     probe_orientation=0., probe_frame_num=6, subregion=[-10., 10., 0., 30.],
                                     sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
 
         all_probes = lsn._generate_all_probes()
         all_probes = [tuple(p) for p in all_probes]
@@ -428,7 +428,7 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10.,10.), probe_size=(10.,10.),
                                     probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
                                     sign='ON', iteration=1, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
 
         all_probes = lsn._generate_all_probes()
         probes_one_frame, all_probes_left = lsn._generate_probe_locs_one_frame(all_probes)
@@ -446,7 +446,7 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10., 10.), probe_size=(10., 10.),
                                     probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
                                     sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
 
         all_probes = lsn._generate_all_probes()
         frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=False)
@@ -486,7 +486,7 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10., 10.), probe_size=(10., 10.),
                                     probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
                                     sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
 
         all_probes = lsn._generate_all_probes()
         frames = lsn._generate_probe_sequence_one_iteration(all_probes=all_probes, is_redistribute=True)
@@ -518,7 +518,7 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10., 10.), probe_size=(10., 10.),
                                     probe_orientation=0., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
                                     sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
 
         frames_unique = lsn._generate_frames_for_index_display()
         # print len(frames_unique)

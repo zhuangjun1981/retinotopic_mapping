@@ -1983,7 +1983,7 @@ class LocallySparseNoise(Stim):
 
             index_to_display = index_to_display * self.repeat
 
-            index_to_display += [0] * self.pregap_frame_num + index_to_display + [0] * self.postgap_frame_num
+            index_to_display = [0] * self.pregap_frame_num + index_to_display + [0] * self.postgap_frame_num
 
             return frames_unique, index_to_display
 
