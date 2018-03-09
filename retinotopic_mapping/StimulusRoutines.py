@@ -444,43 +444,43 @@ class Stim(object):
         """
         place holder of function "generate_frames" for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def generate_movie(self):
         """
         place holder of function 'generate_movie' for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function. ' \
-              'See documentation in the respective stimulus. \n' \
-              'It is possible that full sequence generation is not' \
-              'implemented in this particular stimulus. Try ' \
-              'generate_movie_by_index() function to see if indexed ' \
-              'sequence generation is implemented.'
+        print('Nothing executed! This is a place holder function. '
+              'See documentation in the respective stimulus. \n'
+              'It is possible that full sequence generation is not'
+              'implemented in this particular stimulus. Try '
+              'generate_movie_by_index() function to see if indexed '
+              'sequence generation is implemented.')
 
     def _generate_frames_for_index_display(self):
         """
         place holder of function _generate_frames_for_index_display()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def _generate_display_index(self):
         """
         place holder of function _generate_display_index()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def generate_movie_by_index(self):
         """
         place holder of function generate_movie_by_index()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def clear(self):
         if hasattr(self, 'frames'):
@@ -723,8 +723,8 @@ class UniformContrast(Stim):
             full_seq[i] = curr_FC_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
@@ -1037,8 +1037,8 @@ class FlashingCircle(Stim):
             full_seq[i] = curr_FC_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: '
-                       + str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: '
+                       + str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
@@ -1207,7 +1207,7 @@ class SparseNoise(Stim):
             all_grid_points = [[x, 1] for x in grid_points] + [[x, -1] for x in grid_points]
             random.shuffle(all_grid_points)
             # remove coincident hit of same location by continuous frames
-            print 'removing coincident hit of same location with continuous frames:'
+            print('removing coincident hit of same location with continuous frames:')
             while True:
                 iteration = 0
                 coincident_hit_num = 0
@@ -1216,7 +1216,7 @@ class SparseNoise(Stim):
                         all_grid_points[i + 1], all_grid_points[i + 2] = all_grid_points[i + 2], all_grid_points[i + 1]
                         coincident_hit_num += 1
                 iteration += 1
-                print 'iteration:', iteration, '  continous hits number:', coincident_hit_num
+                print('iteration:' + iteration + '  continous hits number:' + coincident_hit_num)
                 if coincident_hit_num == 0:
                     break
 
@@ -1541,8 +1541,8 @@ class SparseNoise(Stim):
             indicator_width_min:indicator_width_max] = curr_frame[3]
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         # generate log dictionary
         mondict = dict(self.monitor.__dict__)
@@ -2153,9 +2153,9 @@ class DriftingGratingCircle(Stim):
         for tf in tf_list:
             period = 1. / tf
             if (0.05 * period) < (block_dur % period) < (0.95 * period):
-                print period
-                print block_dur % period
-                print 0.95 * period
+                # print(period)
+                # print(block_dur % period)
+                # print(0.95 * period)
                 error_msg = ('Duration of each block times tf ' + str(tf)
                              + ' should be close to a whole number!')
                 raise ValueError, error_msg
@@ -2581,8 +2581,8 @@ class DriftingGratingCircle(Stim):
             indicator_width_min:indicator_width_max] = curr_frame[-1]
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         # generate log dictionary
         mondict = dict(self.monitor.__dict__)
@@ -3408,7 +3408,7 @@ class CombinedStimuli(Stim):
     def generate_movie_by_index(self):
 
         t0 = time.time()
-        print ('\n{:04.1f} min : CombinedStimulus: generation stimuli ...'.format(time.time() - t0))
+        print ('\n{:04.1f} min : CombinedStimulus: generating stimuli ...'.format(time.time() - t0))
 
         self.frames_unique = []
         self.index_to_display = []
@@ -3827,8 +3827,7 @@ class KSstim(Stim):
             full_seq[i] = curr_NM_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' + str(int(100 * (i + 1)
-                                                               / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' + str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)

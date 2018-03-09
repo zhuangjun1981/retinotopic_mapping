@@ -1274,7 +1274,7 @@ class RetinotopicMappingTrial(object):
                                                          pixelSize=visualSpacePixelSize,
                                                          closeIter=visualSpaceCloseIter)
             AS = value.getSigmaArea(detMap)
-            print key, 'AU=' + str(AU), ' AS=' + str(AS), ' ratio=' + str(AS / AU)
+            print(key + 'AU=' + str(AU) + ' AS=' + str(AS) + ' ratio=' + str(AS / AU))
 
             if AS / AU >= splitOverlapThr:
 
@@ -1285,11 +1285,11 @@ class RetinotopicMappingTrial(object):
                 NumOfMin = np.amax(minMarker)
 
                 if NumOfMin == 1:
-                    print 'Only one local minumum was found!!!'
+                    print('Only one local minumum was found!!!')
                 elif NumOfMin == 0:
-                    print 'No local minumum was found!!!'
+                    print('No local minumum was found!!!')
                 else:
-                    print str(NumOfMin) + ' local minuma were found!!!'
+                    print(str(NumOfMin) + ' local minuma were found!!!')
 
                     overlapPatches.append(key)
 
@@ -1397,7 +1397,7 @@ class RetinotopicMappingTrial(object):
 
         while (mergeIter == 1) or (len(mergePairs) > 0):
 
-            print 'merge iteration: ' + str(mergeIter)
+            print('merge iteration: ' + str(mergeIter))
 
             mergePairs = []
 
@@ -1490,7 +1490,7 @@ class RetinotopicMappingTrial(object):
                         # add merged patches into the 'patches' dictionare
                         patches.update({patch1 + '+' + patch2[5:]: value[2]})
 
-                        print 'merging: ' + patch1 + ' & ' + patch2 + ', overlap ratio: ' + str(value[3])
+                        print('merging: ' + patch1 + ' & ' + patch2 + ', overlap ratio: ' + str(value[3]))
 
             mergeIter = mergeIter + 1
 
@@ -1654,7 +1654,7 @@ class RetinotopicMappingTrial(object):
                         pass
 
         if keysLeft:
-            print 'Can not find wanted key(s): ' + str(keysLeft)
+            print('Can not find wanted key(s): ' + str(keysLeft))
 
         return trialDict
 
@@ -1806,8 +1806,8 @@ class RetinotopicMappingTrial(object):
             vasMap = self.vasculatureMap.astype(np.float)
             zoom = int(float(vasMap.shape[0]) / float(self.aziPosMapf.shape[0]))
         except AttributeError as e:
-            print 'Can not find vasculature map!!\n\n'
-            print e
+            print('Can not find vasculature map!!\n\n')
+            print(e)
             zoom = 1
 
         mapSize = mapSize * zoom
@@ -2417,7 +2417,7 @@ class RetinotopicMappingTrial(object):
             aziPosOrigin = np.mean(self.aziPosMapf[totalField == 3], axis=0)
 
         except KeyError:
-            print 'Can not find necessary visual areas (V1, LM, RL) for normalization. \nSetting origins to 0 ...'
+            print('Can not find necessary visual areas (V1, LM, RL) for normalization. \nSetting origins to 0 ...')
             altPosOrigin = 0.
             aziPosOrigin = 0.
 
@@ -3028,4 +3028,4 @@ class Patch(object):
 
 if __name__ == "__main__":
     plt.ioff()
-    print 'for debug ...'
+    print('for debug ...')
