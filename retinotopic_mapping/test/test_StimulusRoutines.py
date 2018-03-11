@@ -531,13 +531,36 @@ class TestSimulation(unittest.TestCase):
                                     grid_space=(10., 10.), probe_size=(10., 10.),
                                     probe_orientation=30., probe_frame_num=6, subregion=[-10., 20., 0., 60.],
                                     sign='ON-OFF', iteration=2, pregap_dur=2., postgap_dur=3.,
-                                    is_include_edge=True)
+                                    is_include_edge=True, repeat=1)
         frames_unique, index_to_display = lsn._generate_display_index()
         # print index_to_display
         assert (index_to_display[:lsn.pregap_frame_num] == [0] * lsn.pregap_frame_num)
         assert (index_to_display[-lsn.postgap_frame_num:] == [0] * lsn.postgap_frame_num)
         assert (len(index_to_display) == (len(frames_unique) - 1) * lsn.probe_frame_num / 2 +
                 lsn.pregap_frame_num + lsn.postgap_frame_num)
+
+    def test_LSN_repeat(self):
+        lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
+                                    min_distance=20., background=0., coordinate='degree',
+                                    grid_space=(10., 10.), probe_size=(10., 10.),
+                                    probe_orientation=0., probe_frame_num=4, subregion=[-10., 20., 0., 60.],
+                                    sign='ON-OFF', iteration=1, pregap_dur=2., postgap_dur=3.,
+                                    is_include_edge=True, repeat=3)
+
+        import itertools
+        import numpy as np
+        alt_lst = np.arange(-10., 25., 10)
+        azi_lst = np.arange(0., 65., 10)
+        all_probes = list(itertools.product(alt_lst, azi_lst, [-1., 1.]))
+
+        frames_unique, display_index = lsn._generate_display_index()
+        for probe in all_probes:
+            present_frames = 0
+            for di in display_index:
+                if frames_unique[di][1] is not None and list(probe) in frames_unique[di][1]:
+                    present_frames += 1
+            # print('probe:{}, number of frames: {}'.format(str(probe), present_frames))
+            assert (present_frames == 4 * 3)
 
     def test_SGC_generate_frames_for_index_display(self):
         sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
