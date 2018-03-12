@@ -6,6 +6,7 @@ Example script to test StimulusRoutines.CombinedStimuli class
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import retinotopic_mapping as rm
 import retinotopic_mapping.StimulusRoutines as stim
 from retinotopic_mapping.MonitorSetup import Monitor, Indicator
 from retinotopic_mapping.DisplayStimulus import DisplaySequence
@@ -52,7 +53,7 @@ ds_sync_pulse_NI_port = 1
 ds_sync_pulse_NI_line = 1
 ds_display_screen = 0
 ds_initial_background_color = 0.
-ds_color_weights = (0., 1., 1.)
+ds_color_weights = (1., 1., 1.)
 # =================================================================================
 
 # ============================ generic stimulus parameters ========================
@@ -63,7 +64,7 @@ coordinate = 'degree'
 # =================================================================================
 
 # ============================ UniformContrast ====================================
-uc_duration = 30.
+uc_duration = 10.
 uc_color = -1
 # =================================================================================
 
@@ -73,7 +74,7 @@ fc_radius = 30.
 fc_color = -1.
 fc_flash_frame_num = 30
 fc_midgap_dur = 5.
-fc_iteration = 10
+fc_iteration = 5.
 fc_is_smooth_edge = True
 fc_smooth_width_ratio = 0.2
 fc_smooth_func = stim.blur_cos
@@ -81,36 +82,36 @@ fc_smooth_func = stim.blur_cos
 
 # ============================ SparseNoise ========================================
 sn_subregion = (-40., 60., 30., 90.)
-sn_grid_space = (10., 10.)
-sn_probe_size = (10., 5.)
+sn_grid_space = (20., 20.)
+sn_probe_size = (20., 10.)
 sn_probe_orientation = 30.
 sn_probe_frame_num = 15
 sn_sign = 'ON-OFF'
-sn_iteration = 5
+sn_iteration = 2
 sn_is_include_edge = True
 # =================================================================================
 
 # ============================ LocallySparseNoise =================================
-lsn_subregion = None
+lsn_subregion = (-10., 20., 0., 60.)
 lsn_min_distance = 40.
-lsn_grid_space = (5., 5.)
-lsn_probe_size = (5., 10.)
+lsn_grid_space = (10., 10.)
+lsn_probe_size = (10., 10.)
 lsn_probe_orientation = 0.
-lsn_probe_frame_num = 15
+lsn_probe_frame_num = 4
 lsn_sign = 'OFF'
-lsn_iteration = 10
+lsn_iteration = 2
 lsn_repeat = 3
 lsn_is_include_edge = True
 # =================================================================================
 
 # ============================ DriftingGratingCircle ==============================
 dgc_center = (10., 90.)
-dgc_sf_list = (0.01, 0.04, 0.16)
-dgc_tf_list = (0.5, 2., 8.,)
+dgc_sf_list = (0.01, 0.16)
+dgc_tf_list = (2., 8.,)
 dgc_dire_list = np.arange(0., 360., 90.)
 dgc_con_list = (0.8,)
 dgc_radius_list = (30.,)
-dgc_block_dur = 4.
+dgc_block_dur = 1.
 dgc_midgap_dur = 1.
 dgc_iteration = 2
 dgc_is_smooth_edge = True
@@ -127,7 +128,7 @@ sgc_radius_list = (25.,)
 sgc_phase_list = (0., 90., 180., 270.)
 sgc_display_dur = 0.25
 sgc_midgap_dur = 0.
-sgc_iteration = 30
+sgc_iteration = 10
 sgc_is_smooth_edge = True
 sgc_smooth_width_ratio = 0.2
 sgc_smooth_func = stim.blur_cos
@@ -135,12 +136,11 @@ sgc_smooth_func = stim.blur_cos
 
 # ============================ StaticImages =======================================
 si_img_center = (0., 60.)
-si_deg_per_pixel = (0.1, 0.1)
+si_deg_per_pixel = (0.5, 0.5)
 si_display_dur = 0.25
 si_midgap_dur = 0.
 si_iteration = 10
-si_images_folder = r"D:\data2\rabies_tracing_project\method_development" \
-                   r"\2017-09-06-natural-scenes"
+si_images_folder = os.path.join(os.path.dirname(rm.__file__), 'test', 'test_data')
 # =================================================================================
 
 # ============================ StimulusSeparator ==================================

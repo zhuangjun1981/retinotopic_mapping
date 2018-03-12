@@ -611,23 +611,27 @@ class TestSimulation(unittest.TestCase):
                              coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
                              display_dur=0.25, midgap_dur=0., iteration=1, pregap_dur=2.,
                              postgap_dur=3.)
-        si.wrap_images(work_dir=os.path.join(self.curr_folder, 'test_data'))
 
         img_w_path = os.path.join(self.curr_folder, 'test_data', 'wrapped_images_for_display.hdf5')
+
+        if os.path.isfile(img_w_path):
+            os.remove(img_w_path)
+
+        si.wrap_images(work_dir=os.path.join(self.curr_folder, 'test_data'))
 
         import h5py
         img_w_f = h5py.File(img_w_path, 'r')
 
-        assert (img_w_f['images_wrapped/images'].shape == (1, 120, 160))
+        assert (img_w_f['images_wrapped/images'].shape == (2, 120, 160))
         assert (img_w_f['images_wrapped/altitude'].shape == (120, 160))
         assert (img_w_f['images_wrapped/azimuth'].shape == (120, 160))
         import numpy as np
         assert (np.array_equal(img_w_f['images_wrapped/altitude'].value, self.monitor.deg_coord_y))
         assert (np.array_equal(img_w_f['images_wrapped/azimuth'].value, self.monitor.deg_coord_x))
 
-        assert (img_w_f['images_dewrapped/images'].shape == (1, 512, 761))
-        assert (img_w_f['images_dewrapped/altitude'].shape == (512, 761))
-        assert (img_w_f['images_dewrapped/azimuth'].shape == (512, 761))
+        assert (img_w_f['images_dewrapped/images'].shape == (2, 270, 473))
+        assert (img_w_f['images_dewrapped/altitude'].shape == (270, 473))
+        assert (img_w_f['images_dewrapped/azimuth'].shape == (270, 473))
 
         img_w_f.close()
 
