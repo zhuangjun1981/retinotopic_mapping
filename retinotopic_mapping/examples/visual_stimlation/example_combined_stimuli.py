@@ -13,8 +13,8 @@ from retinotopic_mapping.DisplayStimulus import DisplaySequence
 
 # ============================ monitor setup ======================================
 mon_resolution = (1200, 1920)  # enter your monitors resolution
-mon_width_cm = 52  # enter your monitors width in cm
-mon_height_cm = 32  # enter your monitors height in cm
+mon_width_cm = 52.  # enter your monitors width in cm
+mon_height_cm = 32.  # enter your monitors height in cm
 mon_refresh_rate = 60  # enter your monitors height in Hz
 mon_C2T_cm = mon_height_cm / 2.
 mon_C2A_cm = mon_width_cm / 2.
