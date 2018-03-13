@@ -11,7 +11,7 @@ class TestMonitorSetup(unittest.TestCase):
         import skimage.external.tifffile as tf
         self.natural_scene = tf.imread(os.path.join(curr_folder,
                                                     'test_data',
-                                                    'images_original.tif'))
+                                                    'images_original.tif'))[0]
 
     def test_Monitor_remap(self):
         mon = ms.Monitor(resolution=(1200, 1600), dis=15.,
@@ -71,7 +71,7 @@ class TestMonitorSetup(unittest.TestCase):
                          downsample_rate=10)
         import numpy as np
         nsw, altw, aziw, nsd, altd, azid = mon.warp_images(imgs=np.array([self.natural_scene]),
-                                                           center_coor=[0., 60.], deg_per_pixel=0.2,
+                                                           center_coor=[0., 60.], deg_per_pixel=0.25,
                                                            is_luminance_correction=True)
 
         # import matplotlib.pyplot as plt

@@ -130,12 +130,15 @@ class DisplayLogAnalyzer(object):
 
         return stim_dict
 
-    def analyze_photodiode_onsets_sequential(self, pd_thr=-0.5):
+    def analyze_photodiode_onsets_sequential(self, stim_dict, pd_thr=-0.5):
         """
         Analyze photodiode onsets in a sequential way
 
         Parameters
         ----------
+        stim_dict: dictionary
+            should be the output of self.get_stim_dict()
+
         pd_thr : float
             the threshold to detect photodiode onset, the photodiode color was saved in each displayed frame (the
             last item of frame tuple) as float with range [-1., 1.]. pd_onset is defined as up crossing the pd_thr.
@@ -159,12 +162,10 @@ class DisplayLogAnalyzer(object):
 
         print('\nAnalyzing photodiode onsets in a sequential manner ...')
 
-        stim_dict = self.get_stim_dict()
-
         stim_ns = stim_dict.keys()
         stim_ns.sort()
 
-        pd_onsets = []
+        pd_onsets_seq = []
 
         global_pd_onset_ind = 0
         for stim_n in stim_ns:
@@ -242,25 +243,25 @@ class DisplayLogAnalyzer(object):
                 global_pd_onset_ind = global_pd_onset_ind + 1
 
             print('{:<45}: number of photodiode_onset: {}'.format(curr_stim_n, len(curr_stim_pd_onsets)))
-            pd_onsets = pd_onsets + curr_stim_pd_onsets
+            pd_onsets_seq = pd_onsets_seq + curr_stim_pd_onsets
 
         # print('\n'.join([str(pd) for pd in pd_onsets]))
-        print('\nTotal number of photodiode onsets: {}'.format(len(pd_onsets)))
+        print('\nTotal number of photodiode onsets: {}'.format(len(pd_onsets_seq)))
 
         # sanity check of global_pd_onset_ind
         # for i, po in enumerate(pd_onsets):
         #     assert (i == po['global_pd_onset_ind'])
 
-        return pd_onsets
+        return pd_onsets_seq
 
-    def analyze_photodiode_onsets_combined(self, pd_thr=-0.5, is_dgc_blocked=True):
+    def analyze_photodiode_onsets_combined(self, pd_onsets_seq, is_dgc_blocked=True):
         """
 
         Parameters
         ----------
-        pd_thr : float
-            the color threshold to detect photodiode onset, will be passed to
-            self.analyze_photodiode_onsets_sequential() function to detect photodiode onsets
+        pd_onsets_seq: list
+            product of self.analyze_photodiode_onsets_sequential()
+
         dgc_onset_type : str
             type of onset "block" or "cycle"
 
@@ -269,9 +270,7 @@ class DisplayLogAnalyzer(object):
         pd_onsets_combined : dict
         """
 
-        pd_onsets = self.analyze_photodiode_onsets_sequential(pd_thr=pd_thr)
-
-        stim_ns = [po['stim_name'] for po in pd_onsets]
+        stim_ns = [po['stim_name'] for po in pd_onsets_seq]
         stim_ns = list(set(stim_ns))
         stim_ns.sort()
 
@@ -280,7 +279,7 @@ class DisplayLogAnalyzer(object):
         pd_onsets_combined = {}
 
         for stim_n in stim_ns:
-            curr_pd_onsets_seq = [po for po in pd_onsets if po['stim_name'] == stim_n]
+            curr_pd_onsets_seq = [po for po in pd_onsets_seq if po['stim_name'] == stim_n]
             # print(len(curr_pd_onsets))
 
             curr_pd_onsets_com = {}

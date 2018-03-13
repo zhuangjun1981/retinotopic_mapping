@@ -64,8 +64,8 @@ class Monitor(object):
                  dis,
                  mon_width_cm,
                  mon_height_cm,
-                 C2T_cm,
-                 C2A_cm,
+                 C2T_cm=None,
+                 C2A_cm=None,
                  center_coordinates=(0., 60.),
                  visual_field='right',
                  deg_coord_x=None,
@@ -90,8 +90,17 @@ class Monitor(object):
         self.dis = dis
         self.mon_width_cm = mon_width_cm
         self.mon_height_cm = mon_height_cm
-        self.C2T_cm = C2T_cm
-        self.C2A_cm = C2A_cm
+
+        if C2T_cm is None:
+            self.C2T_cm = self.mon_height_cm / 2.
+        else:
+            self.C2T_cm = C2T_cm
+
+        if C2A_cm is None:
+            self.C2A_cm = self.mon_width_cm / 2.
+        else:
+            self.C2A_cm = C2A_cm
+
         self.center_coordinates = center_coordinates
         self.visual_field = visual_field
         self.deg_coord_x = deg_coord_x

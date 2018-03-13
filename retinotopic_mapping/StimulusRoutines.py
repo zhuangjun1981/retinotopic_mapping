@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
 import skimage.external.tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
@@ -58,12 +59,12 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
         2d array of warped azimuth coordinates of monitor pixels
     probes : tuple or list
         each element of probes represents a single probe (center_alt, center_azi, sign)
-    width :
-         width of the square
-    height :
-         height of the square
-    ori :
-        angle in degree, should be 0~180
+    width : float
+         width of the square in degrees
+    height : float
+         height of the square in degrees
+    ori : float
+        angle in degree, should be [0., 180.]
     foreground_color : float, optional
          color of the noise pixels, takes values in [-1,1] and defaults to `1.`
     background_color : float, optional
@@ -443,43 +444,43 @@ class Stim(object):
         """
         place holder of function "generate_frames" for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def generate_movie(self):
         """
         place holder of function 'generate_movie' for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function. ' \
-              'See documentation in the respective stimulus. \n' \
-              'It is possible that full sequence generation is not' \
-              'implemented in this particular stimulus. Try ' \
-              'generate_movie_by_index() function to see if indexed ' \
-              'sequence generation is implemented.'
+        print('Nothing executed! This is a place holder function. '
+              'See documentation in the respective stimulus. \n'
+              'It is possible that full sequence generation is not'
+              'implemented in this particular stimulus. Try '
+              'generate_movie_by_index() function to see if indexed '
+              'sequence generation is implemented.')
 
     def _generate_frames_for_index_display(self):
         """
         place holder of function _generate_frames_for_index_display()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def _generate_display_index(self):
         """
         place holder of function _generate_display_index()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def generate_movie_by_index(self):
         """
         place holder of function generate_movie_by_index()
         for each specific stimulus
         """
-        print 'Nothing executed! This is a place holder function'
-        print 'See documentation in the respective stimulus'
+        print('Nothing executed! This is a place holder function. \n'
+              'See documentation in the respective stimulus.')
 
     def clear(self):
         if hasattr(self, 'frames'):
@@ -548,22 +549,23 @@ class UniformContrast(Stim):
     Parameters
     ----------
     monitor : monitor object
-        inherited monitor object from `Stim` class
+        contains display monitor information
     indicator : indicator object
-        inherited indicator object from `Stim` class
-    duration : int
-        amount of time (in seconds) the stimulus is presented
-    color : float, optional
-        the choice of color to display in the stimulus, defaults to `0.` which
-        is grey
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
     pregap_dur : float, optional
         amount of time (in seconds) before the stimulus is presented, defaults
         to `2.`
     postgap_dur : float, optional
         amount of time (in seconds) after the stimulus is presented, defaults
         to `3.`
-    background : float, optional
-        color during pre and post gap, defaults to `0.` which is grey
+    color : float, optional
+        the choice of color to display in the stimulus, defaults to `0.` which
+        is grey
     """
 
     def __init__(self, monitor, indicator, duration, color=0., pregap_dur=2.,
@@ -722,8 +724,8 @@ class UniformContrast(Stim):
             full_seq[i] = curr_FC_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
@@ -748,16 +750,20 @@ class FlashingCircle(Stim):
     Parameters
     ----------
     monitor : monitor object
-        contains display monitor information.
+        contains display monitor information
     indicator : indicator object
-        contains indicator information.
+        contains indicator information
     coordinate : str from {'degree','linear'}, optional
-        specifies coordinates, defaults to 'degree'.
+        specifies coordinates, defaults to 'degree'
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
-        is white.
-    stim_name : str
-        Name of the stimulus.
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple, optional
         center coordinate (altitude, azimuth) of the circle in degrees, defaults to (0.,60.).
     radius : float, optional
@@ -1036,8 +1042,8 @@ class FlashingCircle(Stim):
             full_seq[i] = curr_FC_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: '
-                       + str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: '
+                       + str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
@@ -1073,8 +1079,12 @@ class SparseNoise(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
-    stim_name : str
-        Name of stimulus
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     grid_space : 2-tuple of floats, optional
         first coordinate is altitude, second coordinate is azimuth
     probe_size : 2-tuple of floats, optional
@@ -1084,7 +1094,7 @@ class SparseNoise(Stim):
         orientation of flicker probes
     probe_frame_num : int, optional
         number of frames for each square presentation
-    subregion :
+    subregion : list or tuple
         the region on the monitor that will display the sparse noise,
         list or tuple, [min_alt, max_alt, min_azi, max_azi]
     sign : {'ON-OFF', 'ON', 'OFF'}, optional
@@ -1105,6 +1115,9 @@ class SparseNoise(Stim):
                  grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
+        """
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
 
         super(SparseNoise, self).__init__(monitor=monitor,
                                           indicator=indicator,
@@ -1112,9 +1125,6 @@ class SparseNoise(Stim):
                                           coordinate=coordinate,
                                           pregap_dur=pregap_dur,
                                           postgap_dur=postgap_dur)
-        """    
-        Initialize sparse noise object, inherits Parameters from Stim object
-        """
 
         self.stim_name = 'SparseNoise'
         self.grid_space = grid_space
@@ -1206,7 +1216,7 @@ class SparseNoise(Stim):
             all_grid_points = [[x, 1] for x in grid_points] + [[x, -1] for x in grid_points]
             random.shuffle(all_grid_points)
             # remove coincident hit of same location by continuous frames
-            print 'removing coincident hit of same location with continuous frames:'
+            print('removing coincident hit of same location with continuous frames:')
             while True:
                 iteration = 0
                 coincident_hit_num = 0
@@ -1215,7 +1225,7 @@ class SparseNoise(Stim):
                         all_grid_points[i + 1], all_grid_points[i + 2] = all_grid_points[i + 2], all_grid_points[i + 1]
                         coincident_hit_num += 1
                 iteration += 1
-                print 'iteration:', iteration, '  continous hits number:', coincident_hit_num
+                print('iteration:' + iteration + '  continous hits number:' + coincident_hit_num)
                 if coincident_hit_num == 0:
                     break
 
@@ -1540,8 +1550,8 @@ class SparseNoise(Stim):
             indicator_width_min:indicator_width_max] = curr_frame[3]
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         # generate log dictionary
         mondict = dict(self.monitor.__dict__)
@@ -1581,16 +1591,20 @@ class LocallySparseNoise(Stim):
         contains display monitor information
     indicator : indicator object
         contains indicator information
-    min_distance: float, default 20.
-        the minimum distance in visual degree for any pair of probe centers
-         in a given frame
     coordinate : str from {'degree','linear'}, optional
         specifies coordinates, defaults to 'degree'
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
-    stim_name : str
-        Name of stimulus
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    min_distance : float, default 20.
+        the minimum distance in visual degree for any pair of probe centers
+         in a given frame
     grid_space : 2-tuple of floats, optional
         first coordinate is altitude, second coordinate is azimuth
     probe_size : 2-tuple of floats, optional
@@ -1600,7 +1614,7 @@ class LocallySparseNoise(Stim):
         orientation of flicker probes
     probe_frame_num : int, optional
         number of frames for each square presentation
-    subregion :
+    subregion : list or tuple
         the region on the monitor that will display the sparse noise,
         list or tuple, [min_alt, max_alt, min_azi, max_azi]
     sign : {'ON-OFF', 'ON', 'OFF'}, optional
@@ -1609,7 +1623,12 @@ class LocallySparseNoise(Stim):
         only on pixels (white) are displayed in the noise `subregion while if
         `'OFF'` is selected only off (black) pixels are displayed in the noise
     iteration : int, optional
-        number of times to present stimulus, defaults to `1`
+        number of times to present stimulus with random order, the total number
+        a paticular probe will be displayded will be iteration * repeat,
+        defaults to `1`
+    repeat : int, optional
+        number of repeat of whole sequence, the total number a paticular probe
+        will be displayded will be iteration * repeat, defaults to `1`
     is_include_edge : bool, default True,
         if True, the displayed probes will cover the edge case and ensure that
         the entire subregion is covered.
@@ -1619,15 +1638,15 @@ class LocallySparseNoise(Stim):
 
     def __init__(self, monitor, indicator, min_distance=20., background=0., coordinate='degree',
                  grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
-                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
+                 probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1, repeat=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
+        """
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
 
         super(LocallySparseNoise, self).__init__(monitor=monitor, indicator=indicator,
                                                  background=background, coordinate=coordinate,
                                                  pregap_dur=pregap_dur, postgap_dur=postgap_dur)
-        """    
-        Initialize sparse noise object, inherits Parameters from Stim object
-        """
 
         self.stim_name = 'LocallySparseNoise'
         self.grid_space = grid_space
@@ -1661,10 +1680,16 @@ class LocallySparseNoise(Stim):
             self.subregion = subregion
 
         self.sign = sign
+
         if iteration >= 1:
             self.iteration = int(iteration)
         else:
             raise ValueError('iteration should be no less than 1.')
+
+        if repeat >= 1:
+            self.repeat = int(repeat)
+        else:
+            raise ValueError('repeat should be no less than 1.')
 
         self.clear()
 
@@ -1740,7 +1765,12 @@ class LocallySparseNoise(Stim):
         np.random.shuffle(probes)
         probes_one_frame = []
 
+        probes_left = list(probes)
+
         for probe in probes:
+
+            # print len(probes)
+
             is_overlap = False
 
             for probe_frame in probes_one_frame:
@@ -1753,9 +1783,9 @@ class LocallySparseNoise(Stim):
 
             if not is_overlap:
                 probes_one_frame.append(probe)
-                probes.remove(probe)
+                probes_left.remove(probe)
 
-        return probes_one_frame
+        return probes_one_frame, probes_left
 
     def _generate_probe_sequence_one_iteration(self, all_probes, is_redistribute=True):
         """
@@ -1784,7 +1814,7 @@ class LocallySparseNoise(Stim):
         frames = []
 
         while len(all_probes_cpy) > 0:
-            curr_frames = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
+            curr_frames, all_probes_cpy = self._generate_probe_locs_one_frame(probes=all_probes_cpy)
             frames.append(curr_frames)
 
         if is_redistribute:
@@ -1959,13 +1989,14 @@ class LocallySparseNoise(Stim):
             probe_off_frame_num = self.probe_frame_num - probe_on_frame_num
 
             index_to_display = []
-            index_to_display += [0] * self.pregap_frame_num
 
             for display_ind in range(display_num):
                 index_to_display += [display_ind * 2 + 1] * probe_on_frame_num
                 index_to_display += [display_ind * 2 + 2] * probe_off_frame_num
 
-            index_to_display += [0] * self.postgap_frame_num
+            index_to_display = index_to_display * self.repeat
+
+            index_to_display = [0] * self.pregap_frame_num + index_to_display + [0] * self.postgap_frame_num
 
             return frames_unique, index_to_display
 
@@ -2053,6 +2084,12 @@ class DriftingGratingCircle(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple of floats, optional
         coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
@@ -2083,13 +2120,22 @@ class DriftingGratingCircle(Stim):
             first, ndarray storing the distance from each pixel to smooth band center
             second, smooth band width
         returns smoothed mask with same shape as input ndarray
+    is_blank_block : bool
+        if True, one blank block (full screen background with the same duration of other blocks)
+        will be displayed for each iteration. The frames of this condition will be:
+        (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0), the meaning of these numbers can be found in
+        self.frame_config
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
                  con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3., is_smooth_edge=False,
-                 smooth_width_ratio=0.2, smooth_func=blur_cos):
+                 smooth_width_ratio=0.2, smooth_func=blur_cos, is_blank_block=True):
+        """
+        Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
+        from `Stim` class
+        """
 
         super(DriftingGratingCircle, self).__init__(monitor=monitor,
                                                     indicator=indicator,
@@ -2097,10 +2143,6 @@ class DriftingGratingCircle(Stim):
                                                     coordinate=coordinate,
                                                     pregap_dur=pregap_dur,
                                                     postgap_dur=postgap_dur)
-        """
-        Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
-        from `Stim` class
-        """
 
         self.stim_name = 'DriftingGratingCircle'
         if len(center) != 2:
@@ -2116,10 +2158,11 @@ class DriftingGratingCircle(Stim):
         self.smooth_width_ratio = smooth_width_ratio
         self.smooth_func = smooth_func
 
-        if block_dur > 0.:
+        if int(block_dur * self.monitor.refresh_rate) >= 4:
             self.block_dur = float(block_dur)
         else:
-            raise ValueError('block_dur should be larger than 0 second.')
+            raise ValueError('There should be more than 4 frames per block, otherwise the '
+                             'synchronized indicator strategy will not work.')
 
         if midgap_dur >= 0.:
             self.midgap_dur = float(midgap_dur)
@@ -2131,13 +2174,14 @@ class DriftingGratingCircle(Stim):
                              'temporal frequency (Hz)', 'direction (deg)',
                              'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
                              'indicator color [-1., 1.]')
+        self.is_blank_block = bool(is_blank_block)
 
         for tf in tf_list:
             period = 1. / tf
             if (0.05 * period) < (block_dur % period) < (0.95 * period):
-                print period
-                print block_dur % period
-                print 0.95 * period
+                # print(period)
+                # print(block_dur % period)
+                # print(0.95 * period)
                 error_msg = ('Duration of each block times tf ' + str(tf)
                              + ' should be close to a whole number!')
                 raise ValueError, error_msg
@@ -2168,7 +2212,9 @@ class DriftingGratingCircle(Stim):
                           for dire in self.dire_list
                           for con in self.con_list
                           for size in self.radius_list]
-        random.shuffle(all_conditions)
+
+        if self.is_blank_block:
+            all_conditions.append((0., 0., 0., 0., 0.))
 
         return all_conditions
 
@@ -2190,18 +2236,21 @@ class DriftingGratingCircle(Stim):
             number of frames for each circle
         """
 
-        # block_frame_num = int(self.block_dur * self.monitor.refresh_rate)
+        if tf == 0.:
+            phases = [0.] * self.block_frame_num
+            frame_per_cycle = self.block_frame_num
 
-        frame_per_cycle = int(self.monitor.refresh_rate / tf)
+        else:
+            frame_per_cycle = int(self.monitor.refresh_rate / tf)
 
-        phases_per_cycle = list(np.arange(0, np.pi * 2, np.pi * 2 / frame_per_cycle))
+            phases_per_cycle = list(np.arange(0, np.pi * 2, np.pi * 2 / frame_per_cycle))
 
-        phases = []
+            phases = []
 
-        while len(phases) < self.block_frame_num:
-            phases += phases_per_cycle
+            while len(phases) < self.block_frame_num:
+                phases += phases_per_cycle
 
-        phases = phases[0: self.block_frame_num]
+            phases = phases[0: self.block_frame_num]
         return phases, frame_per_cycle
 
     @staticmethod
@@ -2253,6 +2302,7 @@ class DriftingGratingCircle(Stim):
                 frames += [off_params for ind in range(self.midgap_frame_num)]
 
             all_conditions = self._generate_all_conditions()
+            random.shuffle(all_conditions)
 
             for j, condition in enumerate(all_conditions):
                 if j != 0:  # later conditions
@@ -2301,25 +2351,33 @@ class DriftingGratingCircle(Stim):
                                          this particular condition
         """
         phases, frame_per_cycle = self._generate_phase_list(condi_params[1])
-        phases_unique = phases[0:frame_per_cycle]
 
-        # print condi_params
+        if condi_params[0] == 0.: # blank block
 
-        frames_unique_condi = []
-        for i, ph in enumerate(phases_unique):
-            if i == 0:
-                frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], condi_params[4], ph, 1.])
-            else:
-                frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], condi_params[4], ph, 0.])
+            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 1.),
+                                   (1, 1, 0., 0., 0., 0., 0., 0.))
+            index_to_display_condi = [1] * self.block_frame_num
+            index_to_display_condi[0] = 0
 
-        index_to_display_condi = []
-        while len(index_to_display_condi) < len(phases):
-            index_to_display_condi += range(frame_per_cycle)
-        index_to_display_condi = index_to_display_condi[0:len(phases)]
+        else:
 
-        frames_unique_condi = tuple([tuple(f) for f in frames_unique_condi])
+            phases_unique = phases[0:frame_per_cycle]
+
+            frames_unique_condi = []
+            for i, ph in enumerate(phases_unique):
+                if i == 0:
+                    frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
+                                                condi_params[3], condi_params[4], ph, 1.])
+                else:
+                    frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
+                                                condi_params[3], condi_params[4], ph, 0.])
+
+            index_to_display_condi = []
+            while len(index_to_display_condi) < len(phases):
+                index_to_display_condi += range(frame_per_cycle)
+            index_to_display_condi = index_to_display_condi[0:len(phases)]
+
+            frames_unique_condi = tuple([tuple(f) for f in frames_unique_condi])
 
         return frames_unique_condi, index_to_display_condi
 
@@ -2442,7 +2500,7 @@ class DriftingGratingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[2] != 0.:  # not a gap and not a blank block
 
                 # curr_ori = self._get_ori(frame[3])
 
@@ -2538,7 +2596,7 @@ class DriftingGratingCircle(Stim):
 
         for i, curr_frame in enumerate(self.frames):
 
-            if curr_frame[0] == 1:  # not a gap
+            if curr_frame[0] == 1 and curr_frame[2] != 0. :  # not a gap and not a blank block
 
                 # curr_ori = self._get_ori(curr_frame[4])
                 curr_grating = get_grating(alt_map=coord_alt,
@@ -2563,8 +2621,8 @@ class DriftingGratingCircle(Stim):
             indicator_width_min:indicator_width_max] = curr_frame[-1]
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' +
-                       str(int(100 * (i + 1) / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' +
+                       str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         # generate log dictionary
         mondict = dict(self.monitor.__dict__)
@@ -2603,6 +2661,12 @@ class StaticGratingCircle(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple of floats, optional
         coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
@@ -2633,13 +2697,22 @@ class StaticGratingCircle(Stim):
             first, ndarray storing the distance from each pixel to smooth band center
             second, smooth band width
         returns smoothed mask with same shape as input ndarray
+    is_blank_block : bool, optional
+        if True, a full screen background will be displayed as an additional grating.
+        The frames of this condition will be: (1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 or 0.0),
+        the meaning of these numbers can be found in self.frame_config
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
                  radius_list=(10.,), phase_list=(0., 90., 180., 270.), display_dur=0.25,
                  midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.,
-                 is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos):
+                 is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos,
+                 is_blank_block=True):
+        """
+        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
+        from `Stim` class
+        """
 
         super(StaticGratingCircle, self).__init__(monitor=monitor,
                                                   indicator=indicator,
@@ -2647,10 +2720,6 @@ class StaticGratingCircle(Stim):
                                                   coordinate=coordinate,
                                                   pregap_dur=pregap_dur,
                                                   postgap_dur=postgap_dur)
-        """
-        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
-        from `Stim` class
-        """
 
         self.stim_name = 'StaticGratingCircle'
 
@@ -2681,6 +2750,7 @@ class StaticGratingCircle(Stim):
         self.frame_config = ('is_display', 'spatial frequency (cycle/deg)',
                              'phase (deg)', 'orientation (deg)',
                              'contrast [0., 1.]', 'radius (deg)', 'indicator_color [-1., 1.]')
+        self.is_blank_block = bool(is_blank_block)
 
     @property
     def midgap_frame_num(self):
@@ -2738,7 +2808,9 @@ class StaticGratingCircle(Stim):
                           for ori in self.ori_list
                           for con in self.con_list
                           for radius in self.radius_list]
-        # random.shuffle(all_conditions)
+
+        if self.is_blank_block:
+            all_conditions.append((0., 0., 0., 0., 0.))
 
         return all_conditions
 
@@ -2846,7 +2918,7 @@ class StaticGratingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[1] != 0:  # not a gap and not a blank grating
 
                 # curr_ori = self._get_ori(frame[3])
 
@@ -2916,6 +2988,12 @@ class StaticImages(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     img_center : 2-tuple of floats, optional
         coordintes for center of the images (altitude, azimuth)
     deg_per_pixel: float, or list/tuple of two floats
@@ -2923,15 +3001,21 @@ class StaticImages(Stim):
         if float, assume sizes in altitude and azimuth are the same
     display_dur : float, optional
         duration of each condition in seconds, defaults to `0.25`
-    midgap_dur, float, optional
+    midgap_dur : float, optional
         duration of gap between conditions, defaults to `0.`
-    iteration, int, optional
+    iteration : int, optional
         number of times the stimulus is displayed, defaults to `1`
+    is_blank_block : bool, optional
+        if True, a full screen background will be displayed as an additional image.
+        index of this image will be -1.
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
-                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3., is_blank_block=True):
+        """
+        Initialize `StaticImages` stimulus object, inherits Parameters from `Stim` class
+        """
 
         super(StaticImages, self).__init__(monitor=monitor, indicator=indicator,
                                            background=background, coordinate=coordinate,
@@ -2953,6 +3037,7 @@ class StaticImages(Stim):
         self.display_dur = float(display_dur)
         self.midgap_dur = float(midgap_dur)
         self.iteration = int(iteration)
+        self.is_blank_block = bool(is_blank_block)
 
     @property
     def display_frame_num(self):
@@ -3168,6 +3253,12 @@ class StaticImages(Stim):
         for i in range(img_num):
             frames_unique.append((1, i, 1.))
             frames_unique.append((1, i, 0.))
+
+        # adding blank image
+        if self.is_blank_block:
+            frames_unique.append((1, -1, 1.))
+            frames_unique.append((1, -1, 0.))
+
         return frames_unique
 
     def _generate_display_index(self):
@@ -3238,7 +3329,7 @@ class StaticImages(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[1] != -1:  # not a gap and not a blank block
 
                 curr_img = self.images_wrapped[frame[1]]
                 curr_img[np.isnan(curr_img)] = self.background
@@ -3266,11 +3357,39 @@ class StimulusSeparator(Stim):
     """
     a quick flash of indicator to separate different
     visual stimuli when displayed in the same session
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    indicator_on_frame_num : int
+        number of frames the indicator is white, should be positive.
+    indicator_off_frame_num : int
+        number of frames the indicator is black, should be positive.
+    cycle_num : int
+        number of repeat of the indicator flash, should be positive.
+
     """
 
     def __init__(self, monitor, indicator, coordinate='degree', background=0.,
                  indicator_on_frame_num=4, indicator_off_frame_num=4,
                  cycle_num=10, pregap_dur=0., postgap_dur=0.):
+        """
+        Initialize `StimulusSeparator` stimulus object, inherits Parameters from `Stim` class
+        """
 
         super(StimulusSeparator, self).__init__(monitor=monitor,
                                                 indicator=indicator,
@@ -3356,6 +3475,41 @@ class StimulusSeparator(Stim):
 
 
 class CombinedStimuli(Stim):
+    """
+    the stimulus class that can combine different stimuli into one session.
+
+    example:
+    >>> import retinotopic_mapping.StimulusRoutines as stim
+    >>> from retinotopic_mapping.MonitorSetup import Monitor, Indicator
+    >>> from retinotopic_mapping.DisplayStimulus import DisplaySequence
+    >>> mon = Monitor(resolution=(1200, 1920), dis=15., mon_width_cm=52., mon_height_cm=32.)
+    >>> ind = Indicator(mon)
+    >>> uc = stim.UniformContrast(mon, ind, duration=10., color=-1.)
+    >>> ss = stim.StimulusSeparator(mon, ind)
+    >>> cs = stim.CombinedStimuli(mon, ind)
+    >>> cs.set_stimuli([ss, uc, ss])
+    >>> ds = DisplaySequence(log_dir='C:/data')
+    >>> ds.set_stim(cs)
+    >>> ds.trigger_display()
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    """
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  pregap_dur=2., postgap_dur=3.):
 
@@ -3389,7 +3543,8 @@ class CombinedStimuli(Stim):
 
     def generate_movie_by_index(self):
 
-        print ('\nCombinedStimulus: generation stimuli ...')
+        t0 = time.time()
+        print ('\n{:04.1f} min : CombinedStimulus: generating stimuli ...'.format(time.time() - t0))
 
         self.frames_unique = []
         self.index_to_display = []
@@ -3429,8 +3584,9 @@ class CombinedStimuli(Stim):
 
             curr_start_frame_ind += len(curr_frames_unique)
 
-            print ('stimulus: {}; estimated display duration: {:4.1f} minute(s).'
-                   .format(curr_stim_id, len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
+            print ('{:04.1f} min : stimulus: {:<30}; estimated display duration: {:4.1f} minute(s).'
+                   .format((time.time() - t0) / 60., curr_stim_id,
+                           len(curr_index_to_display) / (60. * self.monitor.refresh_rate)))
 
         self.frames_unique = tuple([tuple(f) for f in self.frames_unique])
         self.index_to_display = list(np.concatenate(self.index_to_display, axis=0))
@@ -3807,8 +3963,7 @@ class KSstim(Stim):
             full_seq[i] = curr_NM_seq
 
             if i in range(0, len(self.frames), len(self.frames) / 10):
-                print ['Generating numpy sequence: ' + str(int(100 * (i + 1)
-                                                               / len(self.frames))) + '%']
+                print('Generating numpy sequence: ' + str(int(100 * (i + 1) / len(self.frames))) + '%')
 
         mondict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
