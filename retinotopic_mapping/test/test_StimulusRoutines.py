@@ -317,7 +317,7 @@ class TestSimulation(unittest.TestCase):
                                        coordinate='degree', center=(10., 90.), sf_list=(0.02, 0.04),
                                        tf_list=(1.0,), dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
                                        block_dur=2., midgap_dur=1., iteration=2, pregap_dur=1.5,
-                                       postgap_dur=3.)
+                                       postgap_dur=3., is_blank_block=False)
 
         frames = dgc.generate_frames()
         assert (len(frames) == 930)
@@ -359,6 +359,8 @@ class TestSimulation(unittest.TestCase):
                                        tf_list=(4.0,), dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
                                        block_dur=0.5, midgap_dur=0.1, iteration=2, pregap_dur=0.2,
                                        postgap_dur=0.3, is_blank_block=True)
+        import random
+        random.seed(0)
 
         frames = dgc.generate_frames()
         # print('\n'.join([str(f) for f in frames]))
@@ -370,7 +372,9 @@ class TestSimulation(unittest.TestCase):
         assert (index_to_display_blank == [0] * 30)
 
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
+        # print('\nDGC frames_unique:')
         # print('\n'.join([str(f) for f in frames_unique]))
+        # print('\nDGC condi_ind_in_frames_unique:')
         # print(condi_ind_in_frames_unique)
         assert (frames_unique[1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
         assert (condi_ind_in_frames_unique['condi_0000'] == [1] * 30)
@@ -380,7 +384,7 @@ class TestSimulation(unittest.TestCase):
                                        block_dur=2., sf_list=(0.04,), tf_list=(2.0,),
                                        dire_list=(45.,), con_list=(0.8,), radius_list=(10.,),
                                        midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
-                                       iteration=2)
+                                       iteration=2, is_blank_block=False)
 
         conditions = dgc._generate_all_conditions()
         # print len(conditions)
@@ -400,7 +404,7 @@ class TestSimulation(unittest.TestCase):
                                        block_dur=2., sf_list=(0.04,), tf_list=(1., 3.0,),
                                        dire_list=(45., 90.), con_list=(0.8,), radius_list=(10.,),
                                        midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
-                                       iteration=2)
+                                       iteration=2, is_blank_block=False)
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
         assert (len(condi_ind_in_frames_unique) == 4)
         assert (set(condi_ind_in_frames_unique.keys()) == set(['condi_0000', 'condi_0001', 'condi_0002', 'condi_0003']))
@@ -419,7 +423,7 @@ class TestSimulation(unittest.TestCase):
                                        block_dur=2., sf_list=(0.04,), tf_list=(1., 3.0,),
                                        dire_list=(45., 90.), con_list=(0.8,), radius_list=(10.,),
                                        midgap_dur=0.1, pregap_dur=0.5, postgap_dur=0.2,
-                                       iteration=2)
+                                       iteration=2, is_blank_block=False)
         frames_unique, index_to_display = dgc._generate_display_index()
         # print '\n'.join([str(f) for f in frames_unique])
         assert (len(frames_unique) == 161)
@@ -632,7 +636,7 @@ class TestSimulation(unittest.TestCase):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
                              coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
                              display_dur=0.25, midgap_dur=0., iteration=1, pregap_dur=2.,
-                             postgap_dur=3.)
+                             postgap_dur=3., is_blank_block=False)
 
         img_w_path = os.path.join(self.curr_folder, 'test_data', 'wrapped_images_for_display.hdf5')
 
@@ -663,7 +667,7 @@ class TestSimulation(unittest.TestCase):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
                              coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
                              display_dur=0.25, midgap_dur=0., iteration=1, pregap_dur=2.,
-                             postgap_dur=3.)
+                             postgap_dur=3., is_blank_block=False)
         import numpy as np
         si.images_wrapped = np.random.rand(27, 120, 160)
         frames_unique = si._generate_frames_for_index_display()
@@ -673,11 +677,31 @@ class TestSimulation(unittest.TestCase):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
                              coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
                              display_dur=0.25, midgap_dur=0.1, iteration=2, pregap_dur=2.,
-                             postgap_dur=3.)
+                             postgap_dur=3., is_blank_block=False)
         import numpy as np
         si.images_wrapped = np.random.rand(15, 120, 160)
         frames_unique, index_to_display = si._generate_display_index()
         assert (len(index_to_display) == 924)
+
+    def test_SI_blank_block(self):
+        si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
+                             coordinate='degree', img_center=(0., 60.), deg_per_pixel=(0.1, 0.1),
+                             display_dur=0.1, midgap_dur=0.1, iteration=1, pregap_dur=0.,
+                             postgap_dur=0., is_blank_block=True)
+        import numpy as np
+        si.images_wrapped = np.random.rand(2, 120, 160)
+        frames_unique, index_to_display = si._generate_display_index()
+        assert (len(frames_unique) == 7)
+        assert (frames_unique[-1] == (1, -1, 0.))
+        assert (frames_unique[-2] == (1, -1, 1.))
+
+        # print('frames_unique:')
+        # print('\n'.join([str(f) for f in frames_unique]))
+        # print('\nindex_to_display: {}.'.format(index_to_display))
+        # print('\nframes to be displayed:')
+        # frames = [frames_unique[i] for i in index_to_display]
+        # print('\n'.join([str(f) for f in frames]))
+        assert (len(index_to_display) == 30)
 
 
 if __name__ == '__main__':

@@ -2152,7 +2152,7 @@ class DriftingGratingCircle(Stim):
                              'temporal frequency (Hz)', 'direction (deg)',
                              'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
                              'indicator color [-1., 1.]')
-        self.is_blank_block = is_blank_block
+        self.is_blank_block = bool(is_blank_block)
 
         for tf in tf_list:
             period = 1. / tf
@@ -2952,15 +2952,18 @@ class StaticImages(Stim):
         if float, assume sizes in altitude and azimuth are the same
     display_dur : float, optional
         duration of each condition in seconds, defaults to `0.25`
-    midgap_dur, float, optional
+    midgap_dur : float, optional
         duration of gap between conditions, defaults to `0.`
-    iteration, int, optional
+    iteration : int, optional
         number of times the stimulus is displayed, defaults to `1`
+    is_blank_block : bool, optional
+        if True, a full screen background will be displayed as an additional image.
+        index of this image will be -1.
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
-                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.):
+                 midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3., is_blank_block=True):
 
         super(StaticImages, self).__init__(monitor=monitor, indicator=indicator,
                                            background=background, coordinate=coordinate,
@@ -2982,6 +2985,7 @@ class StaticImages(Stim):
         self.display_dur = float(display_dur)
         self.midgap_dur = float(midgap_dur)
         self.iteration = int(iteration)
+        self.is_blank_block = bool(is_blank_block)
 
     @property
     def display_frame_num(self):
@@ -3197,6 +3201,12 @@ class StaticImages(Stim):
         for i in range(img_num):
             frames_unique.append((1, i, 1.))
             frames_unique.append((1, i, 0.))
+
+        # adding blank image
+        if self.is_blank_block:
+            frames_unique.append((1, -1, 1.))
+            frames_unique.append((1, -1, 0.))
+
         return frames_unique
 
     def _generate_display_index(self):
@@ -3267,7 +3277,7 @@ class StaticImages(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[1] != -1:  # not a gap and not a blank block
 
                 curr_img = self.images_wrapped[frame[1]]
                 curr_img[np.isnan(curr_img)] = self.background
