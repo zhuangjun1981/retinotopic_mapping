@@ -2103,7 +2103,9 @@ class DriftingGratingCircle(Stim):
         returns smoothed mask with same shape as input ndarray
     is_blank_block : bool
         if True, one blank block (full screen background with the same duration of other blocks)
-        will be displayed for each iteration
+        will be displayed for each iteration. The frames of this condition will be:
+        (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0), the meaning of these numbers can be found in
+        self.frame_config
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
@@ -2137,10 +2139,11 @@ class DriftingGratingCircle(Stim):
         self.smooth_width_ratio = smooth_width_ratio
         self.smooth_func = smooth_func
 
-        if block_dur > 0.:
+        if int(block_dur * self.monitor.refresh_rate) >= 4:
             self.block_dur = float(block_dur)
         else:
-            raise ValueError('block_dur should be larger than 0 second.')
+            raise ValueError('There should be more than 4 frames per block, otherwise the '
+                             'synchronized indicator strategy will not work.')
 
         if midgap_dur >= 0.:
             self.midgap_dur = float(midgap_dur)
@@ -2194,8 +2197,6 @@ class DriftingGratingCircle(Stim):
         if self.is_blank_block:
             all_conditions.append((0., 0., 0., 0., 0.))
 
-        random.shuffle(all_conditions)
-
         return all_conditions
 
     def _generate_phase_list(self, tf):
@@ -2218,7 +2219,7 @@ class DriftingGratingCircle(Stim):
 
         if tf == 0.:
             phases = [0.] * self.block_frame_num
-            frame_per_cycle = 1
+            frame_per_cycle = self.block_frame_num
 
         else:
             frame_per_cycle = int(self.monitor.refresh_rate / tf)
@@ -2282,6 +2283,7 @@ class DriftingGratingCircle(Stim):
                 frames += [off_params for ind in range(self.midgap_frame_num)]
 
             all_conditions = self._generate_all_conditions()
+            random.shuffle(all_conditions)
 
             for j, condition in enumerate(all_conditions):
                 if j != 0:  # later conditions
@@ -2330,25 +2332,33 @@ class DriftingGratingCircle(Stim):
                                          this particular condition
         """
         phases, frame_per_cycle = self._generate_phase_list(condi_params[1])
-        phases_unique = phases[0:frame_per_cycle]
 
-        # print condi_params
+        if condi_params[0] == 0.: # blank block
 
-        frames_unique_condi = []
-        for i, ph in enumerate(phases_unique):
-            if i == 0:
-                frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], condi_params[4], ph, 1.])
-            else:
-                frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
-                                            condi_params[3], condi_params[4], ph, 0.])
+            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 1.),
+                                   (1, 1, 0., 0., 0., 0., 0., 0.))
+            index_to_display_condi = [1] * self.block_frame_num
+            index_to_display_condi[0] = 0
 
-        index_to_display_condi = []
-        while len(index_to_display_condi) < len(phases):
-            index_to_display_condi += range(frame_per_cycle)
-        index_to_display_condi = index_to_display_condi[0:len(phases)]
+        else:
 
-        frames_unique_condi = tuple([tuple(f) for f in frames_unique_condi])
+            phases_unique = phases[0:frame_per_cycle]
+
+            frames_unique_condi = []
+            for i, ph in enumerate(phases_unique):
+                if i == 0:
+                    frames_unique_condi.append([1, 1, condi_params[0], condi_params[1], condi_params[2],
+                                                condi_params[3], condi_params[4], ph, 1.])
+                else:
+                    frames_unique_condi.append([1, 0, condi_params[0], condi_params[1], condi_params[2],
+                                                condi_params[3], condi_params[4], ph, 0.])
+
+            index_to_display_condi = []
+            while len(index_to_display_condi) < len(phases):
+                index_to_display_condi += range(frame_per_cycle)
+            index_to_display_condi = index_to_display_condi[0:len(phases)]
+
+            frames_unique_condi = tuple([tuple(f) for f in frames_unique_condi])
 
         return frames_unique_condi, index_to_display_condi
 
@@ -2662,13 +2672,18 @@ class StaticGratingCircle(Stim):
             first, ndarray storing the distance from each pixel to smooth band center
             second, smooth band width
         returns smoothed mask with same shape as input ndarray
+    is_blank_block : bool, optional
+        if True, a full screen background will be displayed as an additional grating.
+        The frames of this condition will be: (1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 or 0.0),
+        the meaning of these numbers can be found in self.frame_config
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), ori_list=(0., 90.), con_list=(0.5,),
                  radius_list=(10.,), phase_list=(0., 90., 180., 270.), display_dur=0.25,
                  midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.,
-                 is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos):
+                 is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos,
+                 is_blank_block=True):
 
         super(StaticGratingCircle, self).__init__(monitor=monitor,
                                                   indicator=indicator,
@@ -2710,6 +2725,7 @@ class StaticGratingCircle(Stim):
         self.frame_config = ('is_display', 'spatial frequency (cycle/deg)',
                              'phase (deg)', 'orientation (deg)',
                              'contrast [0., 1.]', 'radius (deg)', 'indicator_color [-1., 1.]')
+        self.is_blank_block = bool(is_blank_block)
 
     @property
     def midgap_frame_num(self):
@@ -2767,7 +2783,9 @@ class StaticGratingCircle(Stim):
                           for ori in self.ori_list
                           for con in self.con_list
                           for radius in self.radius_list]
-        # random.shuffle(all_conditions)
+
+        if self.is_blank_block:
+            all_conditions.append((0., 0., 0., 0., 0.))
 
         return all_conditions
 
@@ -2875,7 +2893,7 @@ class StaticGratingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[1] != 0:  # not a gap and not a blank grating
 
                 # curr_ori = self._get_ori(frame[3])
 

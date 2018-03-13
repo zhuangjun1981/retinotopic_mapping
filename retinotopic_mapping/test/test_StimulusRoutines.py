@@ -359,8 +359,6 @@ class TestSimulation(unittest.TestCase):
                                        tf_list=(4.0,), dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
                                        block_dur=0.5, midgap_dur=0.1, iteration=2, pregap_dur=0.2,
                                        postgap_dur=0.3, is_blank_block=True)
-        import random
-        random.seed(0)
 
         frames = dgc.generate_frames()
         # print('\n'.join([str(f) for f in frames]))
@@ -368,18 +366,25 @@ class TestSimulation(unittest.TestCase):
 
         _ = dgc._generate_frames_for_index_display_condition((0., 0., 0., 0., 0.))
         frames_unique_blank, index_to_display_blank = _
-        assert (frames_unique_blank == ((1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),))
-        assert (index_to_display_blank == [0] * 30)
+        # print('\nDGC frames_unique_blank:')
+        # print('\n'.join([str(f) for f in frames_unique_blank]))
+        # print('\nDGC index_to_display_blank:')
+        # print(index_to_display_blank)
+
+        assert (frames_unique_blank == ((1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+                                        (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)))
+        assert (index_to_display_blank == [0] + [1] * 29)
 
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
         # print('\nDGC frames_unique:')
         # print('\n'.join([str(f) for f in frames_unique]))
         # print('\nDGC condi_ind_in_frames_unique:')
         # print(condi_ind_in_frames_unique)
-        assert (frames_unique[1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
-        assert (condi_ind_in_frames_unique['condi_0000'] == [1] * 30)
+        assert (frames_unique[-1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+        assert (frames_unique[-2] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
+        assert (condi_ind_in_frames_unique['condi_0001'] == [16] + [17] * 29)
 
-    def test_DGC__generate_frames_for_index_display_condition(self):
+    def test_DGC_generate_frames_for_index_display_condition(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
                                        block_dur=2., sf_list=(0.04,), tf_list=(2.0,),
                                        dire_list=(45.,), con_list=(0.8,), radius_list=(10.,),
@@ -594,7 +599,7 @@ class TestSimulation(unittest.TestCase):
                                      ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
                                      radius_list=(50.,), phase_list=(0., 90., 180., 270.),
                                      display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2.,
-                                     postgap_dur=3.)
+                                     postgap_dur=3., is_blank_block=False)
         frames_unique = sgc._generate_frames_for_index_display()
         # print len(frames_unique)
         assert (len(frames_unique) == (3 * 4 * 3 * 4 * 2 + 1))
@@ -604,7 +609,7 @@ class TestSimulation(unittest.TestCase):
                                      ori_list=(0., 90., 180., 270.), con_list=(0.2, 0.5, 0.8),
                                      radius_list=(50.,), phase_list=(0., 90., 180., 270.),
                                      display_dur=0.25, midgap_dur=0., iteration=2, pregap_dur=2.,
-                                     postgap_dur=3.)
+                                     postgap_dur=3., is_blank_block=False)
         frames_unique = sgc._generate_frames_for_index_display()
         # print len(frames_unique)
         assert (len(frames_unique) == (3 * 2 * 3 * 4 * 2 + 1))
@@ -615,12 +620,32 @@ class TestSimulation(unittest.TestCase):
                                      ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
                                      radius_list=(50.,), phase_list=(0., 90., 180., 270.),
                                      display_dur=0.25, midgap_dur=0.1, iteration=2, pregap_dur=2.,
-                                     postgap_dur=3.)
+                                     postgap_dur=3., is_blank_block=False)
         frames_unique, index_to_display = sgc._generate_display_index()
         assert (max(index_to_display) == len(frames_unique) - 1)
         # print len(index_to_display)
         # print index_to_display
         assert (len(index_to_display) == 6342)
+
+    def test_SGC_blank_block(self):
+        sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                     coordinate='degree', center=(0., 30.), sf_list=(0.04,),
+                                     ori_list=(90., ), con_list=(0.8, ), radius_list=(50.,),
+                                     phase_list=(0., 180.,), display_dur=0.1, midgap_dur=0.1,
+                                     iteration=2, pregap_dur=0., postgap_dur=0., is_blank_block=True)
+        all_conditions = sgc._generate_all_conditions()
+        # print('\nSGC all_conditions:')
+        # print('\n'.join([str(c) for c in all_conditions]))
+        assert (all_conditions[-1] == (0., 0., 0., 0., 0.))
+
+        frames_unique = sgc._generate_frames_for_index_display()
+        # print('\nSGC frames_unique:')
+        # print('\n'.join([str(f) for f in frames_unique]))
+        assert (frames_unique[-1] == (1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+        assert (frames_unique[-2] == (1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
+
+        _, index_to_display = sgc._generate_display_index()
+        assert (len(index_to_display) == 66)
 
     def test_SS_generate_display_index(self):
         ss = sr.StimulusSeparator(monitor=self.monitor, indicator=self.indicator,
