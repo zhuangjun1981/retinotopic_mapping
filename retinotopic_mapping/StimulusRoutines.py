@@ -59,12 +59,12 @@ def get_warped_probes(deg_coord_alt, deg_coord_azi, probes, width,
         2d array of warped azimuth coordinates of monitor pixels
     probes : tuple or list
         each element of probes represents a single probe (center_alt, center_azi, sign)
-    width :
-         width of the square
-    height :
-         height of the square
-    ori :
-        angle in degree, should be 0~180
+    width : float
+         width of the square in degrees
+    height : float
+         height of the square in degrees
+    ori : float
+        angle in degree, should be [0., 180.]
     foreground_color : float, optional
          color of the noise pixels, takes values in [-1,1] and defaults to `1.`
     background_color : float, optional
@@ -549,22 +549,23 @@ class UniformContrast(Stim):
     Parameters
     ----------
     monitor : monitor object
-        inherited monitor object from `Stim` class
+        contains display monitor information
     indicator : indicator object
-        inherited indicator object from `Stim` class
-    duration : int
-        amount of time (in seconds) the stimulus is presented
-    color : float, optional
-        the choice of color to display in the stimulus, defaults to `0.` which
-        is grey
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
     pregap_dur : float, optional
         amount of time (in seconds) before the stimulus is presented, defaults
         to `2.`
     postgap_dur : float, optional
         amount of time (in seconds) after the stimulus is presented, defaults
         to `3.`
-    background : float, optional
-        color during pre and post gap, defaults to `0.` which is grey
+    color : float, optional
+        the choice of color to display in the stimulus, defaults to `0.` which
+        is grey
     """
 
     def __init__(self, monitor, indicator, duration, color=0., pregap_dur=2.,
@@ -749,16 +750,20 @@ class FlashingCircle(Stim):
     Parameters
     ----------
     monitor : monitor object
-        contains display monitor information.
+        contains display monitor information
     indicator : indicator object
-        contains indicator information.
+        contains indicator information
     coordinate : str from {'degree','linear'}, optional
-        specifies coordinates, defaults to 'degree'.
+        specifies coordinates, defaults to 'degree'
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
-        is white.
-    stim_name : str
-        Name of the stimulus.
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple, optional
         center coordinate (altitude, azimuth) of the circle in degrees, defaults to (0.,60.).
     radius : float, optional
@@ -1074,8 +1079,12 @@ class SparseNoise(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
-    stim_name : str
-        Name of stimulus
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     grid_space : 2-tuple of floats, optional
         first coordinate is altitude, second coordinate is azimuth
     probe_size : 2-tuple of floats, optional
@@ -1085,7 +1094,7 @@ class SparseNoise(Stim):
         orientation of flicker probes
     probe_frame_num : int, optional
         number of frames for each square presentation
-    subregion :
+    subregion : list or tuple
         the region on the monitor that will display the sparse noise,
         list or tuple, [min_alt, max_alt, min_azi, max_azi]
     sign : {'ON-OFF', 'ON', 'OFF'}, optional
@@ -1106,6 +1115,9 @@ class SparseNoise(Stim):
                  grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
+        """
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
 
         super(SparseNoise, self).__init__(monitor=monitor,
                                           indicator=indicator,
@@ -1113,9 +1125,6 @@ class SparseNoise(Stim):
                                           coordinate=coordinate,
                                           pregap_dur=pregap_dur,
                                           postgap_dur=postgap_dur)
-        """    
-        Initialize sparse noise object, inherits Parameters from Stim object
-        """
 
         self.stim_name = 'SparseNoise'
         self.grid_space = grid_space
@@ -1582,16 +1591,20 @@ class LocallySparseNoise(Stim):
         contains display monitor information
     indicator : indicator object
         contains indicator information
-    min_distance: float, default 20.
-        the minimum distance in visual degree for any pair of probe centers
-         in a given frame
     coordinate : str from {'degree','linear'}, optional
         specifies coordinates, defaults to 'degree'
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
-    stim_name : str
-        Name of stimulus
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    min_distance : float, default 20.
+        the minimum distance in visual degree for any pair of probe centers
+         in a given frame
     grid_space : 2-tuple of floats, optional
         first coordinate is altitude, second coordinate is azimuth
     probe_size : 2-tuple of floats, optional
@@ -1601,7 +1614,7 @@ class LocallySparseNoise(Stim):
         orientation of flicker probes
     probe_frame_num : int, optional
         number of frames for each square presentation
-    subregion :
+    subregion : list or tuple
         the region on the monitor that will display the sparse noise,
         list or tuple, [min_alt, max_alt, min_azi, max_azi]
     sign : {'ON-OFF', 'ON', 'OFF'}, optional
@@ -1627,13 +1640,13 @@ class LocallySparseNoise(Stim):
                  grid_space=(10., 10.), probe_size=(10., 10.), probe_orientation=0.,
                  probe_frame_num=6, subregion=None, sign='ON-OFF', iteration=1, repeat=1,
                  pregap_dur=2., postgap_dur=3., is_include_edge=True):
+        """
+        Initialize sparse noise object, inherits Parameters from Stim object
+        """
 
         super(LocallySparseNoise, self).__init__(monitor=monitor, indicator=indicator,
                                                  background=background, coordinate=coordinate,
                                                  pregap_dur=pregap_dur, postgap_dur=postgap_dur)
-        """    
-        Initialize sparse noise object, inherits Parameters from Stim object
-        """
 
         self.stim_name = 'LocallySparseNoise'
         self.grid_space = grid_space
@@ -2071,6 +2084,12 @@ class DriftingGratingCircle(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple of floats, optional
         coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
@@ -2113,6 +2132,10 @@ class DriftingGratingCircle(Stim):
                  con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3., is_smooth_edge=False,
                  smooth_width_ratio=0.2, smooth_func=blur_cos, is_blank_block=True):
+        """
+        Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
+        from `Stim` class
+        """
 
         super(DriftingGratingCircle, self).__init__(monitor=monitor,
                                                     indicator=indicator,
@@ -2120,10 +2143,6 @@ class DriftingGratingCircle(Stim):
                                                     coordinate=coordinate,
                                                     pregap_dur=pregap_dur,
                                                     postgap_dur=postgap_dur)
-        """
-        Initialize `DriftingGratingCircle` stimulus object, inherits Parameters
-        from `Stim` class
-        """
 
         self.stim_name = 'DriftingGratingCircle'
         if len(center) != 2:
@@ -2642,6 +2661,12 @@ class StaticGratingCircle(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     center : 2-tuple of floats, optional
         coordintes for center of the stimulus (altitude, azimuth)
     sf_list : n-tuple, optional
@@ -2684,6 +2709,10 @@ class StaticGratingCircle(Stim):
                  midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3.,
                  is_smooth_edge=False, smooth_width_ratio=0.2, smooth_func=blur_cos,
                  is_blank_block=True):
+        """
+        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
+        from `Stim` class
+        """
 
         super(StaticGratingCircle, self).__init__(monitor=monitor,
                                                   indicator=indicator,
@@ -2691,10 +2720,6 @@ class StaticGratingCircle(Stim):
                                                   coordinate=coordinate,
                                                   pregap_dur=pregap_dur,
                                                   postgap_dur=postgap_dur)
-        """
-        Initialize `StaticGratingCircle` stimulus object, inherits Parameters
-        from `Stim` class
-        """
 
         self.stim_name = 'StaticGratingCircle'
 
@@ -2963,6 +2988,12 @@ class StaticImages(Stim):
     background : float, optional
         color of background. Takes values in [-1,1] where -1 is black and 1
         is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
     img_center : 2-tuple of floats, optional
         coordintes for center of the images (altitude, azimuth)
     deg_per_pixel: float, or list/tuple of two floats
@@ -2982,6 +3013,9 @@ class StaticImages(Stim):
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  img_center=(0., 60.), deg_per_pixel=(0.1, 0.1), display_dur=0.25,
                  midgap_dur=0., iteration=1, pregap_dur=2., postgap_dur=3., is_blank_block=True):
+        """
+        Initialize `StaticImages` stimulus object, inherits Parameters from `Stim` class
+        """
 
         super(StaticImages, self).__init__(monitor=monitor, indicator=indicator,
                                            background=background, coordinate=coordinate,
@@ -3323,11 +3357,39 @@ class StimulusSeparator(Stim):
     """
     a quick flash of indicator to separate different
     visual stimuli when displayed in the same session
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    indicator_on_frame_num : int
+        number of frames the indicator is white, should be positive.
+    indicator_off_frame_num : int
+        number of frames the indicator is black, should be positive.
+    cycle_num : int
+        number of repeat of the indicator flash, should be positive.
+
     """
 
     def __init__(self, monitor, indicator, coordinate='degree', background=0.,
                  indicator_on_frame_num=4, indicator_off_frame_num=4,
                  cycle_num=10, pregap_dur=0., postgap_dur=0.):
+        """
+        Initialize `StimulusSeparator` stimulus object, inherits Parameters from `Stim` class
+        """
 
         super(StimulusSeparator, self).__init__(monitor=monitor,
                                                 indicator=indicator,
@@ -3413,6 +3475,41 @@ class StimulusSeparator(Stim):
 
 
 class CombinedStimuli(Stim):
+    """
+    the stimulus class that can combine different stimuli into one session.
+
+    example:
+    >>> import retinotopic_mapping.StimulusRoutines as stim
+    >>> from retinotopic_mapping.MonitorSetup import Monitor, Indicator
+    >>> from retinotopic_mapping.DisplayStimulus import DisplaySequence
+    >>> mon = Monitor(resolution=(1200, 1920), dis=15., mon_width_cm=52., mon_height_cm=32.)
+    >>> ind = Indicator(mon)
+    >>> uc = stim.UniformContrast(mon, ind, duration=10., color=-1.)
+    >>> ss = stim.StimulusSeparator(mon, ind)
+    >>> cs = stim.CombinedStimuli(mon, ind)
+    >>> cs.set_stimuli([ss, uc, ss])
+    >>> ds = DisplaySequence(log_dir='C:/data')
+    >>> ds.set_stim(cs)
+    >>> ds.trigger_display()
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    """
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  pregap_dur=2., postgap_dur=3.):
 

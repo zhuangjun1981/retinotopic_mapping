@@ -227,7 +227,17 @@ class DisplaySequence(object):
 
     def set_any_array(self, any_array, log_dict=None):
         """
-        to display any numpy 3-d array.
+        set any numpy 3-d array as stimulus
+
+        Parameters:
+        -----------
+        any_array : 3d array
+            shape: (frame, height, width) in pixels, it will be rescaled to
+            have value range [0., 1.] with dtype np.float16
+        log_dict : dictionary, optional
+            the dictionary containing the metadata of the stimulus. If presented,
+            it will be saved in the display log .pkl file (in the field called
+            'stimulation') after displayed.
         """
         if len(any_array.shape) != 3:
             raise LookupError, "Input numpy array should have dimension of 3!"
@@ -254,8 +264,22 @@ class DisplaySequence(object):
 
         Parameters
         ----------
-        stim : Stim object
-            the type of stimulus to be presented in the experiment
+        stim : stim object inherited from retinotopic_mapping.StimulusRoutine.Stim class
+            the type of stimulus to be presented in the experiment.
+
+            Currently support:
+            retinotopic_mapping.StimulusRoutine.UniformContrast
+            retinotopic_mapping.StimulusRoutine.FlashingCircle
+            retinotopic_mapping.StimulusRoutine.SparseNoise
+            retinotopic_mapping.StimulusRoutine.LocallySparseNoise
+            retinotopic_mapping.StimulusRoutine.DriftingGratingCircle
+            retinotopic_mapping.StimulusRoutine.StaticGratingCircle
+            retinotopic_mapping.StimulusRoutine.StaticImages
+            retinotopic_mapping.StimulusRoutine.StimulusSeparator
+            retinotopic_mapping.StimulusRoutine.CombinedStimuli
+            retinotopic_mapping.StimulusRoutine.KSstim
+            retinotopic_mapping.StimulusRoutine.KSstimAllDir
+
         """
         if self.is_by_index:
             if stim.stim_name in ['KSstim', 'KSstimAllDir']:
@@ -283,13 +307,18 @@ class DisplaySequence(object):
 
         Examples
         --------
-        >>> # Assume monitor, indicator, and stimulus objects are defined
-        >>> import DisplaySequence
-        >>> ds = DisplaySequence(log_dir=r'C:\)
-        >>> ds.set_stim(uniform_contrast)
+        >>> import matplotlib.pyplot as plt
+        >>> import retinotopic_mapping.StimulusRoutines as stim
+        >>> from retinotopic_mapping.MonitorSetup import Monitor, Indicator
+        >>> from retinotopic_mapping.DisplayStimulus import DisplaySequence
+        >>> mon = Monitor(resolution=(1200, 1920), dis=15., mon_width_cm=52., mon_height_cm=32.)
+        >>> ind = Indicator(mon)
+        >>> ds = DisplaySequence(log_dir='C:/data')
+        >>> uc = stim.UniformContrast(monitor=mon, indicator=ind, duration=10., color=-1.)
+        >>> ds.set_stim(uc)
         >>> ds.trigger_display()
-
         """
+
         # --------------- early preparation for display--------------------
         # test monitor resolution
         try:
