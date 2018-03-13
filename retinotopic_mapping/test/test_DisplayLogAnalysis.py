@@ -9,13 +9,17 @@ class TestDisplayLogAnalysis(unittest.TestCase):
 
     def setUp(self):
         self.log_path = os.path.join(curr_folder, 'test_data',
-                                      '180312155448-CombinedStimuli-MMOUSE-USER-TEST-notTriggered-complete.pkl')
+                                      '180313114504-CombinedStimuli-MMOUSE-USER-TEST-notTriggered-complete.pkl')
         self.log = dla.DisplayLogAnalyzer(log_path=self.log_path)
 
     def test_DisplayLogAnalyzer(self):
 
         stim_dict = self.log.get_stim_dict()
-        pd_onsets_seq = self.log.analyze_photodiode_onsets_sequential(stim_dict=stim_dict, pd_thr=-0.5)
+        pd_onsets_seq_0 = self.log.analyze_photodiode_onsets_sequential(stim_dict=stim_dict, pd_thr=-0.5)
+        # print(len(pd_onsets_seq_0))
+        assert (len(pd_onsets_seq_0) == 310)
+        pd_onsets_seq = self.log.analyze_photodiode_onsets_sequential(stim_dict=stim_dict, pd_thr=0.5)
+        assert (len(pd_onsets_seq) == 572)
         pd_onsets_com = self.log.analyze_photodiode_onsets_combined(pd_onsets_seq=pd_onsets_seq, is_dgc_blocked=True)
         assert (len(pd_onsets_com) == 14)
 

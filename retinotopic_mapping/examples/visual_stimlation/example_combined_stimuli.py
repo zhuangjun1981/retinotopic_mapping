@@ -133,6 +133,7 @@ sgc_iteration = 10
 sgc_is_smooth_edge = True
 sgc_smooth_width_ratio = 0.2
 sgc_smooth_func = stim.blur_cos
+sgc_is_blank_block = True
 # =================================================================================
 
 # ============================ StaticImages =======================================
@@ -141,6 +142,7 @@ si_deg_per_pixel = (0.5, 0.5)
 si_display_dur = 0.25
 si_midgap_dur = 0.
 si_iteration = 10
+si_is_blank_block = True
 si_images_folder = os.path.join(os.path.dirname(rm.__file__), 'test', 'test_data')
 # =================================================================================
 
@@ -248,7 +250,7 @@ sgc = stim.StaticGratingCircle(monitor=mon, indicator=ind, pregap_dur=pregap_dur
                                midgap_dur=sgc_midgap_dur, iteration=sgc_iteration,
                                is_smooth_edge=sgc_is_smooth_edge,
                                smooth_width_ratio=sgc_smooth_width_ratio,
-                               smooth_func=sgc_smooth_func)
+                               smooth_func=sgc_smooth_func, is_blank_block=sgc_is_blank_block)
 # =================================================================================
 
 # =============================== Static Images ===================================
@@ -256,7 +258,8 @@ si = stim.StaticImages(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
                        postgap_dur=postgap_dur, coordinate=coordinate,
                        background=background, img_center=si_img_center,
                        deg_per_pixel=si_deg_per_pixel, display_dur=si_display_dur,
-                       midgap_dur=si_midgap_dur, iteration=si_iteration)
+                       midgap_dur=si_midgap_dur, iteration=si_iteration,
+                       is_blank_block=si_is_blank_block)
 # =================================================================================
 
 # ============================ wrape images =======================================
