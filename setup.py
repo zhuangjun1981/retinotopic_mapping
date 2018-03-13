@@ -38,7 +38,7 @@ def prepend_find_packages(*roots):
 
 setup(
       name='retinotopic_mapping',
-      version = '2.3.2',
+      version = '2.4.0',
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
       install_requires=install_reqs,
