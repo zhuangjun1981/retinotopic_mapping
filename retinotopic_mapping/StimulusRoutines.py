@@ -2101,13 +2101,16 @@ class DriftingGratingCircle(Stim):
             first, ndarray storing the distance from each pixel to smooth band center
             second, smooth band width
         returns smoothed mask with same shape as input ndarray
+    is_blank_block : bool
+        if True, one blank block (full screen background with the same duration of other blocks)
+        will be displayed for each iteration
     """
 
     def __init__(self, monitor, indicator, background=0., coordinate='degree',
                  center=(0., 60.), sf_list=(0.08,), tf_list=(4.,), dire_list=(0.,),
                  con_list=(0.5,), radius_list=(10.,), block_dur=2., midgap_dur=0.5,
                  iteration=1, pregap_dur=2., postgap_dur=3., is_smooth_edge=False,
-                 smooth_width_ratio=0.2, smooth_func=blur_cos):
+                 smooth_width_ratio=0.2, smooth_func=blur_cos, is_blank_block=True):
 
         super(DriftingGratingCircle, self).__init__(monitor=monitor,
                                                     indicator=indicator,
@@ -2149,6 +2152,7 @@ class DriftingGratingCircle(Stim):
                              'temporal frequency (Hz)', 'direction (deg)',
                              'contrast [0., 1.]', 'radius (deg)', 'phase (deg)',
                              'indicator color [-1., 1.]')
+        self.is_blank_block = is_blank_block
 
         for tf in tf_list:
             period = 1. / tf
@@ -2186,6 +2190,10 @@ class DriftingGratingCircle(Stim):
                           for dire in self.dire_list
                           for con in self.con_list
                           for size in self.radius_list]
+
+        if self.is_blank_block:
+            all_conditions.append((0., 0., 0., 0., 0.))
+
         random.shuffle(all_conditions)
 
         return all_conditions
@@ -2208,18 +2216,21 @@ class DriftingGratingCircle(Stim):
             number of frames for each circle
         """
 
-        # block_frame_num = int(self.block_dur * self.monitor.refresh_rate)
+        if tf == 0.:
+            phases = [0.] * self.block_frame_num
+            frame_per_cycle = 1
 
-        frame_per_cycle = int(self.monitor.refresh_rate / tf)
+        else:
+            frame_per_cycle = int(self.monitor.refresh_rate / tf)
 
-        phases_per_cycle = list(np.arange(0, np.pi * 2, np.pi * 2 / frame_per_cycle))
+            phases_per_cycle = list(np.arange(0, np.pi * 2, np.pi * 2 / frame_per_cycle))
 
-        phases = []
+            phases = []
 
-        while len(phases) < self.block_frame_num:
-            phases += phases_per_cycle
+            while len(phases) < self.block_frame_num:
+                phases += phases_per_cycle
 
-        phases = phases[0: self.block_frame_num]
+            phases = phases[0: self.block_frame_num]
         return phases, frame_per_cycle
 
     @staticmethod
@@ -2460,7 +2471,7 @@ class DriftingGratingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
 
-            if frame[0] == 1:  # not a gap
+            if frame[0] == 1 and frame[2] != 0.:  # not a gap and not a blank block
 
                 # curr_ori = self._get_ori(frame[3])
 
@@ -2556,7 +2567,7 @@ class DriftingGratingCircle(Stim):
 
         for i, curr_frame in enumerate(self.frames):
 
-            if curr_frame[0] == 1:  # not a gap
+            if curr_frame[0] == 1 and curr_frame[2] != 0. :  # not a gap and not a blank block
 
                 # curr_ori = self._get_ori(curr_frame[4])
                 curr_grating = get_grating(alt_map=coord_alt,

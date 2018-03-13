@@ -103,7 +103,7 @@ class DisplaySequence(object):
                  mouse_id='Test',
                  user_id='Name',
                  psychopy_mon='testMonitor',
-                 is_by_index=False,
+                 is_by_index=True,
                  is_interpolate=False,
                  is_triggered=False,
                  is_save_sequence=False,

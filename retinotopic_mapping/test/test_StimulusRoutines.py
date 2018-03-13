@@ -353,6 +353,28 @@ class TestSimulation(unittest.TestCase):
         assert (frames[690][8] == 1.)
         assert ([f[8] for f in frames[691:750]] == [0.] * 59)
 
+    def test_DGC_blank_block(self):
+        dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                       coordinate='degree', center=(10., 90.), sf_list=(0.02,),
+                                       tf_list=(4.0,), dire_list=(45.,), con_list=(0.8,), radius_list=(20.,),
+                                       block_dur=0.5, midgap_dur=0.1, iteration=2, pregap_dur=0.2,
+                                       postgap_dur=0.3, is_blank_block=True)
+
+        frames = dgc.generate_frames()
+        # print('\n'.join([str(f) for f in frames]))
+        assert (len(frames) == 168)
+
+        _ = dgc._generate_frames_for_index_display_condition((0., 0., 0., 0., 0.))
+        frames_unique_blank, index_to_display_blank = _
+        assert (frames_unique_blank == ((1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),))
+        assert (index_to_display_blank == [0] * 30)
+
+        frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
+        # print('\n'.join([str(f) for f in frames_unique]))
+        # print(condi_ind_in_frames_unique)
+        assert (frames_unique[1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
+        assert (condi_ind_in_frames_unique['condi_0000'] == [1] * 30)
+
     def test_DGC__generate_frames_for_index_display_condition(self):
         dgc = sr.DriftingGratingCircle(monitor=self.monitor, indicator=self.indicator,
                                        block_dur=2., sf_list=(0.04,), tf_list=(2.0,),
