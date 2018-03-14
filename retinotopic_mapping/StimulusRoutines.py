@@ -1604,7 +1604,7 @@ class LocallySparseNoise(Stim):
         to `3.`
     min_distance : float, default 20.
         the minimum distance in visual degree for any pair of probe centers
-         in a given frame
+        in a given frame
     grid_space : 2-tuple of floats, optional
         first coordinate is altitude, second coordinate is azimuth
     probe_size : 2-tuple of floats, optional
@@ -2116,9 +2116,8 @@ class DriftingGratingCircle(Stim):
         the ratio between smooth band width and radius, circle edge is the middle
         of smooth band
     smooth_func : function object
-        this function take to inputs
-            first, ndarray storing the distance from each pixel to smooth band center
-            second, smooth band width
+        this function take two inputs: 1) ndarray storing the distance from each
+        pixel to smooth band center; 2) smooth band width.
         returns smoothed mask with same shape as input ndarray
     is_blank_block : bool
         if True, one blank block (full screen background with the same duration of other blocks)
@@ -2693,9 +2692,8 @@ class StaticGratingCircle(Stim):
         the ratio between smooth band width and radius, circle edge is the middle
         of smooth band
     smooth_func : function object
-        this function take to inputs
-            first, ndarray storing the distance from each pixel to smooth band center
-            second, smooth band width
+        this function take two inputs: 1) ndarray storing the distance from each
+        pixel to smooth band center; 2) smooth band width.
         returns smoothed mask with same shape as input ndarray
     is_blank_block : bool, optional
         if True, a full screen background will be displayed as an additional grating.
