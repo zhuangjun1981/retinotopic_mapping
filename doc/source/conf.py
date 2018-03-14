@@ -17,7 +17,7 @@
 #
 import os, sys
 
-# sys.path.append('/Users/johnyearsley/Documents/Allen Institute/Coding/retinotopic_mapping/')
+sys.path.append('E:/data/github_packages/retinotopic_mapping')
 # sys.path.insert(0, os.path.abspath("../"))
 
 # -- General configuration ------------------------------------------------
@@ -54,9 +54,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Retinotopic Mapping'
-copyright = u'2017, JY'
-author = u'JY'
+project = u'retinotopic_mapping'
+copyright = u'2017, Allen Institute for Brain Science'
+author = u'JY, JZ'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -1,6 +1,14 @@
 retinotopic_mapping.StimulusRoutines
 ====================================
-
+This module define a base class :class:`Stim` for visual stimulation. 
+Each subclass of :class:`Stim` defines a particular type of visual 
+stimulus, i.e. :class:`UniformContrast` or :class:`SparseNoise`. When 
+initiated, these subclasses take various parameter inputs to generate  
+stimulus arrays and metadata dictionary which can be passed to the 
+:class:`DisplayStimulus.DisplaySequence` for displaying. Each subclass 
+will have a method called `generate_movie()` or 
+`generate_movie_by_index()` or both. Only when these methods are 
+called, will heavy lifting calculation take place. 
 
 Stim
 ----
