@@ -2,4 +2,4 @@
 include LICENSE.txt
 
 # Include data files
-recursive-include data *
+recursive-include retinotopic_mapping *.ipynb *.tif *.pkl
