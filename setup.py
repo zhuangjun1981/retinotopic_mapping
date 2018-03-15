@@ -16,7 +16,7 @@ package_root = 'retinotopic_mapping'
 with open('requirements.txt') as req_f:
     install_reqs = req_f.read().splitlines()
 install_reqs = [ir for ir in install_reqs if '#' not in ir]
-install_reqs = install_reqs[::-1]
+# install_reqs = install_reqs[::-1]
 print('\ninstall requirements:')
 print('\n'.join(install_reqs))
 print('')
