@@ -91,6 +91,9 @@ python setup.py install
 15. sphinx, version 1.6.3 or later (just for documentation)
 16. numpydoc, version 0.7.0 (just for documentation)
 
+for detailed installation instructions see the
+install page in documentation (`doc` branch).
+
 #### References:
 
 1. Garrett ME, Nauhaus I, Marshel JH, Callaway EM (2014) Topography and areal organization of mouse visual cortex. J Neurosci 34:12587-12600.
