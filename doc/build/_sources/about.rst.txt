@@ -40,7 +40,8 @@ the results.
 Please check the '\examples\signmap_analysis' folder for a `jupyter
 notebook <https://github.com/zhuangjun1981/retinotopic_mapping/blob
 /master/retinotopic_mapping/examples/signmap_analysis
-/retinotopic_mapping_example.ipynb>`_ showing automated visual area segmentation of mouse cortex.
+/retinotopic_mapping_example.ipynb>`_ showing automated visual area 
+segmentation of mouse cortex.
 
 
 What is a retinotopic map?

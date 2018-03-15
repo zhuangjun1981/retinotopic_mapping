@@ -177,7 +177,10 @@
 <a class="reference external" href="https://pypi.python.org/pypi?name=retinotopic-maps&amp;version=2.0.0&amp;:action=display">here</a>.</p>
 <p>Then open the command line, move to the directory that the package was
 installed in and run the <cite>setup.py</cite> file like follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">full</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">package</span> <span class="n">location</span><span class="o">&gt;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">package_path</span><span class="o">&gt;</span>
+<span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>     <span class="c1"># this will take a while</span>
+<span class="n">activate</span> <span class="n">retinotopic_mapping</span>            <span class="c1"># Windows</span>
+<span class="n">source</span> <span class="n">activate</span> <span class="n">retinotopic_mapping</span>     <span class="c1"># Mac or Linux</span>
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
@@ -186,7 +189,7 @@ installed in and run the <cite>setup.py</cite> file like follows:</p>
 <h2>PIP install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h2>
 <p>An even simpler way to install the package is with pip. To do so type the following
 in the command line:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">retinotopic_maps</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">retinotopic_mapping</span>
 </pre></div>
 </div>
 </div>
@@ -194,16 +197,30 @@ in the command line:</p>
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ol class="arabic simple">
+<li>pytest, version 3.3.0 or later</li>
 <li>numpy, version 1.13.1 or later</li>
 <li>scipy, version 0.17.1 or later</li>
 <li>matplotlib, version 1.5.1 or later</li>
+<li>h5py, version 2.7.1 or later</li>
+<li>pillow, version 5.0.0 or later</li>
 <li>psychopy, version 1.85.2 or later</li>
-<li>pyglet, version 1.2.4 or later</li>
-<li>OpenCV-Python, version &gt;= 2.4.8, &lt;= 2.4.10</li>
+<li>pyglet, version 1.2.4</li>
+<li><dl class="first docutils">
+<dt>OpenCV-Python, version &gt;= 2.4.8, &lt;= 2.4.10 (pip version)</dt>
+<dd><ol class="first last loweralpha">
+<li>or opencv 2.4.11 (conda cloud version from <a class="reference external" href="https://anaconda.org/menpo/opencv">menpo channel</a>)</li>
+<li>or opencv3 3.2.0 (conda cloud version from <a class="reference external" href="https://anaconda.org/menpo/opencv3">menpo channel</a>)</li>
+</ol>
+</dd>
+</dl>
+</li>
 <li>scikit-image, version 0.12.3 or later</li>
 <li>tifffile, version &gt;=0.7.0, &lt;=0.10.0</li>
 <li>PIL, version 4.3.0 or later</li>
 <li>PyDAQmx, version 1.3.2 or later</li>
+<li>configobj, version 5.0.6 or later</li>
+<li>sphinx, version 1.6.3 or later (just for documentation)</li>
+<li>numpydoc, version 0.7.0 (just for documentation)</li>
 </ol>
 <ul class="simple">
 <li>also requires National Instruments DAQmx driver</li>

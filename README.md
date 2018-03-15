@@ -66,9 +66,9 @@ We are planning on occasional updating this tool with no fixed schedule. Communi
 #### Install:
 ```
 cd <package_path>
-conda env create -f environment.yml (this will take a while)
-activate retinotopic_mapping (Windows)
-source activate retinotopic_mapping (Mac or Linux)
+conda env create -f environment.yml     # this will take a while
+activate retinotopic_mapping            # Windows
+source activate retinotopic_mapping     # Mac or Linux
 python setup.py install
 ```
 
