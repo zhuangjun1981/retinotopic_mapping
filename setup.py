@@ -1,10 +1,11 @@
 __author__ = 'junz'
 
 import sys
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 import io
 import os
+import codecs
+import re
+from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 os.chdir(here)
@@ -31,10 +32,20 @@ def read(*filenames, **kwargs):
     return sep.join(buf)
 long_description = read('README.md')
 
+# find version
+def find_version(f_path):
+    version_file = codecs.open(f_path, 'r').read()
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+version = find_version(os.path.join(here, 'retinotopic_mapping', '__init__.py'))
+
 # setup
 setup(
       name='retinotopic_mapping',
-      version = '2.6.0',
+      version = version,
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
       install_requires=install_reqs,
