@@ -1,0 +1,21 @@
+name: retinotopic_mapping
+channels:
+  - defaults
+  - menpo
+dependencies:
+  - python=2.7
+  - pytest
+  - scipy
+  - numpy
+  - matplotlib
+  - h5py
+  - pillow
+  - opencv
+  - configobj
+  - sphinx
+  - numpydoc
+  - pip:
+    - PyDAQmx
+    - psychopy
+    - pyglet==1.2.4
+    - tifffile==0.10.0

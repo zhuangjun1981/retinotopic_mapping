@@ -65,7 +65,7 @@ class PyTest(TestCommand):
 # setup
 setup(
       name='retinotopic_mapping',
-      version = '2.5.0',
+      version = '2.6.0',
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
       install_requires=install_reqs,
