@@ -7,10 +7,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import time
-import skimage.external.tifffile as tf
 import h5py
 from tools import ImageAnalysis as ia
 from tools import FileTools as ft
+
+try:
+    import skimage.external.tifffile as tf
+except ImportError:
+    import tifffile as tf
 
 
 def in_hull(p, hull):

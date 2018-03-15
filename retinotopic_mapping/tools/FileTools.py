@@ -5,7 +5,11 @@ import pickle
 import os
 import shutil
 import ImageAnalysis as ia
-import skimage.external.tifffile as tf
+
+try:
+    import skimage.external.tifffile as tf
+except ImportError:
+    import tifffile as tf
 
 try:
     import cv2

@@ -1,10 +1,11 @@
 __author__ = 'junz'
 
 import sys
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 import io
 import os
+import codecs
+import re
+from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 os.chdir(here)
@@ -31,49 +32,27 @@ def read(*filenames, **kwargs):
     return sep.join(buf)
 long_description = read('README.md')
 
-# Recursively traverse nested packages under the root directories
-# packages = [f[0] for f in os.walk(package_root)]
-# packages = [f.replace('\\', '/') for f in packages]
-# packages = [unicode(f) for f in packages if f[-18:] != '.ipynb_checkpoints']
-
-packages = [package_root]
-packages += [package_root + '.' + s for s in find_packages(package_root)]
-packages += ['{}/examples'.format(package_root)]
-packages += ['{}/test'.format(package_root)]
-packages += ['{}/other_test'.format(package_root)]
-print('\npackages to be installed:')
-print('\n'.join(packages))
-
-# define tests
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['--junitxml=result.xml']
-        self.test_args_cov = self.test_args + ['--cov=retinotopic_mapping', '--cov-report=term', '--cov-report=html']
-        self.test_suite = True
-
-    def run_test(self):
-        import pytest
-
-        try:
-            errcode = pytest.main(self.test_args_cov)
-        except:
-            errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
-
+# find version
+def find_version(f_path):
+    version_file = codecs.open(f_path, 'r').read()
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+version = find_version(os.path.join(here, 'retinotopic_mapping', '__init__.py'))
 
 # setup
 setup(
       name='retinotopic_mapping',
-      version = '2.5.0',
+      version = version,
       url='https://github.com/zhuangjun1981/retinotopic_mapping',
       author='Jun Zhuang @ Allen Institute for Brain Science',
       install_requires=install_reqs,
-      cmdclass={'test': PyTest},
       author_email='junz@alleninstitute.org',
       description='retinotopic mapping tools',
       long_description=long_description,
-      packages=packages,
+      packages=find_packages(),
       include_package_data=True,
       package_data={'':['*.md']},
       platforms='any',
