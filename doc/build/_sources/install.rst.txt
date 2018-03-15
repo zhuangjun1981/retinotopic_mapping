@@ -1,8 +1,8 @@
 Installing
 ==========
 
-Manual install
-+++++++++++++++
+Manual install (recommended)
+++++++++++++++++++++++++++++
 To manually install **RetinotopicMapping** you can  download the package
 `here <https://pypi.python.org/pypi?name=retinotopic-maps&version=2.0.0&:action=display>`_.
 
@@ -27,36 +27,51 @@ in the command line:
 
     pip install retinotopic_mapping
 
+This will install all the dependencies (takes long time and not always work). If you
+want to install the package without dependencies, run:
+
+.. code-block:: python
+
+    pip install retinotopic_mapping --no-deps
 
 
 Dependencies
 +++++++++++++++++++++
-        1. pytest, version 3.3.0 or later
-        2. numpy, version 1.13.1 or later
-        3. scipy, version 0.17.1 or later
-        4. matplotlib, version 1.5.1 or later
-        5. h5py, version 2.7.1 or later
-        6. pillow, version 5.0.0 or later
-        7. psychopy, version 1.85.2 or later
-        8. pyglet, version 1.2.4
-        9. OpenCV-Python, version >= 2.4.8, <= 2.4.10 (pip version)  
-        	a. or opencv 2.4.11 (conda cloud version from `menpo channel <https://anaconda.org/menpo/opencv>`_)  
-        	b. or opencv3 3.2.0 (conda cloud version from `menpo channel <https://anaconda.org/menpo/opencv3>`_)  
-        10. scikit-image, version 0.12.3 or later
-        11. tifffile, version >=0.7.0, <=0.10.0
-        12. PIL, version 4.3.0 or later
-        13. PyDAQmx, version 1.3.2 or later
-        14. configobj, version 5.0.6 or later
-        15. sphinx, version 1.6.3 or later (just for documentation)
-        16. numpydoc, version 0.7.0 (just for documentation)
+    1. pytest, version 3.3.0 or later
+    2. numpy, version 1.13.1 or later
+    3. scipy, version 0.17.1 or later
+    4. matplotlib, version 1.5.1 or later
+    5. h5py, version 2.7.1 or later
+    6. pillow, version 5.0.0 or later
+    7. psychopy, version 1.85.2 or later
+    8. pyglet, version 1.2.4
+    9. OpenCV [a]_
+    10. scikit-image, version 0.12.3 or later [b]_
+    11. tifffile, version >=0.7.0 [c]_
+    12. PIL, version 4.3.0 or later
+    13. PyDAQmx, version 1.3.2 or later [d]_
+    14. configobj, version 5.0.6 or later
+    15. sphinx, version 1.6.3 or later (just for documentation)
+    16. numpydoc, version 0.7.0 (just for documentation)
 
-        * also requires National Instruments DAQmx driver
+
+    .. [a] This can be
+        1) OpenCV-Python 3.1.0 or later (pip version) or
+        2) `opencv 2.4.11 <https://anaconda.org/menpo/opencv>`_ (conda cloud version from menpo channel) or
+        3) `opencv3 3.2.0 <https://anaconda.org/menpo/opencv3>`_ (conda cloud version from menpo channel)
+    .. [b] On windows systems, `conda install scikit-image` is recommended.
+       `pip install scikit-image` will sometimes fail. Due to the
+       :mod:`skimage.external.tifffile` module.
+       `This solution <https://stackoverflow.com/questions/44865576/python-scikit-image-install-failing-using-pip>`_
+       usually fix the problem.
+    .. [c] Same as b.
+    .. [d] Requires National Instruments `DAQmx driver <http://sine.ni.com/nips/cds/view/p/lang/en/nid/10181>`_.
 
 Operating Systems Supported
 +++++++++++++++++++++++++++
 
 * Windows
-
+* Linux
 * Mac
 
 
