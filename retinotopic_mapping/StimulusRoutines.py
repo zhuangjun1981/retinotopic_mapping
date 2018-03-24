@@ -2357,8 +2357,8 @@ class DriftingGratingCircle(Stim):
 
         if condi_params[0] == 0.: # blank block
 
-            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 1.),
-                                   (1, 1, 0., 0., 0., 0., 0., 0.))
+            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 0., 1.),
+                                   (1, 1, 0., 0., 0., 0., 0., 0., 0.))
             index_to_display_condi = [1] * self.block_frame_num
             index_to_display_condi[0] = 0
 
