@@ -205,14 +205,22 @@ class DisplaySequence(object):
         self.sync_pulse_NI_port = sync_pulse_NI_port
         self.sync_pulse_NI_line = sync_pulse_NI_line
         self.display_screen = display_screen
-        self.initial_background_color = float(initial_background_color)
 
         if len(color_weights) != 3:
-            raise ValueError('input color_weights should be a tuple with 3 elements.')
+            raise ValueError('input color_weights should be a tuple with 3 numbers, each from -1. to 1.')
         for cw in color_weights:
             if cw < -1. or cw > 1.:
                 raise ValueError('each element of color_weight should be no less than -1. and no greater than 1.')
         self.color_weights = color_weights
+
+        if type(initial_background_color) == int or type(initial_background_color) == float:
+            if initial_background_color < -1. or initial_background_color > 1.:
+                raise ValueError('initial_background_color ({}) out of range. '
+                                 'Should be in [-1., 1].'.format(initial_background_color))
+            self.initial_background_color = [(initial_background_color + 1.) * c - 1. for c in self.color_weights]
+        else:
+            raise ValueError('Do not understand initial_background_color. '
+                             'Should be a number from -1. to 1.'.format(initial_background_color))
 
         self.keep_display = None
 
@@ -662,10 +670,13 @@ class DisplaySequence(object):
         # generate full log dictionary
         path = os.path.join(directory, file_name)
         ft.saveFile(path, logFile)
+        print("\nLog file generated successfully. Log file path: ")
+        print('{}'.format(path))
         if self.is_save_sequence:
             tf.imsave(os.path.join(directory, self.file_name + '.tif'),
                       self.sequence.astype(np.float32))
-        print(".pkl file generated successfully.")
+            print('\nSequence file generated successfully. File path: ')
+            print('{}'.format(os.path.join(directory, self.file_name + '.tif')))
 
         backupFileFolder = self._get_backup_folder()
         if backupFileFolder is not None:
@@ -677,9 +688,10 @@ class DisplaySequence(object):
             if self.is_save_sequence:
                 tf.imsave(os.path.join(backupFileFolder, self.file_name + '.tif'),
                           self.sequence.astype(np.float32))
-            print(".pkl backup file generate successfully")
+            print("\nBackup log file generated successfully. Backup log file path: ")
+            print('{}'.format(backupFilePath))
         else:
-            print("Did not find backup path, no backup has been saved.")
+            print("\nDid not find backup path, no backup was saved.")
 
     def _get_backup_folder(self):
         if self.backupdir is not None:
