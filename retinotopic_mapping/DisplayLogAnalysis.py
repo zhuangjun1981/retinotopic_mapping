@@ -246,7 +246,7 @@ class DisplayLogAnalyzer(object):
             pd_onsets_seq = pd_onsets_seq + curr_stim_pd_onsets
 
         # print('\n'.join([str(pd) for pd in pd_onsets]))
-        print('\nTotal number of photodiode onsets: {}'.format(len(pd_onsets_seq)))
+        print('\nTotal number of expected photodiode onsets: {}'.format(len(pd_onsets_seq)))
 
         # sanity check of global_pd_onset_ind
         # for i, po in enumerate(pd_onsets):
