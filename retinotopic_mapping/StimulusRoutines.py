@@ -567,6 +567,8 @@ class UniformContrast(Stim):
     postgap_dur : float, optional
         amount of time (in seconds) after the stimulus is presented, defaults
         to `3.`
+    duration: float
+        number of seconds of the duration of the uniform luminance.
     color : float, optional
         the choice of color to display in the stimulus, defaults to `0.` which
         is grey
@@ -742,6 +744,79 @@ class UniformContrast(Stim):
                      'indicator': indicator_dict}
 
         return full_seq, full_dict
+
+
+class SinusoidalLuminance(Stim):
+
+    """
+    Generate fullfield sinusoidal luminance fluctuation at given frequency for
+    given number of cycles. Center luminance is at 0.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    max_level : float, (0., 1.]
+        maximum level of peak luminance, defaults to `1.`
+    frequency : float, Hz
+        frequency of the luminance fluctuation, should be less than 1/4 of
+        monitor refresh rate.
+    cycle_num : int
+        number of cycles to be displayed. Should be positive.
+    start_phase : float, [0, 2*pi]
+        starting phase of the cycle.
+    """
+
+    def __init__(self, monitor, indicator, max_level=1., frequency=5,
+                 cycle_num=10, start_phase=0., pregap_dur=2., postgap_dur=3.,
+                 background=0., coordinate='degree'):
+        """
+        Initialize SinusoidalLuminance object
+        """
+
+        super(SinusoidalLuminance, self).__init__(monitor=monitor,
+                                                  indicator=indicator,
+                                                  coordinate=coordinate,
+                                                  background=background,
+                                                  pregap_dur=pregap_dur,
+                                                  postgap_dur=postgap_dur)
+
+        self.stim_name = 'SinusoidalLuminance'
+
+        if max_level > 1.:
+            max_level = 1.
+        elif max_level < 0.:
+            max_level = 0.
+        self.max_level = float(max_level)
+
+        if frequency > (monitor.refresh_rate / 4.):
+            raise ValueError('frequency too high to be sufficiently sampled. Should '
+                             'be less than 1/4 of monitor refresh rate: {}.'.format(self.monitor.refresh_rate))
+        self.frequency = frequency
+
+        if int(cycle_num) <= 0:
+            raise ValueError('cycle_num should be a positive integer.')
+        self.cycle_num = int(cycle_num)
+
+        self.start_phase = start_phase % (2 * np.pi)
+
+        self.frame_config = ('is_display', 'indicator color [-1., 1.]',
+                             'color [-1., 1.]')
+
+    #todo: finish this.
 
 
 class FlashingCircle(Stim):
