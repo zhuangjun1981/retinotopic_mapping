@@ -115,7 +115,7 @@ class DisplaySequence(object):
                  trigger_NI_dev='Dev1',
                  trigger_NI_port=1,
                  trigger_NI_line=0,
-                 is_sync_pulse=True,
+                 is_sync_pulse=False,
                  sync_pulse_NI_dev='Dev1',
                  sync_pulse_NI_port=1,
                  sync_pulse_NI_line=1,

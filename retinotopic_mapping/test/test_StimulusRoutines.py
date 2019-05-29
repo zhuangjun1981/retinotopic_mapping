@@ -752,6 +752,32 @@ class TestSimulation(unittest.TestCase):
         # print('\n'.join([str(f) for f in frames]))
         assert (len(index_to_display) == 30)
 
+    def test_SL_generate_frames_for_index_display(self):
+        sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                    coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.,
+                                    max_level=1., start_phase=0., frequency=4., cycle_num=10)
+        frames = sl._generate_frames_for_index_display()
+        # print(frames)
+        assert (len(frames) == 16)
+        assert (frames[0] == (0, -1., 0.))
+        for i in range(1, 8):
+            assert (frames[i][1] == 1.)
+        for i in range(8, 16):
+            assert (frames[i][1] == 0.)
+
+    def test_SL_generate_display_index(self):
+        sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                    coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.5,
+                                    max_level=1., start_phase=0., frequency=4., cycle_num=3)
+        ind = sl._generate_display_index()
+        # print(ind)
+
+        assert(ind == [0] * 120 +
+                      range(1, 16) + [0] * 30 +
+                      range(1, 16) + [0] * 30 +
+                      range(1, 16) +
+                      [0] * 180)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2.)
