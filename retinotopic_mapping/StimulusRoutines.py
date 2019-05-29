@@ -820,14 +820,15 @@ class SinusoidalLuminance(Stim):
 
         self.start_phase = start_phase % (2 * np.pi)
 
-        self.frame_config = ('is_display', 'indicator color [-1., 1.]',
-                             'color [-1., 1.]')
+        self.frame_config = ('is_display',
+                             'color [-1., 1.]',
+                             'indicator color [-1., 1.]')
 
     def _generate_frames_for_index_display(self):
 
         if self.indicator.is_sync:
 
-            gap_frame = (0, -1., None)
+            gap_frame = (0, None, -1.)
 
             frames_per_cycle = int(np.round(self.monitor.refresh_rate / self.frequency))
             phases = (2. * np.pi * np.arange(frames_per_cycle) / frames_per_cycle) + self.start_phase
@@ -837,7 +838,7 @@ class SinusoidalLuminance(Stim):
             indicator_off_frames = frames_per_cycle - indicator_on_frames
             indicator_color = [1.] * indicator_on_frames + [0.] * indicator_off_frames
 
-            display_frames = [(1, indicator_color[frame_i], colors[frame_i]) for frame_i
+            display_frames = [(1, colors[frame_i], indicator_color[frame_i]) for frame_i
                               in range(frames_per_cycle)]
             frames = [gap_frame] + display_frames
 
@@ -887,12 +888,12 @@ class SinusoidalLuminance(Stim):
                                 + self.indicator.height_pixel / 2)
 
         for i, frame in enumerate(self.frames_unique):
-            if frame[2] is not None:
-                full_sequence[i] = frame[2]
+            if frame[1] is not None:
+                full_sequence[i] = frame[1]
 
             # Insert indicator pixels
             full_sequence[i, indicator_height_min:indicator_height_max,
-                          indicator_width_min:indicator_width_max] = frame[1]
+                          indicator_width_min:indicator_width_max] = frame[2]
 
         monitor_dict = dict(self.monitor.__dict__)
         indicator_dict = dict(self.indicator.__dict__)
