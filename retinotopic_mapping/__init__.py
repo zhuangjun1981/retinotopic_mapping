@@ -1,5 +1,5 @@
 import os
-__version__ = '2.7.3'
+__version__ = '2.8.0'
 
 def test():
     import pytest
