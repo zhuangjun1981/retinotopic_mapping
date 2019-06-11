@@ -1098,10 +1098,10 @@ class FlashingCircle(Stim):
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
-        full_sequence = np.zeros((num_frames,
-                                  num_pixels_width,
-                                  num_pixels_height),
-                                 dtype=np.float32)
+        full_sequence = self.background * np.ones((num_frames,
+                                                   num_pixels_width,
+                                                   num_pixels_height),
+                                                   dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel
                                - self.indicator.width_pixel / 2)
@@ -1112,9 +1112,9 @@ class FlashingCircle(Stim):
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel / 2)
 
-        background = self.background * np.ones((num_pixels_width,
-                                                num_pixels_height),
-                                               dtype=np.float32)
+        # background = self.background * np.ones((num_pixels_width,
+        #                                         num_pixels_height),
+        #                                        dtype=np.float32)
 
         if self.coordinate == 'degree':
             map_azi = self.monitor.deg_coord_x
@@ -1136,7 +1136,7 @@ class FlashingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1:
-                full_sequence[i] = self.color * circle_mask - background * (circle_mask - 1)
+                full_sequence[i][np.where(circle_mask==1)] = self.color
 
             full_sequence[i, indicator_height_min:indicator_height_max,
             indicator_width_min:indicator_width_max] = frame[1]
