@@ -238,6 +238,8 @@ class TestSimulation(unittest.TestCase):
                             postgap_dur=0.2, is_include_edge=True)
 
         frames_unique, index_to_display = sn._generate_display_index()
+        for frame in frames_unique:
+            assert (len(frame) == 4)
         # print '\n'.join([str(f) for f in frames_unique])
         # print index_to_display
         assert (index_to_display[:6] == [0, 0, 0, 0, 0, 0])
@@ -273,6 +275,8 @@ class TestSimulation(unittest.TestCase):
                             pregap_dur=0.5, postgap_dur=0.3, is_include_edge=True)
 
         frames_unique, index_to_display = sn._generate_display_index()
+        for frame in frames_unique:
+            assert (len(frame) == 4)
         assert (index_to_display[:30] == [0] * 30)
         assert (index_to_display[-18:] == [0] * 18)
         assert (max(index_to_display) == len(frames_unique) - 1)
@@ -363,6 +367,8 @@ class TestSimulation(unittest.TestCase):
         frames = dgc.generate_frames()
         # print('\n'.join([str(f) for f in frames]))
         assert (len(frames) == 168)
+        for frame in frames:
+            assert (len(frame) == 9)
 
         _ = dgc._generate_frames_for_index_display_condition((0., 0., 0., 0., 0.))
         frames_unique_blank, index_to_display_blank = _
@@ -371,8 +377,8 @@ class TestSimulation(unittest.TestCase):
         # print('\nDGC index_to_display_blank:')
         # print(index_to_display_blank)
 
-        assert (frames_unique_blank == ((1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-                                        (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)))
+        assert (frames_unique_blank == ((1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+                                        (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)))
         assert (index_to_display_blank == [0] + [1] * 29)
 
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
@@ -380,8 +386,8 @@ class TestSimulation(unittest.TestCase):
         # print('\n'.join([str(f) for f in frames_unique]))
         # print('\nDGC condi_ind_in_frames_unique:')
         # print(condi_ind_in_frames_unique)
-        assert (frames_unique[-1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
-        assert (frames_unique[-2] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
+        assert (frames_unique[-1] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+        assert (frames_unique[-2] == (1, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0))
         assert (condi_ind_in_frames_unique['condi_0001'] == [16] + [17] * 29)
 
     def test_DGC_generate_frames_for_index_display_condition(self):
@@ -412,8 +418,10 @@ class TestSimulation(unittest.TestCase):
                                        iteration=2, is_blank_block=False)
         frames_unique, condi_ind_in_frames_unique = dgc._generate_frames_unique_and_condi_ind_dict()
         assert (len(condi_ind_in_frames_unique) == 4)
-        assert (set(condi_ind_in_frames_unique.keys()) == set(['condi_0000', 'condi_0001', 'condi_0002', 'condi_0003']))
+        assert (set(condi_ind_in_frames_unique.keys()) == {'condi_0000', 'condi_0001', 'condi_0002', 'condi_0003'})
         assert (len(frames_unique) == 161)
+        for frame in frames_unique:
+            assert (len(frame) == 9)
 
         import numpy as np
         for cond, ind in condi_ind_in_frames_unique.items():
@@ -555,6 +563,8 @@ class TestSimulation(unittest.TestCase):
         # print len(frames_unique)
         # print '\n'.join([str(f) for f in frames_unique])
         assert (len(frames_unique) % 2 == 1)
+        for frame in frames_unique:
+            assert (len(frame) == 4)
 
     def test_LSN_generate_display_index(self):
         lsn = sr.LocallySparseNoise(monitor=self.monitor, indicator=self.indicator,
@@ -603,6 +613,8 @@ class TestSimulation(unittest.TestCase):
         frames_unique = sgc._generate_frames_for_index_display()
         # print len(frames_unique)
         assert (len(frames_unique) == (3 * 4 * 3 * 4 * 2 + 1))
+        for frame in frames_unique:
+            assert(len(frame) == 7)
 
         sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
                                      coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
@@ -614,7 +626,7 @@ class TestSimulation(unittest.TestCase):
         # print len(frames_unique)
         assert (len(frames_unique) == (3 * 2 * 3 * 4 * 2 + 1))
 
-    def test_SGC_generate_generate_display_index(self):
+    def test_SGC_generate_display_index(self):
         sgc = sr.StaticGratingCircle(monitor=self.monitor, indicator=self.indicator, background=0.,
                                      coordinate='degree', center=(0., 30.), sf_list=(0.02, 0.04, 0.08),
                                      ori_list=(0., 45., 90., 135.), con_list=(0.2, 0.5, 0.8),
@@ -622,6 +634,8 @@ class TestSimulation(unittest.TestCase):
                                      display_dur=0.25, midgap_dur=0.1, iteration=2, pregap_dur=2.,
                                      postgap_dur=3., is_blank_block=False)
         frames_unique, index_to_display = sgc._generate_display_index()
+        for frame in frames_unique:
+            assert (len(frame) == 7)
         assert (max(index_to_display) == len(frames_unique) - 1)
         # print len(index_to_display)
         # print index_to_display
@@ -639,6 +653,8 @@ class TestSimulation(unittest.TestCase):
         assert (all_conditions[-1] == (0., 0., 0., 0., 0.))
 
         frames_unique = sgc._generate_frames_for_index_display()
+        for frame in frames_unique:
+            assert (len(frame) == 7)
         # print('\nSGC frames_unique:')
         # print('\n'.join([str(f) for f in frames_unique]))
         assert (frames_unique[-1] == (1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
@@ -656,6 +672,8 @@ class TestSimulation(unittest.TestCase):
         frames_unique, index_to_display = ss._generate_display_index()
         assert (frames_unique == ((0, -1), (1, 1.), (1, -1.)))
         assert (len(index_to_display) == 80)
+        for frame in frames_unique:
+            assert (len(frame) == 2)
 
     def test_SI_wrap_images(self):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
@@ -697,6 +715,8 @@ class TestSimulation(unittest.TestCase):
         si.images_wrapped = np.random.rand(27, 120, 160)
         frames_unique = si._generate_frames_for_index_display()
         assert (len(frames_unique) == 55)
+        for frame in frames_unique:
+            assert (len(frame) == 3)
 
     def test_SI_generate_display_index(self):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
@@ -707,6 +727,8 @@ class TestSimulation(unittest.TestCase):
         si.images_wrapped = np.random.rand(15, 120, 160)
         frames_unique, index_to_display = si._generate_display_index()
         assert (len(index_to_display) == 924)
+        for frame in frames_unique:
+            assert (len(frame) == 3)
 
     def test_SI_blank_block(self):
         si = sr.StaticImages(monitor=self.monitor, indicator=self.indicator, background=0.,
@@ -717,6 +739,8 @@ class TestSimulation(unittest.TestCase):
         si.images_wrapped = np.random.rand(2, 120, 160)
         frames_unique, index_to_display = si._generate_display_index()
         assert (len(frames_unique) == 7)
+        for frame in frames_unique:
+            assert (len(frame) == 3)
         assert (frames_unique[-1] == (1, -1, 0.))
         assert (frames_unique[-2] == (1, -1, 1.))
 
@@ -727,6 +751,32 @@ class TestSimulation(unittest.TestCase):
         # frames = [frames_unique[i] for i in index_to_display]
         # print('\n'.join([str(f) for f in frames]))
         assert (len(index_to_display) == 30)
+
+    def test_SL_generate_frames_for_index_display(self):
+        sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                    coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.,
+                                    max_level=1., start_phase=0., frequency=4., cycle_num=10)
+        frames = sl._generate_frames_for_index_display()
+        # print(frames)
+        assert (len(frames) == 16)
+        assert (frames[0] == (0, None, -1.))
+        for i in range(1, 8):
+            assert (frames[i][2] == 1.)
+        for i in range(8, 16):
+            assert (frames[i][2] == 0.)
+
+    def test_SL_generate_display_index(self):
+        sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
+                                    coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.5,
+                                    max_level=1., start_phase=0., frequency=4., cycle_num=3)
+        ind = sl._generate_display_index()
+        # print(ind)
+
+        assert(ind == [0] * 120 +
+                      range(1, 16) + [0] * 30 +
+                      range(1, 16) + [0] * 30 +
+                      range(1, 16) +
+                      [0] * 180)
 
 
 if __name__ == '__main__':

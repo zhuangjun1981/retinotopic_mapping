@@ -9,7 +9,7 @@ class TestDisplayLogAnalysis(unittest.TestCase):
 
     def setUp(self):
         self.log_path = os.path.join(curr_folder, 'test_data',
-                                      '180313114504-CombinedStimuli-MMOUSE-USER-TEST-notTriggered-complete.pkl')
+                                      '180323212952-CombinedStimuli-MMOUSE-USER-TEST-notTriggered-complete.pkl')
         self.log = dla.DisplayLogAnalyzer(log_path=self.log_path)
 
     def test_DisplayLogAnalyzer(self):

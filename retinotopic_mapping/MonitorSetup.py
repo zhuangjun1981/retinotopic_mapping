@@ -23,8 +23,8 @@ class Monitor(object):
 
     Parameters
     ----------
-    resolution : tuple
-        value of the monitor resolution
+    resolution : tuple of two positive integers
+        value of the monitor resolution, (pixel number in height, pixel number in width)
     dis : float
          distance from eyeball to monitor (in cm)
     mon_width_cm : float

@@ -27,7 +27,7 @@ mon_downsample_rate = 5
 ind_width_cm = 3.
 ind_height_cm = 3.
 ind_position = 'northeast'
-ind_is_sync = 'True'
+ind_is_sync = True
 ind_freq = 1.
 # =================================================================================
 

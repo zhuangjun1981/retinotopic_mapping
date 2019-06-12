@@ -567,6 +567,8 @@ class UniformContrast(Stim):
     postgap_dur : float, optional
         amount of time (in seconds) after the stimulus is presented, defaults
         to `3.`
+    duration: float
+        number of seconds of the duration of the uniform luminance.
     color : float, optional
         the choice of color to display in the stimulus, defaults to `0.` which
         is grey
@@ -742,6 +744,167 @@ class UniformContrast(Stim):
                      'indicator': indicator_dict}
 
         return full_seq, full_dict
+
+
+class SinusoidalLuminance(Stim):
+
+    """
+    Generate fullfield sinusoidal luminance fluctuation at given frequency for
+    given number of cycles. Center luminance is at 0.
+
+    Parameters
+    ----------
+    monitor : monitor object
+        contains display monitor information
+    indicator : indicator object
+        contains indicator information
+    coordinate : str from {'degree','linear'}, optional
+        specifies coordinates, defaults to 'degree'
+    background : float, optional
+        color of background. Takes values in [-1,1] where -1 is black and 1
+        is white
+    pregap_dur : float, optional
+        amount of time (in seconds) before the stimulus is presented, defaults
+        to `2.`
+    postgap_dur : float, optional
+        amount of time (in seconds) after the stimulus is presented, defaults
+        to `3.`
+    midgap_dur : float, optional
+        amount of time (in seconds) in between each cycle, defaults to `0.`
+    max_level : float, (0., 1.]
+        maximum level of peak luminance, defaults to `1.`
+    frequency : float, Hz
+        frequency of the luminance fluctuation, should be less than 1/4 of
+        monitor refresh rate.
+    cycle_num : int
+        number of cycles to be displayed. Should be positive.
+    start_phase : float, [0, 2*pi]
+        starting phase of the cycle.
+    """
+
+    def __init__(self, monitor, indicator, max_level=1., frequency=5,
+                 cycle_num=10, start_phase=0., pregap_dur=2., postgap_dur=3.,
+                 midgap_dur=0., background=0., coordinate='degree'):
+        """
+        Initialize SinusoidalLuminance object
+        """
+
+        super(SinusoidalLuminance, self).__init__(monitor=monitor,
+                                                  indicator=indicator,
+                                                  coordinate=coordinate,
+                                                  background=background,
+                                                  pregap_dur=pregap_dur,
+                                                  postgap_dur=postgap_dur)
+
+        self.stim_name = 'SinusoidalLuminance'
+
+        if midgap_dur >= 0.:
+            self.midgap_dur = float(midgap_dur)
+        else:
+            raise ValueError('midgap_dur should be no less than 0.')
+
+        if max_level > 1.:
+            max_level = 1.
+        elif max_level < 0.:
+            max_level = 0.
+        self.max_level = float(max_level)
+
+        if frequency > (monitor.refresh_rate / 4.):
+            raise ValueError('frequency too high to be sufficiently sampled. Should '
+                             'be less than 1/4 of monitor refresh rate: {}.'.format(self.monitor.refresh_rate))
+        self.frequency = frequency
+
+        if int(cycle_num) <= 0:
+            raise ValueError('cycle_num should be a positive integer.')
+        self.cycle_num = int(cycle_num)
+
+        self.start_phase = start_phase % (2 * np.pi)
+
+        self.frame_config = ('is_display',
+                             'color [-1., 1.]',
+                             'indicator color [-1., 1.]')
+
+    def _generate_frames_for_index_display(self):
+
+        if self.indicator.is_sync:
+
+            gap_frame = (0, None, -1.)
+
+            frames_per_cycle = int(np.round(self.monitor.refresh_rate / self.frequency))
+            phases = (2. * np.pi * np.arange(frames_per_cycle) / frames_per_cycle) + self.start_phase
+            colors = np.sin(phases) * self.max_level
+
+            indicator_on_frames = frames_per_cycle // 2
+            indicator_off_frames = frames_per_cycle - indicator_on_frames
+            indicator_color = [1.] * indicator_on_frames + [0.] * indicator_off_frames
+
+            display_frames = [(1, colors[frame_i], indicator_color[frame_i]) for frame_i
+                              in range(frames_per_cycle)]
+            frames = [gap_frame] + display_frames
+
+            return frames
+        else:
+            raise NotImplementedError("method not avaialable for non-sync indicator.")
+
+    def _generate_display_index(self):
+        pregap_ind = [0] * int(self.pregap_dur * self.monitor.refresh_rate)
+        postgap_ind = [0] * int(self.postgap_dur * self.monitor.refresh_rate)
+        midgap_ind = [0] * int(self.midgap_dur * self.monitor.refresh_rate)
+
+        frames_per_cycle = int(np.round(self.monitor.refresh_rate / self.frequency))
+        cycle_ind = midgap_ind + range(1, frames_per_cycle + 1)
+
+        display_ind = cycle_ind * self.cycle_num
+        display_ind = display_ind[len(midgap_ind):]
+
+        index_to_display = pregap_ind + display_ind + postgap_ind
+
+        return index_to_display
+
+    def generate_movie_by_index(self):
+        """ compute the stimulus movie to be displayed by index. """
+
+        self.frames_unique = self._generate_frames_for_index_display()
+        self.index_to_display = self._generate_display_index()
+
+        num_frames = len(self.frames_unique)
+        num_pixels_width = self.monitor.deg_coord_x.shape[0]
+        num_pixels_height = self.monitor.deg_coord_x.shape[1]
+
+        # Initialize numpy array of 0's as placeholder for stimulus routine
+        full_sequence = np.ones((num_frames,
+                                 num_pixels_width,
+                                 num_pixels_height),
+                                dtype=np.float32) * self.background
+
+        # Compute pixel coordinates for indicator
+        indicator_width_min = (self.indicator.center_width_pixel
+                               - self.indicator.width_pixel / 2)
+        indicator_width_max = (self.indicator.center_width_pixel
+                               + self.indicator.width_pixel / 2)
+        indicator_height_min = (self.indicator.center_height_pixel
+                                - self.indicator.height_pixel / 2)
+        indicator_height_max = (self.indicator.center_height_pixel
+                                + self.indicator.height_pixel / 2)
+
+        for i, frame in enumerate(self.frames_unique):
+            if frame[1] is not None:
+                full_sequence[i] = frame[1]
+
+            # Insert indicator pixels
+            full_sequence[i, indicator_height_min:indicator_height_max,
+                          indicator_width_min:indicator_width_max] = frame[2]
+
+        monitor_dict = dict(self.monitor.__dict__)
+        indicator_dict = dict(self.indicator.__dict__)
+        NF_dict = dict(self.__dict__)
+        NF_dict.pop('monitor')
+        NF_dict.pop('indicator')
+        full_dict = {'stimulation': NF_dict,
+                     'monitor': monitor_dict,
+                     'indicator': indicator_dict}
+
+        return full_sequence, full_dict
 
 
 class FlashingCircle(Stim):
@@ -935,10 +1098,10 @@ class FlashingCircle(Stim):
         num_pixels_width = self.monitor.deg_coord_x.shape[0]
         num_pixels_height = self.monitor.deg_coord_x.shape[1]
 
-        full_sequence = np.zeros((num_frames,
-                                  num_pixels_width,
-                                  num_pixels_height),
-                                 dtype=np.float32)
+        full_sequence = self.background * np.ones((num_frames,
+                                                   num_pixels_width,
+                                                   num_pixels_height),
+                                                   dtype=np.float32)
 
         indicator_width_min = (self.indicator.center_width_pixel
                                - self.indicator.width_pixel / 2)
@@ -949,9 +1112,9 @@ class FlashingCircle(Stim):
         indicator_height_max = (self.indicator.center_height_pixel
                                 + self.indicator.height_pixel / 2)
 
-        background = self.background * np.ones((num_pixels_width,
-                                                num_pixels_height),
-                                               dtype=np.float32)
+        # background = self.background * np.ones((num_pixels_width,
+        #                                         num_pixels_height),
+        #                                        dtype=np.float32)
 
         if self.coordinate == 'degree':
             map_azi = self.monitor.deg_coord_x
@@ -973,7 +1136,7 @@ class FlashingCircle(Stim):
 
         for i, frame in enumerate(self.frames_unique):
             if frame[0] == 1:
-                full_sequence[i] = self.color * circle_mask - background * (circle_mask - 1)
+                full_sequence[i][np.where(circle_mask==1)] = self.color
 
             full_sequence[i, indicator_height_min:indicator_height_max,
             indicator_width_min:indicator_width_max] = frame[1]
@@ -2357,8 +2520,8 @@ class DriftingGratingCircle(Stim):
 
         if condi_params[0] == 0.: # blank block
 
-            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 1.),
-                                   (1, 1, 0., 0., 0., 0., 0., 0.))
+            frames_unique_condi = ((1, 1, 0., 0., 0., 0., 0., 0., 1.),
+                                   (1, 1, 0., 0., 0., 0., 0., 0., 0.))
             index_to_display_condi = [1] * self.block_frame_num
             index_to_display_condi[0] = 0
 
@@ -3536,7 +3699,8 @@ class CombinedStimuli(Stim):
         for stimulus in stimuli:
             if not stimulus.stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise',
                                           'LocallySparseNoise', 'DriftingGratingCircle',
-                                          'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
+                                          'StaticGratingCircle', 'StaticImages', 'StimulusSeparator',
+                                          'SinusoidalLuminance']:
                 raise LookupError('Stimulus type "{}" is not currently supported.'
                                   .format(stimulus.stim_name))
 

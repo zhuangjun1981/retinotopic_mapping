@@ -115,7 +115,8 @@ class DisplayLogAnalyzer(object):
         else:
             stim_name = self.log_dict['stimulation']['stim_name']
             if stim_name in ['UniformContrast', 'FlashingCircle', 'SparseNoise', 'LocallySparseNoise',
-                             'DriftingGratingCirlce', 'StaticGratingCircle', 'StaticImages', 'StimulusSeparator']:
+                             'DriftingGratingCirlce', 'StaticGratingCircle', 'StaticImages', 'StimulusSeparator',
+                             'SinusoidalLuminance']:
                 curr_stim_name = '{:03d}_{}RetinotopicMapping'.format(0, stim_name)
                 curr_dict = self.log_dict['stimulation']
                 curr_dict['stim_name'] = curr_stim_name
@@ -196,11 +197,11 @@ class DisplayLogAnalyzer(object):
                 elif curr_stim_n[-36:] == '_StimulusSeparatorRetinotopicMapping':
                     curr_pd_onset.update({'str_stim': 'color1'})
                 elif curr_stim_n[-33:] == '_FlashingCircleRetinotopicMapping':
-                    str_fc = 'alt{:06.1f}_azi{:06.1f}_color{:05.2f}_rad{:03d}'\
+                    str_fc = 'alt{:06.1f}_azi{:06.1f}_color{:05.2f}_rad{:05.1f}'\
                         .format(curr_stim_dict['center'][0],
                                 curr_stim_dict['center'][1],
                                 curr_stim_dict['color'],
-                                int(curr_stim_dict['radius']))
+                                float(curr_stim_dict['radius']))
                     curr_pd_onset.update({'str_stim': str_fc})
                 elif curr_stim_n[-30:] == '_SparseNoiseRetinotopicMapping':
                     str_sn_probe = 'alt{:06.1f}_azi{:06.1f}_sign{:02d}'\
@@ -236,6 +237,9 @@ class DisplayLogAnalyzer(object):
                 elif curr_stim_n[-31:] == '_StaticImagesRetinotopicMapping':
                     str_si = 'img_ind{:05d}'.format(onset_frame[1])
                     curr_pd_onset.update({'str_stim': str_si})
+                elif curr_stim_n[-38:] == '_SinusoidalLuminanceRetinotopicMapping':
+                    str_sl = 'onset'
+                    curr_pd_onset.update({'str_stim': str_sl})
                 else:
                     raise LookupError('Do not understand stimulus name: {}'.format(curr_stim_n))
 
@@ -246,7 +250,7 @@ class DisplayLogAnalyzer(object):
             pd_onsets_seq = pd_onsets_seq + curr_stim_pd_onsets
 
         # print('\n'.join([str(pd) for pd in pd_onsets]))
-        print('\nTotal number of photodiode onsets: {}'.format(len(pd_onsets_seq)))
+        print('\nTotal number of expected photodiode onsets: {}'.format(len(pd_onsets_seq)))
 
         # sanity check of global_pd_onset_ind
         # for i, po in enumerate(pd_onsets):
@@ -335,6 +339,8 @@ class DisplayLogAnalyzer(object):
             elif stim_n[-38:] == '_StaticGratingCircleRetinotopicMapping':
                 curr_pd_onsets_com.update(self._analyze_pd_onset_combined_general(curr_pd_onsets_seq))
             elif stim_n[-31:] == '_StaticImagesRetinotopicMapping':
+                curr_pd_onsets_com.update(self._analyze_pd_onset_combined_general(curr_pd_onsets_seq))
+            elif stim_n[-38:] == '_SinusoidalLuminanceRetinotopicMapping':
                 curr_pd_onsets_com.update(self._analyze_pd_onset_combined_general(curr_pd_onsets_seq))
             else:
                 raise LookupError('Do not understand stimulus name: {}'.format(stim_n))
