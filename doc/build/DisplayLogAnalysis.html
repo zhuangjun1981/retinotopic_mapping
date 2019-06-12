@@ -17,43 +17,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="author" title="About these documents"
-              href="about.html"/>
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="retinotopic_mapping 1.0.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -120,7 +112,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">retinotopic_mapping</a>
@@ -128,9 +120,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -187,15 +180,15 @@ analysis of the log file (the .pkl file) saved by the
 <dd><p>class to take display_log (.pkl) file, check its integrity and extract stimuli and display
 organize into stim_dict dictionary, which is a intermediate step to put visual display
 information into nwb files.</p>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_frame_tot</span></code></td>
-<td></td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>num_frame_tot</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -206,7 +199,7 @@ information into nwb files.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_photodiode_onsets_combined</span></code></a>(pd_onsets_seq)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_photodiode_onsets_combined</span></code></a>(self,&nbsp;…)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -217,13 +210,10 @@ information into nwb files.</p>
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_photodiode_onsets_sequential</span></code></a>(stim_dict)</td>
+<tr class="row-even"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_photodiode_onsets_sequential</span></code></a>(self,&nbsp;…)</td>
 <td>Analyze photodiode onsets in a sequential way</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_integrity</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_stim_dict</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict" title="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_stim_dict</span></code></a>(self)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -236,24 +226,38 @@ information into nwb files.</p>
 </tr>
 </tbody>
 </table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="66%" />
+<col width="34%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>check_integrity</strong></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined">
-<code class="descname">analyze_photodiode_onsets_combined</code><span class="sig-paren">(</span><em>pd_onsets_seq</em>, <em>is_dgc_blocked=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined" title="Permalink to this definition">¶</a></dt>
+<code class="descname">analyze_photodiode_onsets_combined</code><span class="sig-paren">(</span><em>self</em>, <em>pd_onsets_seq</em>, <em>is_dgc_blocked=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_combined" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pd_onsets_seq: list</strong></p>
-<blockquote>
-<div><p>product of self.analyze_photodiode_onsets_sequential()</p>
-</div></blockquote>
-<p><strong>dgc_onset_type</strong> : str</p>
-<blockquote>
-<div><p>type of onset “block” or “cycle”</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>pd_onsets_seq: list</strong></dt>
+<dd><p class="first last">product of self.analyze_photodiode_onsets_sequential()</p>
+</dd>
+<dt><strong>dgc_onset_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">type of onset “block” or “cycle”</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>pd_onsets_combined</strong> : dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pd_onsets_combined</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -262,31 +266,31 @@ information into nwb files.</p>
 
 <dl class="method">
 <dt id="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential">
-<code class="descname">analyze_photodiode_onsets_sequential</code><span class="sig-paren">(</span><em>stim_dict</em>, <em>pd_thr=-0.5</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential" title="Permalink to this definition">¶</a></dt>
+<code class="descname">analyze_photodiode_onsets_sequential</code><span class="sig-paren">(</span><em>self</em>, <em>stim_dict</em>, <em>pd_thr=-0.5</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.analyze_photodiode_onsets_sequential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze photodiode onsets in a sequential way</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stim_dict: dictionary</strong></p>
-<blockquote>
-<div><p>should be the output of self.get_stim_dict()</p>
-</div></blockquote>
-<p><strong>pd_thr</strong> : float</p>
-<blockquote>
-<div><p>the threshold to detect photodiode onset, the photodiode color was saved in each displayed frame (the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>stim_dict: dictionary</strong></dt>
+<dd><p class="first last">should be the output of self.get_stim_dict()</p>
+</dd>
+<dt><strong>pd_thr</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">the threshold to detect photodiode onset, the photodiode color was saved in each displayed frame (the
 last item of frame tuple) as float with range [-1., 1.]. pd_onset is defined as up crossing the pd_thr.
 retinotopic_mapping.tools.GenericTools.up_crossing() function is used to detect the up crossing. It
 detects the frame meeting the following criteria: 1) the current frame has photodiode color larger than
 pd_thr; 2) the previous frame has photodiode color no larger than pd_thr</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">pd_onsets: list</p>
-<blockquote class="last">
-<div><p>list of photodiode onsets in sequential manner (in time). Each element in the list is a dictionary
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt>pd_onsets: list</dt>
+<dd><p class="first">list of photodiode onsets in sequential manner (in time). Each element in the list is a dictionary
 representing one photodiode onset. The dictionary has 3 fields:</p>
-<blockquote>
+<blockquote class="last">
 <div><ol class="arabic simple">
 <li>stim_name: str, the name of the stimulus the onset belongs to</li>
 <li>global_frame_ind: the index of this frame in the total frame displayed</li>
@@ -303,7 +307,8 @@ probe on the onset frame.</dd>
 </li>
 </ol>
 </div></blockquote>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -312,15 +317,15 @@ probe on the onset frame.</dd>
 
 <dl class="method">
 <dt id="retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict">
-<code class="descname">get_stim_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_stim_dict</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.DisplayLogAnalysis.DisplayLogAnalyzer.get_stim_dict" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">stim_dict: dictionary</p>
-<blockquote class="last">
-<div><p>the structure of this dictionary should look like this:</p>
-<dl class="docutils">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt>stim_dict: dictionary</dt>
+<dd><p class="first">the structure of this dictionary should look like this:</p>
+<dl class="last docutils">
 <dt>{</dt>
 <dd><dl class="first docutils">
 <dt>‘000_UniformContrastRetinotopicMapping’: {</dt>
@@ -352,7 +357,8 @@ probe on the onset frame.</dd>
 }</p>
 </dd>
 </dl>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -366,9 +372,7 @@ probe on the onset frame.</dd>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -377,11 +381,11 @@ probe on the onset frame.</dd>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Allen Institute for Brain Science.
+        &copy; Copyright 2017, Allen Institute for Brain Science
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -394,37 +398,15 @@ probe on the onset frame.</dd>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

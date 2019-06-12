@@ -17,44 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="author" title="About these documents"
-              href="about.html"/>
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="retinotopic_mapping 1.0.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="prev" title="API Documentation" href="api.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API Documentation" href="api.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -124,7 +116,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">retinotopic_mapping</a>
@@ -132,9 +124,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -211,72 +204,58 @@ warped by calling the <cite>remap</cite> method to populate the <cite>deg_coord_
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>resolution</strong> : tuple</p>
-<blockquote>
-<div><p>value of the monitor resolution</p>
-</div></blockquote>
-<p><strong>dis</strong> : float</p>
-<blockquote>
-<div><p>distance from eyeball to monitor (in cm)</p>
-</div></blockquote>
-<p><strong>mon_width_cm</strong> : float</p>
-<blockquote>
-<div><p>width of monitor (in cm)</p>
-</div></blockquote>
-<p><strong>mon_height_cm</strong> : float</p>
-<blockquote>
-<div><p>height of monitor (in cm)</p>
-</div></blockquote>
-<p><strong>C2T_cm</strong> : float</p>
-<blockquote>
-<div><p>distance from gaze center to monitor top</p>
-</div></blockquote>
-<p><strong>C2A_cm</strong> : float</p>
-<blockquote>
-<div><p>distance from gaze center to anterior edge of the monitor</p>
-</div></blockquote>
-<p><strong>center_coordinates</strong> : tuple of two floats</p>
-<blockquote>
-<div><p>(altitude, azimuth), in degrees. the coordinates of the projecting point
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>resolution</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of two positive integers</span></dt>
+<dd><p class="first last">value of the monitor resolution, (pixel number in height, pixel number in width)</p>
+</dd>
+<dt><strong>dis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">distance from eyeball to monitor (in cm)</p>
+</dd>
+<dt><strong>mon_width_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">width of monitor (in cm)</p>
+</dd>
+<dt><strong>mon_height_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">height of monitor (in cm)</p>
+</dd>
+<dt><strong>C2T_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">distance from gaze center to monitor top</p>
+</dd>
+<dt><strong>C2A_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">distance from gaze center to anterior edge of the monitor</p>
+</dd>
+<dt><strong>center_coordinates</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of two floats</span></dt>
+<dd><p class="first last">(altitude, azimuth), in degrees. the coordinates of the projecting point
 from the eye ball to the monitor. This allows to place the display monitor
 in any arbitrary position.</p>
-</div></blockquote>
-<p><strong>visual_field</strong> : str from {‘right’,’left’}, optional</p>
-<blockquote>
-<div><p>the eye that is facing the monitor, defaults to ‘right’</p>
-</div></blockquote>
-<p><strong>deg_coord_x</strong> : ndarray, optional</p>
-<blockquote>
-<div><p>array of warped x pixel coordinates, defaults to <cite>None</cite></p>
-</div></blockquote>
-<p><strong>deg_coord_y</strong> : ndarray, optional</p>
-<blockquote>
-<div><p>array of warped y pixel coordinates, defaults to <cite>None</cite></p>
-</div></blockquote>
-<p><strong>name</strong> : str, optional</p>
-<blockquote>
-<div><p>name of the monitor, defaults to <cite>testMonitor</cite></p>
-</div></blockquote>
-<p><strong>gamma</strong> : optional</p>
-<blockquote>
-<div><p>for gamma correction, defaults to <cite>None</cite></p>
-</div></blockquote>
-<p><strong>gamma_grid</strong> : optional</p>
-<blockquote>
-<div><p>for gamme correction, defaults to <cite>None</cite></p>
-</div></blockquote>
-<p><strong>luminance</strong> : optional</p>
-<blockquote>
-<div><p>monitor luminance, defaults to <cite>None</cite></p>
-</div></blockquote>
-<p><strong>downsample_rate</strong> : int, optional</p>
-<blockquote>
-<div><p>downsample rate of monitor pixels, defaults to 10</p>
-</div></blockquote>
-<p><strong>refresh_rate</strong> : float, optional</p>
-<blockquote class="last">
-<div><p>the refresh rate of the monitor in Hz, defaults to 60</p>
-</div></blockquote>
+</dd>
+<dt><strong>visual_field</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str from {‘right’,’left’}, optional</span></dt>
+<dd><p class="first last">the eye that is facing the monitor, defaults to ‘right’</p>
+</dd>
+<dt><strong>deg_coord_x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, optional</span></dt>
+<dd><p class="first last">array of warped x pixel coordinates, defaults to <cite>None</cite></p>
+</dd>
+<dt><strong>deg_coord_y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, optional</span></dt>
+<dd><p class="first last">array of warped y pixel coordinates, defaults to <cite>None</cite></p>
+</dd>
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">name of the monitor, defaults to <cite>testMonitor</cite></p>
+</dd>
+<dt><strong>gamma</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">for gamma correction, defaults to <cite>None</cite></p>
+</dd>
+<dt><strong>gamma_grid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">for gamme correction, defaults to <cite>None</cite></p>
+</dd>
+<dt><strong>luminance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">monitor luminance, defaults to <cite>None</cite></p>
+</dd>
+<dt><strong>downsample_rate</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">downsample rate of monitor pixels, defaults to 10</p>
+</dd>
+<dt><strong>refresh_rate</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">the refresh rate of the monitor in Hz, defaults to 60</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -288,32 +267,40 @@ in any arbitrary position.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table" title="retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_lookup_table</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table" title="retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_lookup_table</span></code></a>(self)</td>
 <td>generate lookup talbe between degree corrdinates and linear corrdinates return two matrix: lookupI: i index in linear matrix to this pixel after warping lookupJ: j index in linear matrix to this pixel after warping</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_map</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.remap" title="retinotopic_mapping.MonitorSetup.Monitor.remap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remap</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.remap" title="retinotopic_mapping.MonitorSetup.Monitor.remap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remap</span></code></a>(self)</td>
 <td>warp the linear pixel coordinates to a spherical corrected representation.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_downsample_rate</span></code>(downsample_rate)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gamma</span></code>(gamma,&nbsp;gamma_grid)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_luminance</span></code>(luminance)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.warp_images" title="retinotopic_mapping.MonitorSetup.Monitor.warp_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">warp_images</span></code></a>(imgs,&nbsp;center_coor[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Monitor.warp_images" title="retinotopic_mapping.MonitorSetup.Monitor.warp_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">warp_images</span></code></a>(self,&nbsp;imgs,&nbsp;center_coor[,&nbsp;…])</td>
 <td>warp a image stack into visual degree coordinate system</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="70%" />
+<col width="30%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>plot_map</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><strong>set_downsample_rate</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td><strong>set_gamma</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><strong>set_luminance</strong></td>
+<td>&#160;</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table">
-<code class="descname">generate_lookup_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table" title="Permalink to this definition">¶</a></dt>
+<code class="descname">generate_lookup_table</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.generate_lookup_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>generate lookup talbe between degree corrdinates and linear corrdinates
 return two matrix:
 lookupI: i index in linear matrix to this pixel after warping
@@ -322,7 +309,7 @@ lookupJ: j index in linear matrix to this pixel after warping</p>
 
 <dl class="method">
 <dt id="retinotopic_mapping.MonitorSetup.Monitor.remap">
-<code class="descname">remap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.remap" title="Permalink to this definition">¶</a></dt>
+<code class="descname">remap</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.remap" title="Permalink to this definition">¶</a></dt>
 <dd><p>warp the linear pixel coordinates to a spherical corrected representation.</p>
 <p>Function is called when the monitor object is initialized and populate
 the <cite>deg_coord_x</cite> and <cite>deg_coord_y</cite> attributes.</p>
@@ -330,64 +317,58 @@ the <cite>deg_coord_x</cite> and <cite>deg_coord_y</cite> attributes.</p>
 
 <dl class="method">
 <dt id="retinotopic_mapping.MonitorSetup.Monitor.warp_images">
-<code class="descname">warp_images</code><span class="sig-paren">(</span><em>imgs</em>, <em>center_coor</em>, <em>deg_per_pixel=0.1</em>, <em>is_luminance_correction=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.warp_images" title="Permalink to this definition">¶</a></dt>
+<code class="descname">warp_images</code><span class="sig-paren">(</span><em>self</em>, <em>imgs</em>, <em>center_coor</em>, <em>deg_per_pixel=0.1</em>, <em>is_luminance_correction=True</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Monitor.warp_images" title="Permalink to this definition">¶</a></dt>
 <dd><p>warp a image stack into visual degree coordinate system</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>imgs</strong> : ndarray</p>
-<blockquote>
-<div><p>should be 2d or 3d, if 3d, axis will be considered as frame x rows x width</p>
-</div></blockquote>
-<p><strong>center_coor</strong> : list or tuple of two floats</p>
-<blockquote>
-<div><p>the visual degree coordinates of the center of the image (altitude, azimuth)</p>
-</div></blockquote>
-<p><strong>deg_per_pixel</strong> : float or list/tuple of two floats</p>
-<blockquote>
-<div><p>size of original pixel in visual degrees, (altitude, azimuth), if float, assume
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>imgs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">should be 2d or 3d, if 3d, axis will be considered as frame x rows x width</p>
+</dd>
+<dt><strong>center_coor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list or tuple of two floats</span></dt>
+<dd><p class="first last">the visual degree coordinates of the center of the image (altitude, azimuth)</p>
+</dd>
+<dt><strong>deg_per_pixel</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or list/tuple of two floats</span></dt>
+<dd><p class="first last">size of original pixel in visual degrees, (altitude, azimuth), if float, assume
 sizes in both dimension are the same</p>
-</div></blockquote>
-<p><strong>is_luminance_correction</strong> : bool</p>
-<blockquote>
-<div><p>if True, wrapped images will have mean intensity equal 0, and values will be
+</dd>
+<dt><strong>is_luminance_correction</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True, wrapped images will have mean intensity equal 0, and values will be
 scaled up to reach minimum equal -1. or maximum equal 1.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>imgs_wrapped</strong> : 3d array, np.float32</p>
-<blockquote>
-<div><p>wrapped images, each frame should have exact same size of down sampled monitor
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>imgs_wrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">3d array, np.float32</span></dt>
+<dd><p class="first last">wrapped images, each frame should have exact same size of down sampled monitor
 resolution. the region on the monitor not covered by the image will have value
 of np.nan. value range [-1., 1.]</p>
-</div></blockquote>
-<p><strong>coord_alt_wrapped</strong> : 2d array, np.float32</p>
-<blockquote>
-<div><p>the altitude coordinates of all pixels in the wrapped images in visual degrees.
+</dd>
+<dt><strong>coord_alt_wrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">2d array, np.float32</span></dt>
+<dd><p class="first last">the altitude coordinates of all pixels in the wrapped images in visual degrees.
 should have the same shape as each frame in ‘imgs_wrapped’.</p>
-</div></blockquote>
-<p><strong>coord_azi_wrapped</strong> : 2d array, np.float32</p>
-<blockquote>
-<div><p>the azimuth coordinates of all pixels in the wrapped images in visual degrees.
+</dd>
+<dt><strong>coord_azi_wrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">2d array, np.float32</span></dt>
+<dd><p class="first last">the azimuth coordinates of all pixels in the wrapped images in visual degrees.
 should have the same shape as each frame in ‘imgs_wrapped’.</p>
-</div></blockquote>
-<p><strong>imgs_dewrapped</strong> : 3d array, dtype same as imgs</p>
-<blockquote>
-<div><p>unwrapped images, same dimension as input image stack. the region of original
+</dd>
+<dt><strong>imgs_dewrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">3d array, dtype same as imgs</span></dt>
+<dd><p class="first last">unwrapped images, same dimension as input image stack. the region of original
 image that was not got displayed (outside of the monitor) will have value of
 np.nan. value range [-1., 1.]</p>
-</div></blockquote>
-<p><strong>coord_alt_dewrapped</strong> : 2d array, np.float32</p>
-<blockquote>
-<div><p>the altitude coordinates of all pixels in the dewrapped images in visual degrees.
+</dd>
+<dt><strong>coord_alt_dewrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">2d array, np.float32</span></dt>
+<dd><p class="first last">the altitude coordinates of all pixels in the dewrapped images in visual degrees.
 should have the same shape as each frame in ‘imgs_dewrapped’.</p>
-</div></blockquote>
-<p><strong>coord_azi_dewrapped</strong> : 2d array, np.float32</p>
-<blockquote class="last">
-<div><p>the azimuth coordinates of all pixels in the dewrapped images in visual degrees.
+</dd>
+<dt><strong>coord_azi_dewrapped</strong> <span class="classifier-delimiter">:</span> <span class="classifier">2d array, np.float32</span></dt>
+<dd><p class="first last">the azimuth coordinates of all pixels in the dewrapped images in visual degrees.
 should have the same shape as each frame in ‘imgs_dewrapped’.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -407,31 +388,27 @@ should have the same shape as each frame in ‘imgs_dewrapped’.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>monitor</strong> : monitor object</p>
-<blockquote>
-<div><p>The monitor used within the experimental setup</p>
-</div></blockquote>
-<p><strong>width_cm</strong> : float, optional</p>
-<blockquote>
-<div><p>width of the size of the indicator in cm, defaults to <cite>3.</cite></p>
-</div></blockquote>
-<p><strong>height_cm</strong> : float, optional</p>
-<blockquote>
-<div><p>height of the size of the indicator in cm, defaults to <cite>3.</cite></p>
-</div></blockquote>
-<p><strong>position</strong> : str from {‘northeast’,’northwest’,’southwest’,’southeast’}</p>
-<blockquote>
-<div><p>the placement of the indicator, defaults to ‘northeast’</p>
-</div></blockquote>
-<p><strong>is_sync</strong> : bool, optional</p>
-<blockquote>
-<div><p>determines whether the indicator is synchronized with the stimulus,
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>monitor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">monitor object</span></dt>
+<dd><p class="first last">The monitor used within the experimental setup</p>
+</dd>
+<dt><strong>width_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">width of the size of the indicator in cm, defaults to <cite>3.</cite></p>
+</dd>
+<dt><strong>height_cm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">height of the size of the indicator in cm, defaults to <cite>3.</cite></p>
+</dd>
+<dt><strong>position</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str from {‘northeast’,’northwest’,’southwest’,’southeast’}</span></dt>
+<dd><p class="first last">the placement of the indicator, defaults to ‘northeast’</p>
+</dd>
+<dt><strong>is_sync</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">determines whether the indicator is synchronized with the stimulus,
 defaults to True.</p>
-</div></blockquote>
-<p><strong>freq</strong> : float, optional</p>
-<blockquote class="last">
-<div><p>frequency of photodiode, defaults to <cite>2.</cite></p>
-</div></blockquote>
+</dd>
+<dt><strong>freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">frequency of photodiode, defaults to <cite>2.</cite></p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -443,20 +420,28 @@ defaults to True.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_center</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Indicator.get_frames" title="retinotopic_mapping.MonitorSetup.Indicator.get_frames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_frames</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#retinotopic_mapping.MonitorSetup.Indicator.get_frames" title="retinotopic_mapping.MonitorSetup.Indicator.get_frames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_frames</span></code></a>(self)</td>
 <td>if not synchronized with stimulation, get frame numbers of each update of indicator</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_size_pixel</span></code>()</td>
-<td></td>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>get_center</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><strong>get_size_pixel</strong></td>
+<td>&#160;</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="retinotopic_mapping.MonitorSetup.Indicator.get_frames">
-<code class="descname">get_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Indicator.get_frames" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_frames</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#retinotopic_mapping.MonitorSetup.Indicator.get_frames" title="Permalink to this definition">¶</a></dt>
 <dd><p>if not synchronized with stimulation, get frame numbers of each update
 of indicator</p>
 </dd></dl>
@@ -468,16 +453,14 @@ of indicator</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="api.html" class="btn btn-neutral" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -486,11 +469,11 @@ of indicator</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Allen Institute for Brain Science.
+        &copy; Copyright 2017, Allen Institute for Brain Science
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -503,37 +486,15 @@ of indicator</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
