@@ -1,2 +1,0 @@
-psychopy>=1.85.2
-opencv-python==3.1.0
