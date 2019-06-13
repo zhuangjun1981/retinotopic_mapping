@@ -96,36 +96,7 @@ class DisplaySequence(object):
     of the logging of relevant experimental data collected and where it
     will be stored on the computer used for the experiment.
 
-
-    """
-
-    def __init__(self,
-                 log_dir,
-                 backupdir=None,
-                 identifier='000',
-                 display_iter=1,
-                 mouse_id='Test',
-                 user_id='Name',
-                 psychopy_mon='testMonitor',
-                 is_by_index=True,
-                 is_interpolate=False,
-                 is_triggered=False,
-                 is_save_sequence=False,
-                 trigger_event="negative_edge",
-                 trigger_NI_dev='Dev1',
-                 trigger_NI_port=1,
-                 trigger_NI_line=0,
-                 is_sync_pulse=False,
-                 sync_pulse_NI_dev='Dev1',
-                 sync_pulse_NI_port=1,
-                 sync_pulse_NI_line=1,
-                 display_screen=0,
-                 initial_background_color=0.,
-                 color_weights=(1., 1., 1.)):
-        """
-        initialize `DisplaySequence` object
-
-        Parameters
+    Parameters
         ----------
         log_dir : str
             system directory path to where log display will be saved.
@@ -186,6 +157,33 @@ class DisplaySequence(object):
             element is in the range [0., 1.]. This is designed in such way that
             if you want to suppress a certain channel i.e. red channel, you can
             change this parameter to (0., 1., 1.)
+    """
+
+    def __init__(self,
+                 log_dir,
+                 backupdir=None,
+                 identifier='000',
+                 display_iter=1,
+                 mouse_id='Test',
+                 user_id='Name',
+                 psychopy_mon='testMonitor',
+                 is_by_index=True,
+                 is_interpolate=False,
+                 is_triggered=False,
+                 is_save_sequence=False,
+                 trigger_event="negative_edge",
+                 trigger_NI_dev='Dev1',
+                 trigger_NI_port=1,
+                 trigger_NI_line=0,
+                 is_sync_pulse=False,
+                 sync_pulse_NI_dev='Dev1',
+                 sync_pulse_NI_port=1,
+                 sync_pulse_NI_line=1,
+                 display_screen=0,
+                 initial_background_color=0.,
+                 color_weights=(1., 1., 1.)):
+        """
+        initialize `DisplaySequence` object
         """
 
         self.sequence = None
