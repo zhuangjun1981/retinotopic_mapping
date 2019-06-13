@@ -56,3 +56,6 @@ crashlytics-build.properties
 /retinotopic_mapping/ipython_lizard/res/test_pkls
 .ipynb_checkpoints
 
+build/
+dis/
+
