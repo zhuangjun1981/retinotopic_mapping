@@ -57,5 +57,7 @@ crashlytics-build.properties
 .ipynb_checkpoints
 
 build/
-dist/
+dis/
 retinotopic_mapping.egg-info/
+*.egg
+
