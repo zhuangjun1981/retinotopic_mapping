@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installing &mdash; retinotopic_mapping 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="intro.html" />
+    <link rel="prev" title="About" href="about.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> retinotopic_mapping
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#manual-install-recommended">Manual install (recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pip-install">PIP install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-systems-supported">Operating Systems Supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#making-sure-pydaqmx-works">Making sure PyDAQmx works</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">retinotopic_mapping</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installing">
+<h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="manual-install-recommended">
+<h2>Manual install (recommended)<a class="headerlink" href="#manual-install-recommended" title="Permalink to this headline">¶</a></h2>
+<p>To manually install <strong>RetinotopicMapping</strong> you can  download the package
+<a class="reference external" href="https://pypi.python.org/pypi?name=retinotopic-maps&amp;version=2.0.0&amp;:action=display">here</a>.</p>
+<p>Then open the command line, move to the directory that the package was
+installed in and run the <cite>setup.py</cite> file like follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">package_path</span><span class="o">&gt;</span>
+<span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>     <span class="c1"># this will take a while</span>
+<span class="n">activate</span> <span class="n">retinotopic_mapping</span>            <span class="c1"># Windows</span>
+<span class="n">source</span> <span class="n">activate</span> <span class="n">retinotopic_mapping</span>     <span class="c1"># Mac or Linux</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pip-install">
+<h2>PIP install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h2>
+<p>An even simpler way to install the package is with pip. To do so type the following
+in the command line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">retinotopic_mapping</span>
+</pre></div>
+</div>
+<p>This will install all the dependencies (takes long time and not always work). If you
+want to install the package without dependencies, run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">retinotopic_mapping</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">deps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li>pytest, version 3.3.0 or later</li>
+<li>numpy, version 1.13.1 or later</li>
+<li>scipy, version 0.17.1 or later</li>
+<li>matplotlib, version 1.5.1 or later</li>
+<li>h5py, version 2.7.1 or later</li>
+<li>pillow, version 5.0.0 or later</li>
+<li>psychopy, version 1.85.2 or later</li>
+<li>pyglet, version 1.2.4</li>
+<li>OpenCV <a class="reference internal" href="#a" id="id1">[a]</a></li>
+<li>scikit-image, version 0.12.3 or later <a class="reference internal" href="#b" id="id2">[b]</a></li>
+<li>tifffile, version &gt;=0.7.0 <a class="reference internal" href="#c" id="id3">[c]</a></li>
+<li>PIL, version 4.3.0 or later</li>
+<li>PyDAQmx, version 1.3.2 or later <a class="reference internal" href="#d" id="id4">[d]</a></li>
+<li>configobj, version 5.0.6 or later</li>
+<li>sphinx, version 1.6.3 or later (just for documentation)</li>
+<li>numpydoc, version 0.7.0 (just for documentation)</li>
+</ol>
+<table class="docutils citation" frame="void" id="a" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[a]</a></td><td>This can be
+1) OpenCV-Python 3.1.0 or later (pip version) or
+2) <a class="reference external" href="https://anaconda.org/menpo/opencv">opencv 2.4.11</a> (conda cloud version from menpo channel) or
+3) <a class="reference external" href="https://anaconda.org/menpo/opencv3">opencv3 3.2.0</a> (conda cloud version from menpo channel)</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[b]</a></td><td>On windows systems, <cite>conda install scikit-image</cite> is recommended.
+<cite>pip install scikit-image</cite> will sometimes fail. Due to the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.external.tifffile</span></code> module.
+<a class="reference external" href="https://stackoverflow.com/questions/44865576/python-scikit-image-install-failing-using-pip">This solution</a>
+usually fix the problem.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[c]</a></td><td>Same as b.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="d" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[d]</a></td><td>Requires National Instruments <a class="reference external" href="http://sine.ni.com/nips/cds/view/p/lang/en/nid/10181">DAQmx driver</a>.</td></tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="operating-systems-supported">
+<h2>Operating Systems Supported<a class="headerlink" href="#operating-systems-supported" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Windows</li>
+<li>Linux</li>
+<li>Mac</li>
+</ul>
+</div>
+<div class="section" id="making-sure-pydaqmx-works">
+<h2>Making sure PyDAQmx works<a class="headerlink" href="#making-sure-pydaqmx-works" title="Permalink to this headline">¶</a></h2>
+<p>The PyDAQmx module allows users to integrate National Instruments
+data-acquisition hardware into their experimental setup (see their
+<a class="reference external" href="https://pythonhosted.org/PyDAQmx/">documentation</a> for more information).</p>
+<p>To get PyDAQmx to function correctly there are a couple of important
+points to mention:</p>
+<ul class="simple">
+<li>The NIDAQmx driver must first be installed</li>
+<li>Once NIDAQmx driver is installed it is not guaranteed that the
+module will work, so it is important to know how to troubleshoot
+this issue. The main issue is tracking down where two files
+are on your computer, a filepath ending with <code class="docutils literal notranslate"><span class="pre">DAQMX.h</span></code> and another
+path ending with <code class="docutils literal notranslate"><span class="pre">nicaiu.dll</span></code>. The PyDAQmx module tries to find
+these files for you, but if it cannot, the user needs to manually
+find and enter the path within the <cite>DAQmxConfig.py</cite> file.
+See <a class="reference external" href="https://pythonhosted.org/PyDAQmx/installation.html">this</a>
+page for a more thorough explanation).</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is the most likely issue to come up in debugging. Chances
+are if you are having a related issue it either has something
+to do with not supplying a correct path or  making improper
+import statements somewhere in your script.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="about.html" class="btn btn-neutral float-left" title="About" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Allen Institute for Brain Science
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
