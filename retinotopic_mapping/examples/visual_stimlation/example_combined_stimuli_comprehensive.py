@@ -80,6 +80,15 @@ fc_smooth_width_ratio = 0.2
 fc_smooth_func = stim.blur_cos
 # =================================================================================
 
+# ============================ SinusoidalLuminance ================================
+sl_max_level = 1.
+sl_min_level = -1.
+sl_frequency = 1.
+sl_cycle_num = 10
+sl_start_phase = 0.
+sl_midgap_dur = 0.
+# =================================================================================
+
 # ============================ SparseNoise ========================================
 sn_subregion = (-40., 60., 30., 90.)
 sn_grid_space = (20., 20.)
@@ -153,7 +162,7 @@ ss_cycle_num = 10
 # =================================================================================
 
 # ============================ CombinedStimuli ====================================
-cs_stim_ind_sequence = [0, 7, 1, 7, 2, 7, 3, 7, 4, 7, 5, 7, 6, 7]
+cs_stim_ind_sequence = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 # =================================================================================
 
 
@@ -204,6 +213,15 @@ fc = stim.FlashingCircle(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
                          is_smooth_edge=fc_is_smooth_edge,
                          smooth_width_ratio=fc_smooth_width_ratio,
                          smooth_func=fc_smooth_func)
+# =================================================================================
+
+# ============================ SinusoidalLuminance ================================
+sl = stim.SinusoidalLuminance(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
+                              postgap_dur=postgap_dur, coordinate=coordinate,
+                              background=background, max_level=sl_max_level,
+                              min_level=sl_min_level, frequency=sl_frequency,
+                              cycle_num=sl_cycle_num, start_phase=sl_start_phase,
+                              midgap_dur=sl_midgap_dur)
 # =================================================================================
 
 # ======================== Sparse Noise ===========================================
@@ -286,7 +304,7 @@ cs = stim.CombinedStimuli(monitor=mon, indicator=ind, pregap_dur=pregap_dur,
 # =================================================================================
 
 # ======================= Set Stimuli Sequence ====================================
-all_stim = [uc, fc, sn, lsn, dgc, sgc, si, ss]
+all_stim = [uc, fc, sl, sn, lsn, dgc, sgc, si, ss]
 stim_seq = [all_stim[stim_ind] for stim_ind in cs_stim_ind_sequence]
 cs.set_stimuli(stimuli=stim_seq, static_images_path=static_images_path)
 # =================================================================================

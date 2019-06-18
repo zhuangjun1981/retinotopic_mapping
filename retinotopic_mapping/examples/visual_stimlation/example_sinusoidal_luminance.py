@@ -14,11 +14,12 @@ ds = DisplaySequence(log_dir='C:/data')
 
 # Initialize UniformContrast object
 sl = stim.SinusoidalLuminance(monitor=mon, indicator=ind,
-                              pregap_dur=2.,
-                              midgap_dur=1.,
+                              pregap_dur=1.,
+                              midgap_dur=0.,
                               postgap_dur=3.,
-                              max_level=0.5,
-                              frequency=0.5, cycle_num=5,
+                              max_level=0.,
+                              min_level=-0.8,
+                              frequency=0.5, cycle_num=3,
                               start_phase=0.)
 
 # set uniform contrast stimulus into the DisplaySequence object

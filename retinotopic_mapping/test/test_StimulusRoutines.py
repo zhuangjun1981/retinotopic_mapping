@@ -755,7 +755,7 @@ class TestSimulation(unittest.TestCase):
     def test_SL_generate_frames_for_index_display(self):
         sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
                                     coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.,
-                                    max_level=1., start_phase=0., frequency=4., cycle_num=10)
+                                    max_level=0.5, min_level=-0.2, start_phase=0., frequency=4., cycle_num=10)
         frames = sl._generate_frames_for_index_display()
         # print(frames)
         assert (len(frames) == 16)
@@ -765,10 +765,16 @@ class TestSimulation(unittest.TestCase):
         for i in range(8, 16):
             assert (frames[i][2] == 0.)
 
+        colors = [f[1] for f in frames]
+        # print(colors)
+        assert(colors[1] == 0.15)
+        assert(max(colors[1:]) <= 0.5)
+        assert(min(colors[1:]) >= -0.2)
+
     def test_SL_generate_display_index(self):
         sl = sr.SinusoidalLuminance(monitor=self.monitor, indicator=self.indicator, background=0.,
                                     coordinate='degree', pregap_dur=2., postgap_dur=3., midgap_dur=0.5,
-                                    max_level=1., start_phase=0., frequency=4., cycle_num=3)
+                                    max_level=1., min_level=-1., start_phase=0., frequency=4., cycle_num=3)
         ind = sl._generate_display_index()
         # print(ind)
 

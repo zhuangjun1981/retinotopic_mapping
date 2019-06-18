@@ -771,8 +771,10 @@ class SinusoidalLuminance(Stim):
         to `3.`
     midgap_dur : float, optional
         amount of time (in seconds) in between each cycle, defaults to `0.`
-    max_level : float, (0., 1.]
+    max_level : float, [-1., 1.]
         maximum level of peak luminance, defaults to `1.`
+    min_level : float, [-1., 1.]
+        minimum level of peak luminance, defaults to `-1.` Should be smaller than max_level
     frequency : float, Hz
         frequency of the luminance fluctuation, should be less than 1/4 of
         monitor refresh rate.
@@ -782,7 +784,7 @@ class SinusoidalLuminance(Stim):
         starting phase of the cycle.
     """
 
-    def __init__(self, monitor, indicator, max_level=1., frequency=5,
+    def __init__(self, monitor, indicator, max_level=1., min_level=-1., frequency=1.,
                  cycle_num=10, start_phase=0., pregap_dur=2., postgap_dur=3.,
                  midgap_dur=0., background=0., coordinate='degree'):
         """
@@ -804,15 +806,27 @@ class SinusoidalLuminance(Stim):
             raise ValueError('midgap_dur should be no less than 0.')
 
         if max_level > 1.:
-            max_level = 1.
-        elif max_level < 0.:
-            max_level = 0.
-        self.max_level = float(max_level)
+            self.max_level = 1.
+        elif max_level < -1.:
+            self.max_level = -1
+        else:
+            self.max_level = float(max_level)
+
+        if min_level > 1.:
+            self.min_level = 1.
+        elif min_level < -1:
+            self.min_level = -1.
+        else:
+            self.min_level = float(min_level)
+
+        if self.min_level >= self.max_level:
+            raise ValueError('self.min_level ({}) should be smaller than '
+                             'self.max_level({}).'.format(self.min_level, self.max_level))
 
         if frequency > (monitor.refresh_rate / 4.):
             raise ValueError('frequency too high to be sufficiently sampled. Should '
                              'be less than 1/4 of monitor refresh rate: {}.'.format(self.monitor.refresh_rate))
-        self.frequency = frequency
+        self.frequency = float(frequency)
 
         if int(cycle_num) <= 0:
             raise ValueError('cycle_num should be a positive integer.')
@@ -832,7 +846,11 @@ class SinusoidalLuminance(Stim):
 
             frames_per_cycle = int(np.round(self.monitor.refresh_rate / self.frequency))
             phases = (2. * np.pi * np.arange(frames_per_cycle) / frames_per_cycle) + self.start_phase
-            colors = np.sin(phases) * self.max_level
+
+            mean_level = (self.max_level + self.min_level) / 2
+            amp_level = (self.max_level - self.min_level) / 2
+
+            colors = np.sin(phases) * amp_level + mean_level
 
             indicator_on_frames = frames_per_cycle // 2
             indicator_off_frames = frames_per_cycle - indicator_on_frames

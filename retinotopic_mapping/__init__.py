@@ -1,5 +1,5 @@
 import os
-__version__ = '2.9.3'
+__version__ = '2.9.4'
 
 def test():
     import pytest
