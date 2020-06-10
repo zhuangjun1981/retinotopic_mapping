@@ -4,6 +4,13 @@ by Jun Zhuang
 &copy; 2016 Allen Institute
 email: junz&lt;AT&gt;alleninstitute&lt;DOT&gt;org
 
+Because this is a python2 repo, we stopped the update since 2019-06-18.
+The visual stimulus part of this repo is moved to the python 3 repo
+[WrapedVisualStimu](https://github.com/zhuangjun1981/WarpedVisualStim)
+and the analysis part of this repo is moved to the python 3 repo
+[NeuroAnalysisTools](https://github.com/zhuangjun1981/NeuroAnalysisTools).
+Both of these two repos are under development with occasional updates.
+
 For a more thorough introduction and explanation of the module please
 see our [documentation](http://retinotopic-mapping.readthedocs.io/).
 If the online version of documentation looks incomplete. Please refer
