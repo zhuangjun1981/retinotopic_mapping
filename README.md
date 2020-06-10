@@ -4,7 +4,7 @@ by Jun Zhuang
 &copy; 2016 Allen Institute
 email: junz&lt;AT&gt;alleninstitute&lt;DOT&gt;org
 
-Because this is a python2 repo, we stopped the update since 2019-06-18.
+Because this is a python2 repo, we stopped the update since 2019-12-05.
 The visual stimulus part of this repo is moved to the python 3 repo
 [WrapedVisualStimu](https://github.com/zhuangjun1981/WarpedVisualStim)
 and the analysis part of this repo is moved to the python 3 repo
