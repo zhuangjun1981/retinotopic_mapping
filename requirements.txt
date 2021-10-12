@@ -1,4 +1,4 @@
-opencv-python == 3.1.0
+opencv-python == 3.3.1.11
 psychopy >= 1.85.2
 # pytest
 # numpy
